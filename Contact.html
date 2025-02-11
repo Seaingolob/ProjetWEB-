@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LeBonPlan - Contact et Mentions Légales</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header>
+        <nav>
+            <div class="logo">
+                <a href="/"><h1>lebonplan</h1></a>
+            </div>
+            <ul class="main-nav">
+                <li><a href="Main.html">Accueil</a></li>
+                <li><a href="Entreprises.html">Entreprises</a></li>
+                <li><a href="Offres.html">Offres</a></li>
+                <li><a href="Wishlist.html">Wishlist</a></li>
+                <li><a href="Contact.html" class="active">Contact</a></li>
+            </ul>
+
+        </nav>
+    </header>
+
+    <main>
+        <section class="contact-hero">
+            <h2>Contactez-nous</h2>
+            <p>Notre équipe est à votre disposition pour répondre à toutes vos questions</p>
+        </section>
+
+        <section class="contact-info">
+            <div class="contact-card">
+                <h3>Siège social</h3>
+                <address>
+                    <p>Web4All</p>
+                    <p>93 Boulevard de la Seine</p>
+                    <p>92000 Nanterre</p>
+                    <p>France</p>
+                </address>
+            </div>
+
+            <div class="contact-card">
+                <h3>Coordonnées</h3>
+                <ul>
+                    <li>
+                        <span>Email:</span>
+                        <a href="mailto:contact@web4all.fr">contact@web4all.fr</a>
+                    </li>
+                    <li>
+                        <span>Téléphone:</span>
+                        <a href="tel:+33123456789">01 23 45 67 89</a>
+                    </li>
+                    <li>
+                        <span>Horaires:</span>
+                        <p>Du lundi au vendredi, de 9h à 18h</p>
+                    </li>
+                </ul>
+            </div>
+        </section>
+
+        <section class="contact-form">
+            <h3>Formulaire de contact</h3>
+            <form id="contactForm">
+                <div class="form-group">
+                    <label for="subject">Sujet *</label>
+                    <select id="subject" name="subject" required>
+                        <option value="">Choisissez un sujet</option>
+                        <option value="info">Demande d'information</option>
+                        <option value="problem">Signaler un problème</option>
+                        <option value="partnership">Proposition de partenariat</option>
+                        <option value="other">Autre</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="name">Nom complet *</label>
+                    <input type="text" id="name" name="name" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="email">Email *</label>
+                    <input type="email" id="email" name="email" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="message">Message *</label>
+                    <textarea id="message" name="message" rows="5" required></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label class="checkbox-label">
+                        <input type="checkbox" required>
+                        J'accepte que mes données soient traitées conformément à la politique de confidentialité
+                    </label>
+                </div>
+
+                <button type="submit">Envoyer</button>
+            </form>
+        </section>
+
+        <section class="legal-info">
+            <h2>Mentions Légales</h2>
+            
+            <article class="legal-section">
+                <h3>Éditeur du site</h3>
+                <p>Web4All SAS</p>
+                <p>Capital social : 100 000€</p>
+                <p>RCS Nanterre B 123 456 789</p>
+                <p>N° TVA : FR 12 345 678 901</p>
+            </article>
+
+            <article class="legal-section">
+                <h3>Hébergement</h3>
+                <p>OVH SAS</p>
+                <p>2 rue Kellermann</p>
+                <p>59100 Roubaix</p>
+                <p>France</p>
+            </article>
+
+            <article class="legal-section">
+                <h3>Conditions Générales d'Utilisation</h3>
+                <div class="cgu-content">
+                    <h4>1. Objet</h4>
+                    <p>Les présentes CGU régissent l'utilisation du site LeBonPlan, plateforme de mise en relation entre étudiants et entreprises pour des stages.</p>
+
+                    <h4>2. Accès au service</h4>
+                    <p>L'accès au site est gratuit pour les étudiants. L'inscription est nécessaire pour accéder à certaines fonctionnalités.</p>
+
+                    <h4>3. Protection des données</h4>
+                    <p>Conformément au RGPD, les utilisateurs disposent d'un droit d'accès, de rectification et de suppression de leurs données personnelles.</p>
+
+                    <h4>4. Responsabilité</h4>
+                    <p>Web4All ne peut être tenu responsable des contenus publiés par les utilisateurs ou des relations entre utilisateurs.</p>
+                </div>
+            </article>
+
+            <article class="legal-section">
+                <h3>Cookies</h3>
+                <p>Ce site utilise des cookies pour améliorer l'expérience utilisateur. En continuant à naviguer, vous acceptez leur utilisation.</p>
+            </article>
+        </section>
+    </main>
+
+    <footer>
+        <div class="footer-content">
+            <div class="footer-section">
+                <h4>À propos</h4>
+                <ul>
+                    <li><a href="/qui-sommes-nous">Qui sommes-nous</a></li>
+                    <li><a href="/mentions-legales">Mentions légales</a></li>
+                    <li><a href="/cgu">CGU</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h4>Ressources</h4>
+                <ul>
+                    <li><a href="/aide">Centre d'aide</a></li>
+                    <li><a href="/blog">Blog</a></li>
+                    <li><a href="/faq">FAQ</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2024 - Tous droits réservés - Web4All</p>
+        </div>
+    </footer>
+</body>
+</html>
