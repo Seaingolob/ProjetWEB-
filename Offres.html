@@ -10,7 +10,7 @@
     <header>
         <nav>
             <div class="logo">
-                <a href="/"><h1>lebonplan</h1></a>
+                <a href="Main.html"><h1>lebonplan</h1></a>
             </div>
             <ul class="main-nav">
                 <li><a href="Main.html">Accueil</a></li>
@@ -18,11 +18,14 @@
                 <li><a href="Offres.html" class="active">Offres</a></li>
                 <li><a href="Wishlist.html">Wishlist</a></li>
                 <li><a href="Contact.html">Contact</a></li>
+                <div class="logout-container">
+                    <button id="logout-btn" onclick="window.location.href='Connection.html';">Déconnexion</button>
+                </div>
             </ul>
 
         </nav>
     </header>
-
+    <br>
     <main class="offers-page">
         <section class="search-filters">
             <h2>Rechercher une offre de stage</h2>
@@ -83,7 +86,6 @@
                 </div>
             </article>
 
-            <!-- Pagination -->
             <div class="pagination">
                 <button class="prev">Précédent</button>
                 <div class="pages">
@@ -95,3 +97,27 @@
             </div>
         </section>
     </main>
+    <footer>
+        <div class="footer-content">
+            <div class="footer-section">
+                <h4>À propos</h4>
+                <ul>
+                    <li><a href="/qui-sommes-nous">Qui sommes-nous</a></li>
+                    <li><a href="/mentions-legales">Mentions légales</a></li>
+                    <li><a href="/cgu">CGU</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h4>Ressources</h4>
+                <ul>
+                    <li><a href="/blog">Blog</a></li>
+                    <li><a href="/faq">FAQ</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2024 - Tous droits réservés - Web4All</p>
+        </div>
+    </footer>
+</body>
+</html>
