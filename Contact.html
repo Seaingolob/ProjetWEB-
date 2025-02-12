@@ -10,7 +10,7 @@
     <header>
         <nav>
             <div class="logo">
-                <a href="/"><h1>lebonplan</h1></a>
+                <a href="Main.html"><h1>lebonplan</h1></a>
             </div>
             <ul class="main-nav">
                 <li><a href="Main.html">Accueil</a></li>
@@ -18,12 +18,16 @@
                 <li><a href="Offres.html">Offres</a></li>
                 <li><a href="Wishlist.html">Wishlist</a></li>
                 <li><a href="Contact.html" class="active">Contact</a></li>
+                <div class="logout-container">
+                    <button id="logout-btn" onclick="window.location.href='Connection.html';">Déconnexion</button>
+                </div>
             </ul>
 
         </nav>
     </header>
 
     <main>
+        <br><br><br>
         <section class="contact-hero">
             <h2>Contactez-nous</h2>
             <p>Notre équipe est à votre disposition pour répondre à toutes vos questions</p>
@@ -90,80 +94,12 @@
 
                 <div class="form-group">
                     <label class="checkbox-label">
-                        <input type="checkbox" required>
-                        J'accepte que mes données soient traitées conformément à la politique de confidentialité
-                    </label>
+
+                        En envoyant le formulaire, vous consentez à ce que vous données soient traitées conformément à la politique de confidentialité</label>
                 </div>
 
                 <button type="submit">Envoyer</button>
             </form>
         </section>
 
-        <section class="legal-info">
-            <h2>Mentions Légales</h2>
-            
-            <article class="legal-section">
-                <h3>Éditeur du site</h3>
-                <p>Web4All SAS</p>
-                <p>Capital social : 100 000€</p>
-                <p>RCS Nanterre B 123 456 789</p>
-                <p>N° TVA : FR 12 345 678 901</p>
-            </article>
-
-            <article class="legal-section">
-                <h3>Hébergement</h3>
-                <p>OVH SAS</p>
-                <p>2 rue Kellermann</p>
-                <p>59100 Roubaix</p>
-                <p>France</p>
-            </article>
-
-            <article class="legal-section">
-                <h3>Conditions Générales d'Utilisation</h3>
-                <div class="cgu-content">
-                    <h4>1. Objet</h4>
-                    <p>Les présentes CGU régissent l'utilisation du site LeBonPlan, plateforme de mise en relation entre étudiants et entreprises pour des stages.</p>
-
-                    <h4>2. Accès au service</h4>
-                    <p>L'accès au site est gratuit pour les étudiants. L'inscription est nécessaire pour accéder à certaines fonctionnalités.</p>
-
-                    <h4>3. Protection des données</h4>
-                    <p>Conformément au RGPD, les utilisateurs disposent d'un droit d'accès, de rectification et de suppression de leurs données personnelles.</p>
-
-                    <h4>4. Responsabilité</h4>
-                    <p>Web4All ne peut être tenu responsable des contenus publiés par les utilisateurs ou des relations entre utilisateurs.</p>
-                </div>
-            </article>
-
-            <article class="legal-section">
-                <h3>Cookies</h3>
-                <p>Ce site utilise des cookies pour améliorer l'expérience utilisateur. En continuant à naviguer, vous acceptez leur utilisation.</p>
-            </article>
-        </section>
-    </main>
-
-    <footer>
-        <div class="footer-content">
-            <div class="footer-section">
-                <h4>À propos</h4>
-                <ul>
-                    <li><a href="/qui-sommes-nous">Qui sommes-nous</a></li>
-                    <li><a href="/mentions-legales">Mentions légales</a></li>
-                    <li><a href="/cgu">CGU</a></li>
-                </ul>
-            </div>
-            <div class="footer-section">
-                <h4>Ressources</h4>
-                <ul>
-                    <li><a href="/aide">Centre d'aide</a></li>
-                    <li><a href="/blog">Blog</a></li>
-                    <li><a href="/faq">FAQ</a></li>
-                </ul>
-            </div>
-        </div>
-        <div class="footer-bottom">
-            <p>&copy; 2024 - Tous droits réservés - Web4All</p>
-        </div>
-    </footer>
-</body>
 </html>
