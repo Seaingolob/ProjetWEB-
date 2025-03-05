@@ -499,6 +499,14 @@ input:focus, select:focus, textarea:focus {
     color: var(--primary-black);
 }
 
+.pagination {
+    display: flex;
+    justify-content: center; 
+    align-items: center; 
+    gap: 10px; 
+    width: 100%; 
+}
+
 /* Animations */
 @keyframes fadeIn {
     from { opacity: 0; transform: translateY(10px); }
@@ -575,4 +583,52 @@ input:focus, select:focus, textarea:focus {
         margin: 1rem;
     }
 
+}
+
+
+.filters-form {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start; 
+    background-color: #f9f9f9;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+    max-width: 400px;
+    margin-left: 20px; 
+}
+
+
+.filter-group {
+    display: flex;
+    flex-direction: column;
+    gap: 30px; 
+    width: 100%;
+}
+
+
+.filter-group input,
+.filter-group select {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 16px;
+    outline: none;
+}
+
+.filter-group button {
+    width: 100%;
+    padding: 12px;
+    background-color: #000; 
+    color: white;
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.filter-group button:hover {
+    background-color: #333;
 }
