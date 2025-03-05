@@ -664,6 +664,35 @@ input:focus, select:focus, textarea:focus {
     animation: fadeIn 0.5s ease-out forwards;
 }
 
+.cookie-banner{
+    left: 0;
+    right: 0;
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    background-color:#000000;
+    color: #fff;
+    padding:15px;
+    text-align: center;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+}
+
+.cookie-banner p{
+    font-size: 16px; 
+}
+
+.cookie-banner button{
+    background-color: #ffffff;
+    color:#000000;
+    padding: 10px 15px;
+    border-radius: 10px;
+    cursor:pointer;
+    border:0px;
+}
+
 /* Media Queries */
 @media (max-width: 768px) {
     nav {
