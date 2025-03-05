@@ -5,32 +5,36 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>LeBonPlan - Recherche de stages</title>
     <link rel="stylesheet" href="styles.css">
+    <script src="script.js"></script>
 </head>
 <body>
     <header>
         <nav>
             <div class="logo">
-                <a href="/">
-                    <h1>lebonplan</h1>
-                </a>
+                <a href="Main.html"><h1>lebonplan</h1></a>
             </div>
+
             <ul class="main-nav">
                 <li><a href="Main.html"class="active">Accueil</a></li>
                 <li><a href="Entreprises.html">Entreprises</a></li>
                 <li><a href="Offres.html">Offres</a></li>
                 <li><a href="Wishlist.html">Wishlist</a></li>
                 <li><a href="Contact.html">Contact</a></li>
+                <div class="logout-container">
+                    <button id="logout-btn" onclick="window.location.href='Connection.html';">Déconnexion</button>
+                </div>
             </ul>
 
         </nav>
     </header>
-
+<br><br><br><br><br>
     <main>
         <section class="hero">
             <h2>Trouvez le stage idéal</h2>
-            <p>La plateforme qui simplifie vos recherches de stages</p>
+            <p><big>La plateforme qui simplifie vos recherches de stages</big></p>
             <form class="search-form">
                 <input type="text" placeholder="Rechercher par mot-clé, compétence...">
+                
                 <input type="text" placeholder="Ville ou région">
                 <button type="submit">Rechercher</button>
             </form>
@@ -85,17 +89,16 @@
             <div class="footer-section">
                 <h4>À propos</h4>
                 <ul>
-                    <li><a href="/qui-sommes-nous">Qui sommes-nous</a></li>
-                    <li><a href="/mentions-legales">Mentions légales</a></li>
-                    <li><a href="/cgu">CGU</a></li>
+                    <li><a href="QSN.html">Qui sommes-nous</a></li>
+                    <li><a href="MentionLegales.html">Mentions légales</a></li>
+                    <li><a href="CGU.html">CGU</a></li>
                 </ul>
             </div>
             <div class="footer-section">
                 <h4>Ressources</h4>
                 <ul>
-                    <li><a href="/aide">Centre d'aide</a></li>
-                    <li><a href="/blog">Blog</a></li>
-                    <li><a href="/faq">FAQ</a></li>
+                    <li><a href="Blog.html">Blog</a></li>
+                    <li><a href="FAQ.html">FAQ</a></li>
                 </ul>
             </div>
         </div>
