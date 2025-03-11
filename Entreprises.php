@@ -100,54 +100,9 @@ $currentItems = array_slice($entreprises, ($page - 1) * $itemsPerPage, $itemsPer
                         </div>
                     </article>
                 <?php endforeach; ?>
+
             </div>
-            
-            <style>
-                .pagination {
-                    display: flex;
-                    justify-content: center;
-                    align-items: center;
-                    margin-top: 20px;
-                    gap: 10px;
-                }
-
-                .pagination a, .pagination span {
-                    padding: 10px 15px;
-                    border: 1px solid #ddd;
-                    border-radius: 5px;
-                    text-decoration: none;
-                    font-weight: bold;
-                    transition: background 0.3s ease;
-                }
-
-                .pagination a {
-                    color:rgb(0, 0, 0);
-                    background: #fff;
-                }
-
-                .pagination a:hover {
-                    background:#3498db;
-                    color: white;
-                }
-
-                .pagination .active {
-                    background:#3498db;
-                    color: black;
-                    border-color:rgb(122, 122, 122);
-                }
-
-                .pagination .disabled {
-                    color: #ccc;
-                    cursor: not-allowed;
-                    background: #f9f9f9;
-                    border: 1px solid #ddd;
-                }
-
-                .page-numbers {
-                    display: flex;
-                    gap: 5px;
-                }
-            </style>
+    
 
             <div class="pagination">
                 <?php if ($page > 1): ?>

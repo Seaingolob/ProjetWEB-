@@ -1,9 +1,8 @@
 <?php
-
-
 // Démarrer la session
 session_start();
-
+// Inclure le fichier de configuration de la base de données
+require_once 'config.php';
 // Vérifier si l'utilisateur est connecté
 if (!isset($_SESSION['logged_in']) || $_SESSION['logged_in'] !== true) {
     // Rediriger vers la page de connexion
@@ -11,31 +10,160 @@ if (!isset($_SESSION['logged_in']) || $_SESSION['logged_in'] !== true) {
     exit();
 }
 
+// Récupérer les noms des entreprises
+$sqlCompanies = "SELECT DISTINCT nom FROM entreprise ORDER BY nom";
+$stmtCompanies = $connexion->prepare($sqlCompanies);
+$stmtCompanies->execute();
+$companies = $stmtCompanies->fetchAll(PDO::FETCH_COLUMN);
 
-// Simuler une liste d'offres de stage
-$offres = array_map(function ($i) {
-    $durees = [2, 3, 4, 6];
-    $skills = ['React', 'Node.js', 'MongoDB', 'PHP', 'Laravel'];
+// Récupérer les noms des villes
+$sqlCities = "SELECT DISTINCT nom_ville FROM ville ORDER BY nom_ville";
+$stmtCities = $connexion->prepare($sqlCities);
+$stmtCities->execute();
+$cities = $stmtCities->fetchAll(PDO::FETCH_COLUMN);
 
-    return [
-        'titre' => "Stage - Développeur FullStack $i",
-        'entreprise' => "Entreprise $i",
-        'ville' => "Ville " . ($i % 10 + 1),
-        'duree' => $durees[array_rand($durees)],
-        'date' => date('d/m/Y', strtotime("-" . rand(0, 30) . " days")),
-        'skills' => array_intersect_key($skills, array_flip(array_rand($skills, 3)))
-    ];
-}, range(1, 50)); // Générer 50 offres
+// Récupérer les noms des compétences
+$sqlCompetences = "SELECT DISTINCT nom FROM competence ORDER BY nom";
+$stmtCompetences = $connexion->prepare($sqlCompetences);
+$stmtCompetences->execute();
+$competences = $stmtCompetences->fetchAll(PDO::FETCH_COLUMN);
 
 // Paramètres de pagination
 $itemsPerPage = 5;
 $page = max(1, filter_input(INPUT_GET, 'page', FILTER_VALIDATE_INT) ?: 1);
-$totalPages = ceil(count($offres) / $itemsPerPage);
 
-// Extraire les offres pour la page actuelle
-$currentItems = array_slice($offres, ($page - 1) * $itemsPerPage, $itemsPerPage);
+// Initialiser les variables de recherche
+$searchCompany = isset($_GET['company-name']) ? $_GET['company-name'] : '';
+$searchLocation = isset($_GET['location']) ? $_GET['location'] : '';
+$searchCompetence = isset($_GET['competence']) ? $_GET['competence'] : '';
+
+// Diviser les competences par virgule et les nettoyer
+$competencesArray = array_filter(array_map('trim', explode(',', $searchCompetence)));
+
+// Construire la requête SQL de base pour compter les offres
+$sqlCount = "SELECT COUNT(DISTINCT o.id_offre) FROM offre o 
+JOIN entreprise e ON o.Id_entreprise = e.Id_entreprise
+JOIN adresse ad ON e.Id_adresse = ad.Id_adresse
+JOIN ville v ON ad.Id_ville = v.Id_ville
+LEFT JOIN contenir co ON o.id_offre = co.id_offre
+LEFT JOIN competence c ON co.Id_competence = c.Id_competence";
+
+// Requête SQL pour récupérer les offres avec informations détaillées
+$sqlOffres = "SELECT DISTINCT o.*, e.nom AS nom_entreprise, v.nom_ville 
+FROM offre o 
+JOIN entreprise e ON o.Id_entreprise = e.Id_entreprise
+JOIN adresse ad ON e.Id_adresse = ad.Id_adresse
+JOIN ville v ON ad.Id_ville = v.Id_ville
+LEFT JOIN contenir co ON o.id_offre = co.id_offre
+LEFT JOIN competence c ON co.Id_competence = c.Id_competence";
+
+// Ajouter les conditions de recherche si elles sont définies
+$whereConditions = [];
+$params = [];
+
+if (!empty($searchCompany)) {
+    $whereConditions[] = "e.nom = :company";
+    $params[':company'] = $searchCompany;
+}
+
+if (!empty($searchLocation)) {
+    $whereConditions[] = "(v.nom_ville LIKE :location OR r.nom_region LIKE :location)";
+    
+    // On doit s'assurer que region est inclus dans la requête si on recherche par localisation
+    if (strpos($sqlOffres, "JOIN region r") === false) {
+        $sqlOffres = str_replace(
+            "JOIN ville v ON ad.Id_ville = v.Id_ville",
+            "JOIN ville v ON ad.Id_ville = v.Id_ville JOIN region r ON v.Id_region = r.Id_region",
+            $sqlOffres
+        );
+        
+        $sqlCount = str_replace(
+            "JOIN ville v ON ad.Id_ville = v.Id_ville",
+            "JOIN ville v ON ad.Id_ville = v.Id_ville JOIN region r ON v.Id_region = r.Id_region",
+            $sqlCount
+        );
+    }
+    
+    $params[':location'] = '%' . $searchLocation . '%';
+}
+
+if (!empty($competencesArray)) {
+    $competenceConditions = [];
+    foreach ($competencesArray as $index => $competence) {
+        $competenceParam = ':competence' . $index;
+        $competenceConditions[] = "c.nom LIKE $competenceParam";
+        $params[$competenceParam] = '%' . $competence . '%';
+    }
+    $whereConditions[] = '(' . implode(' AND ', $competenceConditions) . ')';
+}
+
+// Assembler la clause WHERE si nécessaire
+if (!empty($whereConditions)) {
+    $whereClause = " WHERE " . implode(' AND ', $whereConditions);
+    $sqlCount .= $whereClause;
+    $sqlOffres .= $whereClause;
+}
+
+// Ajouter l'ordre de tri par date décroissante (plus récentes en premier)
+$sqlOffres .= " ORDER BY o.date_publication DESC";
+
+// Ajouter la pagination
+$sqlOffres .= " LIMIT :offset, :limit";
+$params[':offset'] = ($page - 1) * $itemsPerPage;
+$params[':limit'] = $itemsPerPage;
+
+try {
+    // Exécuter la requête pour compter le nombre total d'offres
+    $stmtCount = $connexion->prepare($sqlCount);
+    
+    // Lier les paramètres pour la requête de comptage
+    foreach ($params as $key => $value) {
+        // Ne pas lier les paramètres de pagination pour la requête COUNT
+        if ($key !== ':offset' && $key !== ':limit') {
+            $stmtCount->bindValue($key, $value);
+        }
+    }
+    
+    $stmtCount->execute();
+    $totalOffres = $stmtCount->fetchColumn();
+    $totalPages = ceil($totalOffres / $itemsPerPage);
+    
+    // Exécuter la requête pour récupérer les offres de la page actuelle
+    $stmtOffres = $connexion->prepare($sqlOffres);
+    
+    // Lier tous les paramètres
+    foreach ($params as $key => $value) {
+        if ($key === ':offset' || $key === ':limit') {
+            $stmtOffres->bindValue($key, $value, PDO::PARAM_INT);
+        } else {
+            $stmtOffres->bindValue($key, $value);
+        }
+    }
+    
+    $stmtOffres->execute();
+    $offres = $stmtOffres->fetchAll(PDO::FETCH_ASSOC);
+    
+} catch (PDOException $e) {
+    // En cas d'erreur, afficher un message
+    die("Erreur lors de la récupération des offres : " . $e->getMessage());
+}
+
+// Récupérer les competences pour chaque offre
+function getCompetencesForOffer($connexion, $idOffre) {
+    $sql = "SELECT c.nom FROM competence c 
+    JOIN contenir co ON c.Id_competence = co.Id_competence 
+    WHERE co.id_offre = :idOffre";
+    
+    try {
+        $stmt = $connexion->prepare($sql);
+        $stmt->bindValue(':idOffre', $idOffre, PDO::PARAM_INT);
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_COLUMN);
+    } catch (PDOException $e) {
+        return [];
+    }
+}
 ?>
-
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -62,113 +190,122 @@ $currentItems = array_slice($offres, ($page - 1) * $itemsPerPage, $itemsPerPage)
             </ul>
         </nav>
     </header>
-
     <main>
-
-    <section class="search-section">
-        <br>
-        <div><br></div>
+        <section class="search-section">
+            <br>
+            <div><br></div>
             <h2>Rechercher une offre</h2>
-            <form class="advanced-search">
+            <form class="advanced-search" method="GET" action="Offres.php">
                 <div class="search-filters">
                     <label for="company-name">Nom de l'entreprise</label>
-                    <input type="text" id="company-name" name="company-name" placeholder="Ex: Web4All">
+                    <select id="company-name" name="company-name">
+                        <option value="">Sélectionner une entreprise</option>
+                        <?php foreach ($companies as $company): ?>
+                            <option value="<?php echo htmlspecialchars($company); ?>" <?php echo $searchCompany === $company ? 'selected' : ''; ?>>
+                                <?php echo htmlspecialchars($company); ?>
+                            </option>
+                        <?php endforeach; ?>
+                    </select>
                     <label for="location">Localisation</label>
-                    <input type="text" id="location" name="location" placeholder="Ville ou région">
+                    <select id="location" name="location">
+                        <option value="">Sélectionner une ville</option>
+                        <?php foreach ($cities as $city): ?>
+                            <option value="<?php echo htmlspecialchars($city); ?>" <?php echo $searchLocation === $city ? 'selected' : ''; ?>>
+                                <?php echo htmlspecialchars($city); ?>
+                            </option>
+                        <?php endforeach; ?>
+                    </select>
+
+                    <label for="competence">Compétences</label>
+                    <select id="competence" name="competence">
+                        <option value="">Sélectionner une compétence</option>
+                        <?php foreach ($competences as $competence): ?>
+                            <option value="<?php echo htmlspecialchars($competence); ?>" <?php echo $searchCompetence === $competence ? 'selected' : ''; ?>>
+                                <?php echo htmlspecialchars($competence); ?>
+                            </option>
+                        <?php endforeach; ?>
+                    </select>
+
                     <div><br></div>
                     <button type="submit">Rechercher</button>
                 </div>
             </form>
         </section>
         <br>
-
         <section class="offers-list">
             <div class="offers-header">
-                <h2>Offres de stage (<?php echo count($offres); ?> résultats)</h2>
+                <h2>Offres de stage (<?php echo $totalOffres; ?> résultats)</h2>
             </div>
-
-            <?php foreach ($currentItems as $offre): ?>
-                <article class="offer-card">
-                    <h3><?php echo htmlspecialchars($offre['titre']); ?></h3>
-                    <p class="company-name"><?php echo htmlspecialchars($offre['entreprise']); ?></p>
-                    <p class="location">Lieu : <?php echo htmlspecialchars($offre['ville']); ?></p>
-                    <p class="duration">Durée : <?php echo $offre['duree']; ?> mois</p>
-                    <p class="date">Publié le <?php echo $offre['date']; ?></p>
-                    <a href="#" class="view-details">Voir l'offre</a>
-                </article>
-            <?php endforeach; ?>
+            <?php if (empty($offres)): ?>
+                <p class="no-results">Aucune offre ne correspond à votre recherche.</p>
+            <?php else: ?>
+                <?php foreach ($offres as $offre): ?>
+                    <?php 
+                    // Récupérer les compétences pour cette offre
+                    $competences = getCompetencesForOffer($connexion, $offre['id_offre']);
+                    ?>
+                    <article class="offer-card">
+                        <h3><?php echo htmlspecialchars($offre['titre']); ?></h3>
+                        <p class="company-name"><?php echo htmlspecialchars($offre['nom_entreprise']); ?></p>
+                        <p class="location">Lieu : <?php echo htmlspecialchars($offre['nom_ville'] ?? 'Non spécifié'); ?></p>
+                        <p class="duration">Durée : <?php echo htmlspecialchars($offre['duree_mois']); ?> mois</p>
+                        <p class="date">Publié le <?php echo date('d/m/Y', strtotime($offre['date_publication'])); ?></p>
+                        
+                        <?php if (!empty($competences)): ?>
+                            <div class="skills">
+                                <?php foreach ($competences as $competence): ?>
+                                    <span class="skill-tag"><?php echo htmlspecialchars($competence); ?></span>
+                                <?php endforeach; ?>
+                            </div>
+                        <?php else: ?>
+                            <p class="no-skills">Aucune compétence spécifiée</p>
+                        <?php endif; ?>
+                        
+                        <a href="DetailsOffre.php?id=<?php echo $offre['id_offre']; ?>" class="view-details">Voir l'offre</a>
+                    </article>
+                <?php endforeach; ?>
+            <?php endif; ?>
         </section>
-
-        <style>
-                .pagination {
-                    display: flex;
-                    justify-content: center;
-                    align-items: center;
-                    margin-top: 20px;
-                    gap: 10px;
-                }
-
-                .pagination a, .pagination span {
-                    padding: 10px 15px;
-                    border: 1px solid #ddd;
-                    border-radius: 5px;
-                    text-decoration: none;
-                    font-weight: bold;
-                    transition: background 0.3s ease;
-                }
-
-                .pagination a {
-                    color:rgb(0, 0, 0);
-                    background: #fff;
-                }
-
-                .pagination a:hover {
-                    background:#3498db;
-                    color: white;
-                }
-
-                .pagination .active {
-                    background:#3498db;
-                    color: black;
-                    border-color:rgb(122, 122, 122);
-                }
-
-                .pagination .disabled {
-                    color: #ccc;
-                    cursor: not-allowed;
-                    background: #f9f9f9;
-                    border: 1px solid #ddd;
-                }
-
-                .page-numbers {
-                    display: flex;
-                    gap: 5px;
-                }
-            </style>
-
         <div class="pagination">
             <?php if ($page > 1): ?>
-                <a href="?page=<?php echo $page - 1; ?>" class="prev-page">« Précédent</a>
+                <a href="?page=<?php echo $page - 1; ?><?php echo !empty($searchCompany) ? '&company-name=' . urlencode($searchCompany) : ''; ?><?php echo !empty($searchLocation) ? '&location=' . urlencode($searchLocation) : ''; ?><?php echo !empty($searchCompetence) ? '&competence=' . urlencode($searchCompetence) : ''; ?>" class="prev-page">« Précédent</a>
             <?php else: ?>
                 <span class="disabled">« Précédent</span>
             <?php endif; ?>
-
             <div class="page-numbers">
-                <?php for ($i = 1; $i <= $totalPages; $i++): ?>
-                    <a href="?page=<?php echo $i; ?>" class="<?php echo $i == $page ? 'active' : ''; ?>"><?php echo $i; ?></a>
+                <?php 
+                // Afficher un nombre limité de pages dans la pagination
+                $maxPagesToShow = 5;
+                $startPage = max(1, min($page - floor($maxPagesToShow / 2), $totalPages - $maxPagesToShow + 1));
+                $endPage = min($startPage + $maxPagesToShow - 1, $totalPages);
+                
+                if ($startPage > 1): ?>
+                    <a href="?page=1<?php echo !empty($searchCompany) ? '&company-name=' . urlencode($searchCompany) : ''; ?><?php echo !empty($searchLocation) ? '&location=' . urlencode($searchLocation) : ''; ?><?php echo !empty($searchCompetence) ? '&competence=' . urlencode($searchCompetence) : ''; ?>">1</a>
+                    <?php if ($startPage > 2): ?>
+                        <span class="ellipsis">...</span>
+                    <?php endif; ?>
+                <?php endif; ?>
+                
+                <?php for ($i = $startPage; $i <= $endPage; $i++): ?>
+                    <a href="?page=<?php echo $i; ?><?php echo !empty($searchCompany) ? '&company-name=' . urlencode($searchCompany) : ''; ?><?php echo !empty($searchLocation) ? '&location=' . urlencode($searchLocation) : ''; ?><?php echo !empty($searchCompetence) ? '&competence=' . urlencode($searchCompetence) : ''; ?>" class="<?php echo $i == $page ? 'active' : ''; ?>"><?php echo $i; ?></a>
                 <?php endfor; ?>
+                
+                <?php if ($endPage < $totalPages): ?>
+                    <?php if ($endPage < $totalPages - 1): ?>
+                        <span class="ellipsis">...</span>
+                    <?php endif; ?>
+                    <a href="?page=<?php echo $totalPages; ?><?php echo !empty($searchCompany) ? '&company-name=' . urlencode($searchCompany) : ''; ?><?php echo !empty($searchLocation) ? '&location=' . urlencode($searchLocation) : ''; ?><?php echo !empty($searchCompetence) ? '&competence=' . urlencode($searchCompetence) : ''; ?>"><?php echo $totalPages; ?></a>
+                <?php endif; ?>
             </div>
-
             <?php if ($page < $totalPages): ?>
-                <a href="?page=<?php echo $page + 1; ?>" class="next-page">Suivant »</a>
+                <a href="?page=<?php echo $page + 1; ?><?php echo !empty($searchCompany) ? '&company-name=' . urlencode($searchCompany) : ''; ?><?php echo !empty($searchLocation) ? '&location=' . urlencode($searchLocation) : ''; ?><?php echo !empty($searchCompetence) ? '&competence=' . urlencode($searchCompetence) : ''; ?>" class="next-page">Suivant »</a>
             <?php else: ?>
                 <span class="disabled">Suivant »</span>
             <?php endif; ?>
         </div>
     </main>
-
     <footer>
-        <p>&copy; 2024 - Tous droits réservés - Web4All</p>
+        <p>© 2024 - Tous droits réservés - Web4All</p>
     </footer>
 </body>
 </html>

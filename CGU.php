@@ -1,3 +1,17 @@
+<?php
+
+
+// Démarrer la session
+session_start();
+
+// Vérifier si l'utilisateur est connecté
+if (!isset($_SESSION['logged_in']) || $_SESSION['logged_in'] !== true) {
+    // Rediriger vers la page de connexion
+    header("Location: connexion.php");
+    exit();
+}
+?>
+
 <!DOCTYPE html>
 <html lang="fr">
 <head>
