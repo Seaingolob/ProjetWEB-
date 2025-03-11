@@ -1,3 +1,16 @@
+<?php
+// Démarrer la session
+session_start();
+
+// Vérifier si l'utilisateur est connecté
+if (!isset($_SESSION['logged_in']) || $_SESSION['logged_in'] !== true) {
+    // Rediriger vers la page de connexion
+    header("Location: connexion.php");
+    exit();
+}
+?>
+
+
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -20,7 +33,7 @@
                 <li><a href="Wishlist.php">Wishlist</a></li>
                 <li><a href="Contact.php"class="active">Contact</a></li>
                 <div class="logout-container">
-                    <button id="logout-btn" onclick="window.location.href='Connection.html';">Déconnexion</button>
+                    <button id="logout-btn" onclick="window.location.href='logout.php';">Déconnexion</button>
                 </div>
             </ul>
 

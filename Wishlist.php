@@ -1,3 +1,15 @@
+<?php
+// Démarrer la session
+session_start();
+
+// Vérifier si l'utilisateur est connecté
+if (!isset($_SESSION['logged_in']) || $_SESSION['logged_in'] !== true) {
+    // Rediriger vers la page de connexion
+    header("Location: connexion.php");
+    exit();
+}
+?>
+
 <main class="wishlist-page" style="display: none;">
     <section class="wishlist-header">
         <h2>Mes offres favorites</h2>
@@ -58,7 +70,7 @@
             <ul>
                 <li><a href="/qui-sommes-nous">Qui sommes-nous</a></li>
                 <li><a href="/mentions-legales">Mentions légales</a></li>
-                <li><a href="CGU.html">CGU</a></li>
+                <li><a href="CGU.php">CGU</a></li>
 
             </ul>
         </div>
@@ -66,7 +78,7 @@
             <h4>Ressources</h4>
             <ul>
                 <li><a href="/aide">Centre d'aide</a></li>
-                <li><a href="Blog.html">Blog</a></li>
+                <li><a href="Blog.php">Blog</a></li>
                 <li><a href="/faq">FAQ</a></li>
             </ul>
         </div>

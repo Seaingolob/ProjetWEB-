@@ -1,5 +1,14 @@
-<?php ?>
+<?php
+// Démarrer la session
+session_start();
 
+// Vérifier si l'utilisateur est connecté
+if (!isset($_SESSION['logged_in']) || $_SESSION['logged_in'] !== true) {
+    // Rediriger vers la page de connexion
+    header("Location: connexion.php");
+    exit();
+}
+?>
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -11,12 +20,10 @@
 </head>
 <body>
     <div class="cookie-banner" id="cookie-banner">
-        <p>Nous utilisons des cookies pour améliorer votre expérience sur notre site, analyser le trafic et personnaliser le contenu. Certains cookies sont nécessaires au bon fonctionnement du site, tandis que d'autres nous aident à mieux comprendre votre utilisation afin d'optimiser nos services.
-
-            En cliquant sur "Accepter", vous consentez à l'utilisation de tous les cookies.
-        </p>
+        <p>Nous utilisons des cookies pour améliorer votre expérience sur notre site...</p>
         <button id="accept-cookies">Accepter</button>
     </div>
+
     <header>
         <nav>
             <div class="logo">
@@ -24,26 +31,26 @@
             </div>
 
             <ul class="main-nav">
-                <li><a href="Main.php"class="active">Accueil</a></li>
+                <li><a href="Main.php" class="active">Accueil</a></li>
                 <li><a href="Entreprises.php">Entreprises</a></li>
                 <li><a href="Offres.php">Offres</a></li>
                 <li><a href="Wishlist.php">Wishlist</a></li>
                 <li><a href="Contact.php">Contact</a></li>
                 <div class="logout-container">
-                    <button id="logout-btn" onclick="window.location.href='Connection.html';">Déconnexion</button>
+                    <button id="logout-btn" onclick="window.location.href='logout.php';">Déconnexion</button>
                 </div>
             </ul>
-
         </nav>
     </header>
-<br><br><br><br><br>
+
+    <br><br><br>
+
     <main>
         <section class="hero">
             <h2>Trouvez le stage idéal</h2>
             <p><big>La plateforme qui simplifie vos recherches de stages</big></p>
             <form class="search-form">
                 <input type="text" placeholder="Rechercher par mot-clé, compétence...">
-                
                 <input type="text" placeholder="Ville ou région">
                 <button type="submit">Rechercher</button>
             </form>
@@ -61,61 +68,31 @@
                 </article>
             </div>
         </section>
-
-        <section class="statistics">
-            <h2>Nos chiffres clés</h2>
-            <div class="stats-container">
-                <div class="stat-item">
-                    <p class="stat-number">500+</p>
-                    <p class="stat-label">Entreprises partenaires</p>
-                </div>
-                <div class="stat-item">
-                    <p class="stat-number">1000+</p>
-                    <p class="stat-label">Offres de stage</p>
-                </div>
-                <div class="stat-item">
-                    <p class="stat-number">5000+</p>
-                    <p class="stat-label">Étudiants inscrits</p>
-                </div>
-            </div>
-        </section>
-
-        <section class="popular-companies">
-            <h2>Entreprises populaires</h2>
-            <div class="companies-grid">
-                <article class="company-card">
-                    <h3>Web4All</h3>
-                    <p class="sector">Développement Web</p>
-                    <p class="rating">4.5/5</p>
-                    <a href="/entreprises/1" class="view-company">Voir l'entreprise</a>
-                </article>
-            </div>
-        </section>
     </main>
+
     <footer>
-    <div class="pied">
-        <div class="footer-content">
-            <div class="footer-section">
-                <h4>À propos</h4>
-                <ul>
-                    <li><a href="QSN.html">Qui sommes-nous</a></li>
-                    <li><a href="MentionLegales.html">Mentions légales</a></li>
-                    <li><a href="CGU.html">CGU</a></li>
-                </ul>
+        <div class="pied">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h4>À propos</h4>
+                    <ul>
+                        <li><a href="QSN.php">Qui sommes-nous</a></li>
+                        <li><a href="MentionLegales.php">Mentions légales</a></li>
+                        <li><a href="CGU.php">CGU</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>Ressources</h4>
+                    <ul>
+                        <li><a href="Blog.php">Blog</a></li>
+                        <li><a href="FAQ.php">FAQ</a></li>
+                    </ul>
+                </div>
             </div>
-            <div class="footer-section">
-                <h4>Ressources</h4>
-                <ul>
-                    <li><a href="Blog.html">Blog</a></li>
-                    <li><a href="FAQ.html">FAQ</a></li>
-                </ul>
+            <div class="footer-bottom">
+                <p>&copy; 2024 - Tous droits réservés - Web4All</p>
             </div>
         </div>
-        <div class="footer-bottom">
-            <p>&copy; 2024 - Tous droits réservés - Web4All</p>
-        </div>
-    </div>
     </footer>
-    </body>
 </body>
 </html>

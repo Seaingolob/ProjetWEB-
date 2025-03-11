@@ -1,4 +1,16 @@
 <?php
+
+// Démarrer la session
+session_start();
+
+// Vérifier si l'utilisateur est connecté
+if (!isset($_SESSION['logged_in']) || $_SESSION['logged_in'] !== true) {
+    // Rediriger vers la page de connexion
+    header("Location: connexion.php");
+    exit();
+}
+
+
 // Simuler une liste d'entreprises
 $entreprises = array_map(function ($i) {
     return [
@@ -40,7 +52,7 @@ $currentItems = array_slice($entreprises, ($page - 1) * $itemsPerPage, $itemsPer
                 <li><a href="Wishlist.php">Wishlist</a></li>
                 <li><a href="Contact.php">Contact</a></li>
                 <div class="logout-container">
-                    <button id="logout-btn" onclick="window.location.href='Connection.html';">Déconnexion</button>
+                    <button id="logout-btn" onclick="window.location.href='logout.php';">Déconnexion</button>
                 </div>
             </ul>
         </nav>
@@ -164,8 +176,8 @@ $currentItems = array_slice($entreprises, ($page - 1) * $itemsPerPage, $itemsPer
             <div class="footer-section">
                 <h4>À propos</h4>
                 <ul>
-                    <li><a href="QSN.html">Qui sommes-nous</a></li>
-                    <li><a href="MentionLegales.html">Mentions légales</a></li>
+                    <li><a href="QSN.php">Qui sommes-nous</a></li>
+                    <li><a href="MentionLegales.php">Mentions légales</a></li>
                     <li><a href="/cgu">CGU</a></li>
                 </ul>
             </div>
@@ -173,7 +185,7 @@ $currentItems = array_slice($entreprises, ($page - 1) * $itemsPerPage, $itemsPer
                 <h4>Ressources</h4>
                 <ul>
                     <li><a href="/blog">Blog</a></li>
-                    <li><a href="FAQ.html">FAQ</a></li>
+                    <li><a href="FAQ.php">FAQ</a></li>
                 </ul>
             </div>
         </div>

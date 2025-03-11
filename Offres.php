@@ -1,4 +1,17 @@
 <?php
+
+
+// Démarrer la session
+session_start();
+
+// Vérifier si l'utilisateur est connecté
+if (!isset($_SESSION['logged_in']) || $_SESSION['logged_in'] !== true) {
+    // Rediriger vers la page de connexion
+    header("Location: connexion.php");
+    exit();
+}
+
+
 // Simuler une liste d'offres de stage
 $offres = array_map(function ($i) {
     $durees = [2, 3, 4, 6];
@@ -44,7 +57,7 @@ $currentItems = array_slice($offres, ($page - 1) * $itemsPerPage, $itemsPerPage)
                 <li><a href="Wishlist.php">Wishlist</a></li>
                 <li><a href="Contact.php">Contact</a></li>
                 <div class="logout-container">
-                    <button id="logout-btn" onclick="window.location.href='Connection.html';">Déconnexion</button>
+                    <button id="logout-btn" onclick="window.location.href='logout.php';">Déconnexion</button>
                 </div>
             </ul>
         </nav>
