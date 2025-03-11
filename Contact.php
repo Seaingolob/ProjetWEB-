@@ -28,8 +28,6 @@ if (!isset($_SESSION['logged_in']) || $_SESSION['logged_in'] !== true) {
             </div>
             <ul class="main-nav">
                 <li><a href="Main.php">Accueil</a></li>
-                <li><a href="Entreprises.php">Entreprises</a></li>
-                <li><a href="Postuler.php">Produits</a></li>
                 <li><a href="Offres.php">Offres</a></li>
                 <li><a href="Wishlist.php">Wishlist</a></li>
                 <li><a href="Contact.php"class="active">Contact</a></li>
@@ -43,13 +41,13 @@ if (!isset($_SESSION['logged_in']) || $_SESSION['logged_in'] !== true) {
 
     <main>
         <br><br><br>
-        <section class="contact-hero">
+        <section class="contact-form">
             <h2>Contactez-nous</h2>
             <p>Notre équipe est à votre disposition pour répondre à toutes vos questions</p>
         </section>
-
+        <br>
         <section class="contact-info">
-            <div class="contact-card">
+            <div class="contact-form">
                 <h3>Siège social</h3>
                 <address>
                     <p>Web4All</p>
@@ -58,8 +56,8 @@ if (!isset($_SESSION['logged_in']) || $_SESSION['logged_in'] !== true) {
                     <p>France</p>
                 </address>
             </div>
-
-            <div class="contact-card">
+            <br>
+            <div class="contact-form">
                 <h3>Coordonnées</h3>
                 <ul>
                     <li>
@@ -76,6 +74,7 @@ if (!isset($_SESSION['logged_in']) || $_SESSION['logged_in'] !== true) {
                     </li>
                 </ul>
             </div>
+            <br>
         </section>
 
         <section class="contact-form">
