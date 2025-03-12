@@ -81,7 +81,7 @@ if (!isset($_SESSION['logged_in']) || $_SESSION['logged_in'] !== true) {
                 <div class="team-member">
                     <img src="images/JorisDS.jpg" alt="Membre 5">
                     <h3>Joris Dos-Santos</h3>
-                    <p>Développeur Full-stack</p>
+                    <p>Expert CSS</p>
                 </div>
             </div>
         </section>

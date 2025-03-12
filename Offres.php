@@ -259,7 +259,7 @@ function getCompetencesForOffer($connexion, $idOffre) {
                 <?php else: ?>
                 <p class="no-skills">Aucune competence spécifiée</p>
                 <?php endif; ?>
-                <a href="DetailsOffre.php?id=<?php echo $offre['id_offre']; ?>" class="view-details">Voir l'offre</a>
+                <a href="VoirOffre.php?id=<?php echo $offre['id_offre']; ?>" class="view-details">Voir l'offre</a>
                 
                 <?php
                 // Vérifier si l'utilisateur a liké l'offre
@@ -273,9 +273,12 @@ function getCompetencesForOffer($connexion, $idOffre) {
                     $isLiked = false;
                 }
                 ?>
+                <?php if ($_SESSION['user_type'] === 'etudiant'): ?>
                 <div class="heart" data-id="<?php echo $offre['id_offre']; ?>" onclick="toggleHeart(event)">
                 <?php echo $isLiked ? '❤️' : '🤍'; ?>
                 </div>
+                <?php endif; ?>
+
 
             </article>
             <?php endforeach; ?>

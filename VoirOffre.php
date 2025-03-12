@@ -48,6 +48,7 @@ if (!isset($_SESSION['logged_in']) || $_SESSION['logged_in'] !== true) {
             <div class="offre-header">
                 </div>
                 <div class="offre-title-container">
+                    <br><br>
                     <h1>Stage - Développeur FullStack</h1>
                     <p class="entreprise-name">DigitalSolutions</p>
                     <p class="offre-location">Lyon, France</p>

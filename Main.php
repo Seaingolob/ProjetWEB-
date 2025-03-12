@@ -7,7 +7,39 @@ if (!isset($_SESSION['logged_in']) || $_SESSION['logged_in'] !== true) {
     header("Location: connexion.php");
     exit();
 }
+
+// Inclure le fichier de configuration
+require_once "config.php";
+
+ // Récupérer les offres avec leurs notes moyennes
+ $sql = "SELECT o.*, ev.nom AS nom_entreprise, v.nom_ville, AVG(e.note) AS moyenne_note
+ FROM offre o
+ LEFT JOIN evaluation e ON o.id_offre = e.id_offre
+ JOIN entreprise ev ON o.id_entreprise = ev.id_entreprise
+ JOIN adresse ad ON ev.id_adresse = ad.id_adresse
+ JOIN ville v ON ad.id_ville = v.id_ville
+ LEFT JOIN contenir co ON o.id_offre = co.id_offre
+ LEFT JOIN competence c ON co.id_competence = c.id_competence
+ GROUP BY o.id_offre, ev.nom, v.nom_ville
+ ORDER BY moyenne_note DESC
+ LIMIT 2";
+$stmt = $connexion->prepare($sql);
+$stmt->execute();
+$offres = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+function getCompetencesForOffer($connexion, $id_offre) {
+    $sql = "SELECT c.nom 
+            FROM competence c
+            INNER JOIN contenir co ON c.id_competence = co.id_competence
+            WHERE co.id_offre = :id_offre";
+    $stmt = $connexion->prepare($sql);
+    $stmt->execute([':id_offre' => $id_offre]);
+    return $stmt->fetchAll(PDO::FETCH_COLUMN);
+}
+
 ?>
+
+
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -54,21 +86,59 @@ if (!isset($_SESSION['logged_in']) || $_SESSION['logged_in'] !== true) {
     </div>
     <br>
     <main>
-        <section class="contact-form">
-            <h2>Offres de stage en vedette</h2>
-            <div class="offers-grid">
+        <section class="offers-list">
+
+        <?php if (empty($offres)): ?>
+            <p class="no-results">Aucune offre ne correspond à votre recherche.</p>
+        <?php else: ?>
+            <?php foreach ($offres as $offre): ?>
+                <?php 
+                // Récupérer les competences pour cette offre
+                $competences = getCompetencesForOffer($connexion, $offre['id_offre']);
+                // Vérifier si l'utilisateur a liké l'offre
+                if (isset($_SESSION['id_compte'])) {
+                    $userId = $_SESSION['id_compte'];
+                    $sqlLiked = "SELECT * FROM souhaiter WHERE id_compte = :user_id AND id_offre = :offer_id";
+                    $stmtLiked = $connexion->prepare($sqlLiked);
+                    $stmtLiked->execute([':user_id' => $userId, ':offer_id' => $offre['id_offre']]);
+                    $isLiked = $stmtLiked->rowCount() > 0;
+                } else {
+                    $isLiked = false;
+                }
+                ?>
                 <article class="offer-card">
-                    <h3>Stage - Développeur Web Full Stack</h3>
-                    <p class="company">Web4All</p>
-                    <p class="location">Paris</p>
-                    <p class="duration">6 mois</p>
-                    <a href="/offres/1" class="view-offer">Voir l'offre</a>
+                    <h3><?php echo htmlspecialchars($offre['titre']); ?></h3>
+                    <p class="company-name"><?php echo isset($offre['nom_entreprise']) ? htmlspecialchars($offre['nom_entreprise']) : 'Entreprise non spécifiée'; ?></p>
+                    <p class="location">Lieu : <?php echo isset($offre['nom_ville']) ? htmlspecialchars($offre['nom_ville']) : 'Non spécifié'; ?></p>
+                    <p class="duration">Durée : <?php echo htmlspecialchars($offre['duree_mois']); ?> mois</p>
+                    <p class="date">Publié le <?php echo date('d/m/Y', strtotime($offre['date_publication'])); ?></p>
+                    
+                    <?php if (!empty($competences)): ?>
+                    <div class="skills">
+                        <?php foreach ($competences as $competence): ?>
+                        <span class="skill-tag"><?php echo htmlspecialchars($competence); ?></span>
+                        <?php endforeach; ?>
+                    </div>
+                    <?php else: ?>
+                    <p class="no-skills">Aucune compétence spécifiée</p>
+                    <?php endif; ?>
+                    <a href="VoirOffre.php?id=<?php echo $offre['id_offre']; ?>" class="view-details">Voir l'offre</a>
+                    
+                    <?php if ($_SESSION['user_type'] === 'etudiant'): ?>
+                    <div class="heart" data-id="<?php echo $offre['id_offre']; ?>" onclick="toggleHeart(event)">
+                        <?php echo $isLiked ? '❤️' : '🤍'; ?>
+                    </div>
+                    <?php endif; ?>
                 </article>
-            </div>
-        </section>
+            <?php endforeach; ?>
+        <?php endif; ?>
+    </section>
+
 
         <section class="statistics">
             <h2>Nos chiffres clés</h2>
+            <br>
+            
             <div class="stats-container">
                 <div class="stat-item">
                     <p class="stat-number">500+</p>
