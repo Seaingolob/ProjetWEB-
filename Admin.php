@@ -35,7 +35,7 @@ if (!isset($_SESSION['logged_in']) || $_SESSION['logged_in'] !== true) {
                     <li><a href="Admin.php" class="active">Espace-administration</a></li>
                 <?php endif; ?>
                 <?php if ($_SESSION['user_type'] === 'pilote'): ?>
-                    <li><a href="pilote.php">Espace-pilote</a></li>
+                    <li><a href="Admin.php" class="active">Espace-pilote</a></li>
                 <?php endif; ?>
                 <li><a href="Contact.php">Contact</a></li>
                 <div class="logout-container">
@@ -62,7 +62,10 @@ if (!isset($_SESSION['logged_in']) || $_SESSION['logged_in'] !== true) {
                 <!-- Section Utilisateurs -->
                 <div class="user-management active" id="section-utilisateur">
                     <h3>Gestion des utilisateurs :</h3>
-                    <button class="action-btn" onclick="window.location.href='FormulaireUtilisateur.php';">Ajouter un utilisateur</button>
+                    <?php if ($_SESSION['user_type'] === 'admin'): ?>
+                        <button class="action-btn" onclick="window.location.href='FormulaireUtilisateur.php';">Ajouter un utilisateur</button>
+                    <?php endif; ?>
+
                     
                     <div class="users-grid">
                         <div class="user-card">
@@ -79,46 +82,13 @@ if (!isset($_SESSION['logged_in']) || $_SESSION['logged_in'] !== true) {
                                 <span>Actions possibles</span>
                                 <div class="action-buttons">
                                     <button class="view-btn" onclick="window.location.href='VoirEleve.php';">Voir</button>
-                                    <button class="delete-btn">Supprimer</button>
+                                    <?php if ($_SESSION['user_type'] === 'admin'): ?>
+                                        <button class="delete-btn">Supprimer</button>
+                                    <?php endif; ?>
                                 </div>
                             </div>
                         </div>
-                        <div class="user-card">
-                            <div class="user-header">ID : 002</div>
-                            <div class="user-details">
-                                <p><strong>Nom:</strong> Niels Bour</p>
-                                <p><strong>Nom d'utilisateur:</strong> 2</p>
-                                <p><strong>Email:</strong> test@viacesi.fr</p>
-                                <p><strong>Campus:</strong> PouetLand</p>
-                                <p><strong>Promotion:</strong> M2 Agriculture</p>
-                                <p><strong>Wishlist:</strong> 12 offres</p>
-                            </div>
-                            <div class="user-actions">
-                                <span>Actions possibles</span>
-                                <div class="action-buttons">
-                                    <button class="view-btn" onclick="window.location.href='VoirEleve.php';">Voir</button>
-                                    <button class="delete-btn">Supprimer</button>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="user-card">
-                            <div class="user-header">ID : 003</div>
-                            <div class="user-details">
-                                <p><strong>Nom:</strong> Joris Dos Santos</p>
-                                <p><strong>Nom d'utilisateur:</strong> JDosSantos</p>
-                                <p><strong>Email:</strong> Warwick.fr@lol.fr</p>
-                                <p><strong>Campus:</strong> Luxembourg</p>
-                                <p><strong>Promotion:</strong> M1 Généraliste</p>
-                                <p><strong>Wishlist:</strong> 7 offres</p>
-                            </div>
-                            <div class="user-actions">
-                                <span>Actions possibles</span>
-                                <div class="action-buttons">
-                                    <button class="view-btn" onclick="window.location.href='VoirEleve.php';">Voir</button>
-                                    <button class="delete-btn">Supprimer</button>
-                                </div>
-                            </div>
-                        </div>
+
                     </div>
                 </div>
                 <!-- Section Offres -->
@@ -127,6 +97,7 @@ if (!isset($_SESSION['logged_in']) || $_SESSION['logged_in'] !== true) {
                     <button class="action-btn" onclick="window.location.href='FormulaireOffres.php';">Ajouter une offre</button>
                     
                     <div class="offers-container">
+
                         <div class="offer-card">
                             <div class="offer-header">ID : 001 <br> Stage Full Stack</div>
                             <div class="offer-details">
@@ -146,78 +117,15 @@ if (!isset($_SESSION['logged_in']) || $_SESSION['logged_in'] !== true) {
                                 <span>Actions possibles</span>
                                 <div class="action-buttons">
                                     <button class="view-btn" onclick="window.location.href='VoirOffre.php';">Voir</button>
-                                    <button class="delete-btn">Supprimer</button>
+                                    <?php if ($_SESSION['user_type'] === 'admin'): ?>
+                                        <button class="delete-btn">Supprimer</button>
+                                    <?php endif; ?>
+
                                 </div>
                             </div>
                         </div>
-                        <div class="offer-card">
-                            <div class="offer-header">ID : 002 <br> Stage PHP et BDD</div>
-                            <div class="offer-details">
-                                <p><strong>Entreprise:</strong> DataSolution</p>
-                                <p><strong>Localisation:</strong> Lyon, 69002</p>
-                                <p><strong>Poste:</strong> Développeur Back-End</p>
-                                <p><strong>Compétences requises:</strong></p>
-                                <div class="skills-tags">
-                                    <span class="skill-tag">Java</span>
-                                    <span class="skill-tag">Spring Boot</span>
-                                    <span class="skill-tag">PostgreSQL</span>
-                                    <span class="skill-tag">Docker</span>
-                                    <span class="skill-tag">Microservices</span>
-                                </div>
-                            </div>
-                            <div class="offer-actions">
-                                <span>Actions possibles</span>
-                                <div class="action-buttons">
-                                    <button class="view-btn" onclick="window.location.href='VoirOffre.php';">Voir</button>
-                                    <button class="delete-btn">Supprimer</button>
-                                </div>
-                            </div>
-                        </div>
-                            <div class="offer-header">ID : 003 <br> Stage Front-End</div>
-                            <div class="offer-details">
-                                <p><strong>Entreprise:</strong> WebCreative</p>
-                                <p><strong>Localisation:</strong> Marseille, 13008</p>
-                                <p><strong>Poste:</strong> Développeur Front-End</p>
-                                <p><strong>Compétences requises:</strong></p>
-                                <div class="skills-tags">
-                                    <span class="skill-tag">HTML5/CSS3</span>
-                                    <span class="skill-tag">Vue.js</span>
-                                    <span class="skill-tag">TypeScript</span>
-                                    <span class="skill-tag">SASS</span>
-                                    <span class="skill-tag">Figma</span>
-                                </div>
-                            </div>
-                            <div class="offer-actions">
-                                <span>Actions possibles</span>
-                                <div class="action-buttons">
-                                    <button class="view-btn" onclick="window.location.href='VoirOffre.php';">Voir</button>
-                                    <button class="delete-btn">Supprimer</button>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="offer-card">
-                            <div class="offer-header">ID : 004 <br> Stage Cybersécurité</div>
-                            <div class="offer-details">
-                                <p><strong>Entreprise:</strong> CyberSecure</p>
-                                <p><strong>Localisation:</strong> Lille, 59000</p>
-                                <p><strong>Poste:</strong> Ingénieur Cybersécurité</p>
-                                <p><strong>Compétences requises:</strong></p>
-                                <div class="skills-tags">
-                                    <span class="skill-tag">Python</span>
-                                    <span class="skill-tag">Réseaux</span>
-                                    <span class="skill-tag">Cryptographie</span>
-                                    <span class="skill-tag">Pentest</span>
-                                    <span class="skill-tag">Linux</span>
-                                </div>
-                            </div>
-                            <div class="offer-actions">
-                                <span>Actions possibles</span>
-                                <div class="action-buttons">
-                                    <button class="view-btn" onclick="window.location.href='VoirOffre.php';">Voir</button>
-                                    <button class="delete-btn">Supprimer</button>
-                                </div>
-                            </div>
-                        </div>
+
+                        
                     </div>
                 </div>
             </div>

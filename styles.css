@@ -1405,3 +1405,12 @@ input:focus, select:focus, textarea:focus {
     }
     
 }
+
+.contact-form {
+    border: 2px solid #1d7faa;
+    border-radius: 8px;
+    padding: 25px;
+    background-color: white;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    margin: 5px 0;
+  }

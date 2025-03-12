@@ -33,7 +33,7 @@ if (!isset($_SESSION['logged_in']) || $_SESSION['logged_in'] !== true) {
                     <li><a href="Admin.php">Espace-administration</a></li>
                 <?php endif; ?>
                 <?php if ($_SESSION['user_type'] === 'pilote'): ?>
-                    <li><a href="pilote.php">Espace-pilote</a></li>
+                    <li><a href="Admin.php">Espace-pilote</a></li>
                 <?php endif; ?>
                 <li><a href="Contact.php">Contact</a></li>
                 <div class="logout-container">

@@ -35,7 +35,7 @@ if (!isset($_SESSION['logged_in']) || $_SESSION['logged_in'] !== true) {
                     <li><a href="Admin.php">Espace-administration</a></li>
                 <?php endif; ?>
                 <?php if ($_SESSION['user_type'] === 'pilote'): ?>
-                    <li><a href="pilote.php">Espace-pilote</a></li>
+                    <li><a href="Admin.php">Espace-pilote</a></li>
                 <?php endif; ?>
                 <li><a href="Contact.php">Contact</a></li>
                 <div class="logout-container">
@@ -62,10 +62,15 @@ if (!isset($_SESSION['logged_in']) || $_SESSION['logged_in'] !== true) {
                             <span class="user-info-label">Nom d'utilisateur :</span>
                             <span class="user-info-value">3</span>
                         </div>
-                        <div class="user-info-row">
-                            <span class="user-info-label">Mot de passe :</span>
-                            <span class="user-info-value">TripleCoca</span>
-                        </div>
+
+                        <?php if ($_SESSION['user_type'] === 'admin'): ?>
+                  
+                            <div class="user-info-row">
+                                <span class="user-info-label">Mot de passe :</span>
+                                <span class="user-info-value">TripleCoca</span>
+                            </div>
+                        <?php endif; ?>
+
                         <div class="user-info-row">
                             <span class="user-info-label">Email :</span>
                             <span class="user-info-value">Warwick@lol.fr</span>
@@ -81,7 +86,6 @@ if (!isset($_SESSION['logged_in']) || $_SESSION['logged_in'] !== true) {
                                 <p><strong>Intitulé:</strong> Dev-Nancy</p>
                                 <p><strong>Compétences:</strong> PHP, Java, HTML</p>
                                 <p><strong>Localisation:</strong> Nancy</p>
-                                <p><strong>Demandeur:</strong> 42</p>
                                 <div class="wishlist-status">
                                     <div class="status-option">
 
@@ -94,8 +98,10 @@ if (!isset($_SESSION['logged_in']) || $_SESSION['logged_in'] !== true) {
                 
                 <div class="user-action-buttons">
                     <button class="back-btn" onclick="window.location.href='Espace-Administration.php';">Retour</button>
-                    <button class="edit-btn">Modifier</button>
-                    <button class="delete-btn">Supprimer</button>
+                    <?php if ($_SESSION['user_type'] === 'admin'): ?>
+                        <button class="edit-btn">Modifier</button>
+                        <button class="delete-btn">Supprimer</button>
+                    <?php endif; ?>
                 </div>
             </div>
         </div>

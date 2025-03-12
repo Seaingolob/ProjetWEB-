@@ -37,7 +37,7 @@ if (!isset($_SESSION['logged_in']) || $_SESSION['logged_in'] !== true) {
                     <li><a href="Admin.php">Espace-administration</a></li>
                 <?php endif; ?>
                 <?php if ($_SESSION['user_type'] === 'pilote'): ?>
-                    <li><a href="pilote.php">Espace-pilote</a></li>
+                    <li><a href="Admin.php">Espace-pilote</a></li>
                 <?php endif; ?>
                 <li><a href="Contact.php" class ="active">Contact</a></li>
                 <div class="logout-container">
@@ -49,13 +49,13 @@ if (!isset($_SESSION['logged_in']) || $_SESSION['logged_in'] !== true) {
 
     <main>
         <br><br><br>
-        <section class="contact-hero">
+        <section class="contact-form">
             <h2>Contactez-nous</h2>
             <p>Notre équipe est à votre disposition pour répondre à toutes vos questions</p>
         </section>
-
+        <br>            
         <section class="contact-info">
-            <div class="contact-card">
+            <div class="contact-form">
                 <h3>Siège social</h3>
                 <address>
                     <p>Web4All</p>
@@ -64,8 +64,8 @@ if (!isset($_SESSION['logged_in']) || $_SESSION['logged_in'] !== true) {
                     <p>France</p>
                 </address>
             </div>
-
-            <div class="contact-card">
+            <br>
+            <div class="contact-form">
                 <h3>Coordonnées</h3>
                 <ul>
                     <li>
@@ -83,7 +83,7 @@ if (!isset($_SESSION['logged_in']) || $_SESSION['logged_in'] !== true) {
                 </ul>
             </div>
         </section>
-
+        <br>            
         <section class="contact-form">
             <h3>Formulaire de contact</h3>
             <form id="contactForm">
@@ -146,5 +146,4 @@ if (!isset($_SESSION['logged_in']) || $_SESSION['logged_in'] !== true) {
             </div>
         </div>
     </footer>
-
 </html>
