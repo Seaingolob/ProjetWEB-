@@ -50,7 +50,7 @@ if (!isset($_SESSION['logged_in']) || $_SESSION['logged_in'] !== true) {
                 <div class="offre-title-container">
                     <h1>Stage - Développeur FullStack</h1>
                     <p class="entreprise-name">DigitalSolutions</p>
-                    <p class="offre-location">Lyon, France</p>
+                    <p class="offre-location">Lyon</p>
                     <div class="offre-meta">
                         <span class="offre-meta-item">Durée: 6 mois</span>
                         <span class="offre-meta-item">Publiée le: 01/03/2024</span>
@@ -69,22 +69,6 @@ if (!isset($_SESSION['logged_in']) || $_SESSION['logged_in'] !== true) {
                     </div>
 
                     <div class="section">
-                        <h2 class="section-title">Missions</h2>
-                        <div class="section-content">
-                            <ul class="missions-list">
-                                <li>Développement de nouvelles fonctionnalités front-end et back-end</li>
-                                <li>Participation à la refonte de l'interface utilisateur</li>
-                                <li>Optimisation des performances des applications existantes</li>
-                                <li>Tests et débogage de code</li>
-                                <li>Veille technologique</li>
-                            </ul>
-                        </div>
-                    </div>
-
-                    <div class="section">
-                        <h2 class="section-title">Profil recherché</h2>
-                        <div class="section-content">
-                            <p>Vous êtes en formation Bac+4/5 en informatique, vous avez une appétence particulière pour le développement web et les nouvelles technologies. Vous êtes curieux, autonome et avez un bon esprit d'équipe.</p>
                             <h3 style="margin-top: 15px; font-size: 1rem; font-weight: 600;">Compétences requises:</h3>
                             <div class="skills-container">
                                 <span class="skill-tag">React</span>
@@ -92,26 +76,17 @@ if (!isset($_SESSION['logged_in']) || $_SESSION['logged_in'] !== true) {
                                 <span class="skill-tag">MongoDB</span>
                                 <span class="skill-tag">JavaScript</span>
                                 <span class="skill-tag">Git</span>
-                            </div>
+                                <div class="section">
+                           
                         </div>
                     </div>
 
                     <div class="section">
-                        <h2 class="section-title">Rémunération</h2>
-                        <div class="section-content">
-                            <p>900€ / mois</p>
-                        </div>
-                    </div>
-
-                    <div class="section">
-                        <h2 class="section-title">À propos de l'entreprise</h2>
-                        <div class="section-content">
-                            <p>DigitalSolutions est une entreprise spécialisée dans le développement d'applications web et mobiles innovantes. Fondée en 2015, notre entreprise compte aujourd'hui plus de 50 collaborateurs passionnés par les nouvelles technologies. Nous intervenons dans divers secteurs d'activité (e-commerce, finance, santé) et accompagnons nos clients dans leur transformation digitale.</p>
                             <p style="margin-top: 10px;"><strong>Adresse:</strong> 15 rue de la République, 69002 Lyon</p>
                         </div>
                     </div>
                 </div>
-
+                <br>
                 <div class="postuler-sidebar">
                     <h2 class="section-title">Postuler à cette offre</h2>
                     
