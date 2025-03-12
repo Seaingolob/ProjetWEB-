@@ -157,20 +157,29 @@ function getCompetencesForOffer($connexion, $idOffre) {
 </head>
 <body>
     <header>
-        <nav>
+    <nav>
             <div class="logo">
                 <a href="Main.php"><h1>lebonplan</h1></a>
             </div>
-            <ul class="main-nav">
-                <li><a href="Main.php">Accueil</a></li>
-                <li><a href="Offres.php" class="active">Offres</a></li>
-                <li><a href="Wishlist.php">Wishlist</a></li>
+            <div class="burger-menu">&#9776;</div>
+            <ul class="main-nav" id="menu">
+                <li><a href="Main.php" >Accueil</a></li>
+                <li><a href="Offres.php" class="active" >Offres</a></li>
+                <?php if ($_SESSION['user_type'] === 'etudiant'): ?>
+                    <li><a href="Wishlist.php">Wishlist</a></li>
+                <?php endif; ?>
+                <?php if ($_SESSION['user_type'] === 'admin'): ?>
+                    <li><a href="Admin.php">Espace-administration</a></li>
+                <?php endif; ?>
+                <?php if ($_SESSION['user_type'] === 'pilote'): ?>
+                    <li><a href="pilote.php">Espace-pilote</a></li>
+                <?php endif; ?>
                 <li><a href="Contact.php">Contact</a></li>
                 <div class="logout-container">
                     <button id="logout-btn" onclick="window.location.href='logout.php';">Déconnexion</button>
                 </div>
             </ul>
-       >
+        </nav>
     </header>
     <main>
         <section class="search-section">
@@ -295,9 +304,30 @@ function getCompetencesForOffer($connexion, $idOffre) {
             <?php endif; ?>
           </div>
       </main>
+      <br><br>
       <footer>
-          <p>© 2024 - Tous droits réservés - Web4All</p>
-      </footer>
+        <div class="pied">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h4>À propos</h4>
+                    <ul>
+                        <li><a href="QSN.php">Qui sommes-nous</a></li>
+                        <li><a href="MentionLegales.php">Mentions légales</a></li>
+                        <li><a href="CGU.php">CGU</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>Ressources</h4>
+                    <ul>
+                        <li><a href="FAQ.php">FAQ</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>© 2024 - Tous droits réservés - Web4All</p>
+            </div>
+        </div>
+    </footer>
       <script src="script.js"></script>
   </body>
   </html>

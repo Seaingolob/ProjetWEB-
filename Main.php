@@ -70,6 +70,26 @@ if (!isset($_SESSION['logged_in']) || $_SESSION['logged_in'] !== true) {
                 </article>
             </div>
         </section>
+
+        <section class="statistics">
+            <h2>Nos chiffres clés</h2>
+            <div class="stats-container">
+                <div class="stat-item">
+                    <p class="stat-number">500+</p>
+                    <p class="stat-label">Entreprises partenaires</p>
+                </div>
+                <div class="stat-item">
+                    <p class="stat-number">1000+</p>
+                    <p class="stat-label">Offres de stage</p>
+                </div>
+                <div class="stat-item">
+                    <p class="stat-number">5000+</p>
+                    <p class="stat-label">Étudiants inscrits</p>
+                </div>
+            </div>
+        </section>
+
+        
     </main>
     <footer>
         <div class="pied">
@@ -85,7 +105,6 @@ if (!isset($_SESSION['logged_in']) || $_SESSION['logged_in'] !== true) {
                 <div class="footer-section">
                     <h4>Ressources</h4>
                     <ul>
-                        <li><a href="Blog.php">Blog</a></li>
                         <li><a href="FAQ.php">FAQ</a></li>
                     </ul>
                 </div>

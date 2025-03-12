@@ -1,6 +1,13 @@
 <?php
 // Démarrer la session
-session_start();?>
+session_start();
+// Vérifier si l'utilisateur est connecté
+if (!isset($_SESSION['logged_in']) || $_SESSION['logged_in'] !== true) {
+    // Rediriger vers la page de connexion
+    header("Location: connexion.php");
+    exit();
+}
+?>
 
 <!DOCTYPE html>
 <php lang="fr">
@@ -16,18 +23,25 @@ session_start();?>
             <div class="logo">
                 <a href="Main.php"><h1>lebonplan</h1></a>
             </div>
-
-    <div class="burger-menu">&#9776;</div> <!-- Icône du menu burger -->
-    <ul class="main-nav" id="menu">
-        <li><a href="Main.php">Accueil</a></li>
-        <li><a href="Offres.php">Offres</a></li>
-        <li><a href="Wishlist.php"class="active">Wishlist</a></li>
-        <li><a href="Contact.php">Contact</a></li>
-        <div class="logout-container">
-            <button id="logout-btn" onclick="window.location.href='logout.php';">Déconnexion</button>
-        </div>
-    </ul>
-</nav>   
+            <div class="burger-menu">&#9776;</div>
+            <ul class="main-nav" id="menu">
+                <li><a href="Main.php">Accueil</a></li>
+                <li><a href="Offres.php">Offres</a></li>
+                <?php if ($_SESSION['user_type'] === 'etudiant'): ?>
+                    <li><a href="Wishlist.php" class = "active" >Wishlist</a></li>
+                <?php endif; ?>
+                <?php if ($_SESSION['user_type'] === 'admin'): ?>
+                    <li><a href="Admin.php">Espace-administration</a></li>
+                <?php endif; ?>
+                <?php if ($_SESSION['user_type'] === 'pilote'): ?>
+                    <li><a href="pilote.php">Espace-pilote</a></li>
+                <?php endif; ?>
+                <li><a href="Contact.php">Contact</a></li>
+                <div class="logout-container">
+                    <button id="logout-btn" onclick="window.location.href='logout.php';">Déconnexion</button>
+                </div>
+            </ul>
+        </nav>  
     </header>
     <br><br>
          <h2>Offres de stage (45 résultats)</h2>
@@ -94,7 +108,6 @@ session_start();?>
                 <div class="footer-section">
                     <h4>Ressources</h4>
                     <ul>
-                        <li><a href="Blog.php">Blog</a></li>
                         <li><a href="FAQ.php">FAQ</a></li>
                     </ul>
                 </div>
