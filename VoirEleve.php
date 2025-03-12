@@ -1,3 +1,14 @@
+<?php
+// Démarrer la session
+session_start();
+// Vérifier si l'utilisateur est connecté
+if (!isset($_SESSION['logged_in']) || $_SESSION['logged_in'] !== true) {
+    // Rediriger vers la page de connexion
+    header("Location: connexion.php");
+    exit();
+}
+?>
+
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -13,13 +24,22 @@
             <div class="logo">
                 <a href="Main.php"><h1>lebonplan</h1></a>
             </div>
-            <ul class="main-nav">
+            <div class="burger-menu">&#9776;</div>
+            <ul class="main-nav" id="menu">
                 <li><a href="Main.php">Accueil</a></li>
                 <li><a href="Offres.php">Offres</a></li>
+                <?php if ($_SESSION['user_type'] === 'etudiant'): ?>
+                    <li><a href="Wishlist.php">Wishlist</a></li>
+                <?php endif; ?>
+                <?php if ($_SESSION['user_type'] === 'admin'): ?>
+                    <li><a href="Admin.php">Espace-administration</a></li>
+                <?php endif; ?>
+                <?php if ($_SESSION['user_type'] === 'pilote'): ?>
+                    <li><a href="Admin.php">Espace-pilote</a></li>
+                <?php endif; ?>
                 <li><a href="Contact.php">Contact</a></li>
-                <li><a href="Espace-Administration.php" class="active">Espace-Administration</a></li>
                 <div class="logout-container">
-                    <button id="logout-btn" onclick="window.location.href='Connection.php';">Déconnexion</button>
+                    <button id="logout-btn" onclick="window.location.href='logout.php';">Déconnexion</button>
                 </div>
             </ul>
         </nav>
@@ -42,10 +62,15 @@
                             <span class="user-info-label">Nom d'utilisateur :</span>
                             <span class="user-info-value">3</span>
                         </div>
-                        <div class="user-info-row">
-                            <span class="user-info-label">Mot de passe :</span>
-                            <span class="user-info-value">TripleCoca</span>
-                        </div>
+
+                        <?php if ($_SESSION['user_type'] === 'admin'): ?>
+                  
+                            <div class="user-info-row">
+                                <span class="user-info-label">Mot de passe :</span>
+                                <span class="user-info-value">TripleCoca</span>
+                            </div>
+                        <?php endif; ?>
+
                         <div class="user-info-row">
                             <span class="user-info-label">Email :</span>
                             <span class="user-info-value">Warwick@lol.fr</span>
@@ -61,7 +86,6 @@
                                 <p><strong>Intitulé:</strong> Dev-Nancy</p>
                                 <p><strong>Compétences:</strong> PHP, Java, HTML</p>
                                 <p><strong>Localisation:</strong> Nancy</p>
-                                <p><strong>Demandeur:</strong> 42</p>
                                 <div class="wishlist-status">
                                     <div class="status-option">
 
@@ -74,8 +98,10 @@
                 
                 <div class="user-action-buttons">
                     <button class="back-btn" onclick="window.location.href='Espace-Administration.php';">Retour</button>
-                    <button class="edit-btn">Modifier</button>
-                    <button class="delete-btn">Supprimer</button>
+                    <?php if ($_SESSION['user_type'] === 'admin'): ?>
+                        <button class="edit-btn">Modifier</button>
+                        <button class="delete-btn">Supprimer</button>
+                    <?php endif; ?>
                 </div>
             </div>
         </div>

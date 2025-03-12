@@ -1,3 +1,16 @@
+<?php
+
+// Démarrer la session
+session_start();
+
+// Vérifier si l'utilisateur est connecté
+if (!isset($_SESSION['logged_in']) || $_SESSION['logged_in'] !== true) {
+    // Rediriger vers la page de connexion
+    header("Location: connexion.php");
+    exit();
+}
+?>
+
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -9,15 +22,23 @@
 </head>
 <body>
     <header>
-        <nav>
+    <nav>
             <div class="logo">
                 <a href="Main.php"><h1>lebonplan</h1></a>
             </div>
-            <ul class="main-nav">
+            <div class="burger-menu">&#9776;</div>
+            <ul class="main-nav" id="menu">
                 <li><a href="Main.php">Accueil</a></li>
-
                 <li><a href="Offres.php">Offres</a></li>
-                <li><a href="Wishlist.php">Wishlist</a></li>
+                <?php if ($_SESSION['user_type'] === 'etudiant'): ?>
+                    <li><a href="Wishlist.php">Wishlist</a></li>
+                <?php endif; ?>
+                <?php if ($_SESSION['user_type'] === 'admin'): ?>
+                    <li><a href="Admin.php">Espace-administration</a></li>
+                <?php endif; ?>
+                <?php if ($_SESSION['user_type'] === 'pilote'): ?>
+                    <li><a href="Admin.php">Espace-pilote</a></li>
+                <?php endif; ?>
                 <li><a href="Contact.php">Contact</a></li>
                 <div class="logout-container">
                     <button id="logout-btn" onclick="window.location.href='logout.php';">Déconnexion</button>

@@ -1,3 +1,14 @@
+<?php
+// Démarrer la session
+session_start();
+// Vérifier si l'utilisateur est connecté
+if (!isset($_SESSION['logged_in']) || $_SESSION['logged_in'] !== true) {
+    // Rediriger vers la page de connexion
+    header("Location: connexion.php");
+    exit();
+}
+?>
+
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -8,17 +19,26 @@
 </head>
 <body>
     <header>
-        <nav>
+    <nav>
             <div class="logo">
                 <a href="Main.php"><h1>lebonplan</h1></a>
             </div>
-            <ul class="main-nav">
-                <li><a href="Main.php">Accueil</a></li>
+            <div class="burger-menu">&#9776;</div>
+            <ul class="main-nav" id="menu">
+                <li><a href="Main.php" >Accueil</a></li>
                 <li><a href="Offres.php">Offres</a></li>
+                <?php if ($_SESSION['user_type'] === 'etudiant'): ?>
+                    <li><a href="Wishlist.php">Wishlist</a></li>
+                <?php endif; ?>
+                <?php if ($_SESSION['user_type'] === 'admin'): ?>
+                    <li><a href="Admin.php" class="active">Espace-administration</a></li>
+                <?php endif; ?>
+                <?php if ($_SESSION['user_type'] === 'pilote'): ?>
+                    <li><a href="Admin.php">Espace-pilote</a></li>
+                <?php endif; ?>
                 <li><a href="Contact.php">Contact</a></li>
-                <li><a href="Espace-Administration.php" class="active">Espace-Administration</a></li>
                 <div class="logout-container">
-                    <button id="logout-btn" onclick="window.location.href='Connexion.php';">Déconnexion</button>
+                    <button id="logout-btn" onclick="window.location.href='logout.php';">Déconnexion</button>
                 </div>
             </ul>
         </nav>
@@ -28,10 +48,18 @@
         <form action="processFormulaireUtilisateur.php" method="post">
             <label for="nom">Nom:</label>
             <input type="text" id="nom" name="nom" required>
-            
+
+            <label for="prenom">Prénom:</label>
+            <input type="text" id="prenom" name="prenom" required>
+
+            <label for="mot de passe">Mot de passe :</label>
+            <input type="email" id="mot de passe" name="mot de passe" required>
 
             <label for="email">Email:</label>
             <input type="email" id="email" name="email" required>
+
+            <label for="telephone">N° de Téléphone:</label>
+            <input type="tel" id="telephone" name="telephone" required>
             
             <label for="campus">Campus:</label>
             <input type="text" id="campus" name="campus" required>
