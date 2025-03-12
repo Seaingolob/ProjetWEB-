@@ -1,3 +1,17 @@
+<?php
+
+
+// Démarrer la session
+session_start();
+
+// Vérifier si l'utilisateur est connecté
+if (!isset($_SESSION['logged_in']) || $_SESSION['logged_in'] !== true) {
+    // Rediriger vers la page de connexion
+    header("Location: connexion.php");
+    exit();
+}
+?>
+
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -15,7 +29,7 @@
             </div>
             <ul class="main-nav">
                 <li><a href="Main.php">Accueil</a></li>
-                <li><a href="Entreprises.php">Entreprises</a></li>
+                
                 <li><a href="Offres.php">Offres</a></li>
                 <li><a href="Wishlist.php">Wishlist</a></li>
                 <li><a href="Contact.php">Contact</a></li>

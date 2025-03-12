@@ -2,17 +2,8 @@
 // Démarrer la session
 session_start();
 
-
-// Vérifier si l'utilisateur est connecté
-if (!isset($_SESSION['logged_in']) || $_SESSION['logged_in'] !== true) {
-    // Rediriger vers la page de connexion
-    header("Location: connexion.php");
-    exit();
-}
-
-
-// Inclure le fichier de configuration pour la connexion à la base de données
-require_once(__DIR__ . '/config.php');
+// Inclure le fichier de configuration
+require_once 'config.php';
 
 // Vérifier si le formulaire a été soumis
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
@@ -66,7 +57,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         }
     } catch (PDOException $e) {
         // Erreur de préparation ou d'exécution
-        die("Erreur de connexion ou de requête : " . $e->getMessage());
+        $_SESSION['error_message'] = "Erreur de connexion à la base de données.";
+        header("Location: connexion.php");
+        exit();
     }
 } else {
     // Si quelqu'un accède directement à cette page sans soumettre le formulaire
@@ -76,24 +69,24 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
 // Fonction pour déterminer le type d'utilisateur
 function determinerTypeUtilisateur($connexion, $id_compte) {
-    $types = ["pilote", "etudiant", "admin"]; // Liste des types d'utilisateurs
-    
+    $types = ["etudiant", "admin", "pilote"]; // Liste des types d'utilisateurs, en incluant les pilotes
+
     foreach ($types as $type) {
         $sql = "SELECT 1 FROM $type WHERE id_compte = :id_compte";
-        
+
         try {
             $stmt = $connexion->prepare($sql);
             $stmt->bindParam(':id_compte', $id_compte, PDO::PARAM_INT);
             $stmt->execute();
-            
+
             if ($stmt->rowCount() === 1) { // Si l'utilisateur est trouvé
-                return $type;
+                return $type; // Revoyer le type
             }
         } catch (PDOException $e) {
             throw new Exception("Erreur lors de la préparation de la requête $type: " . $e->getMessage());
         }
     }
-    
-    return false; // Aucun type trouvé, l'utilisateur n'existe pas
+
+    return "utilisateur"; // Type par défaut si aucun type spécifique n'est trouvé
 }
 ?>

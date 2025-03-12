@@ -13,8 +13,9 @@ try {
     
     // Définit le mode d'erreur de PDO pour afficher les exceptions en cas d'erreur
     $connexion->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-
-    echo "Connexion réussie à la base de données!";
+    
+    // Suppression du message de débogage
+    // echo "Connexion réussie à la base de données!";
 } catch (PDOException $e) {
     // En cas d'erreur, affiche le message d'erreur
     die("Erreur de connexion à la base de données : " . $e->getMessage());
