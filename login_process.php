@@ -69,24 +69,24 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
 // Fonction pour déterminer le type d'utilisateur
 function determinerTypeUtilisateur($connexion, $id_compte) {
-    $types = ["pilote", "etudiant", "admin"]; // Liste des types d'utilisateurs
-    
+    $types = ["etudiant", "admin", "pilote"]; // Liste des types d'utilisateurs, en incluant les pilotes
+
     foreach ($types as $type) {
         $sql = "SELECT 1 FROM $type WHERE id_compte = :id_compte";
-        
+
         try {
             $stmt = $connexion->prepare($sql);
             $stmt->bindParam(':id_compte', $id_compte, PDO::PARAM_INT);
             $stmt->execute();
-            
+
             if ($stmt->rowCount() === 1) { // Si l'utilisateur est trouvé
-                return $type;
+                return $type; // Revoyer le type
             }
         } catch (PDOException $e) {
             throw new Exception("Erreur lors de la préparation de la requête $type: " . $e->getMessage());
         }
     }
-    
+
     return "utilisateur"; // Type par défaut si aucun type spécifique n'est trouvé
 }
 ?>

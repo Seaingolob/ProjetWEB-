@@ -1,7 +1,6 @@
 <?php
 // Démarrer la session
 session_start();
-
 // Vérifier si l'utilisateur est connecté
 if (!isset($_SESSION['logged_in']) || $_SESSION['logged_in'] !== true) {
     // Rediriger vers la page de connexion
@@ -23,18 +22,24 @@ if (!isset($_SESSION['logged_in']) || $_SESSION['logged_in'] !== true) {
         <p>Nous utilisons des cookies pour améliorer votre expérience sur notre site...</p>
         <button id="accept-cookies">Accepter</button>
     </div>
-
     <header>
         <nav>
             <div class="logo">
                 <a href="Main.php"><h1>lebonplan</h1></a>
             </div>
-
-            <ul class="main-nav">
+            <div class="burger-menu">&#9776;</div>
+            <ul class="main-nav" id="menu">
                 <li><a href="Main.php" class="active">Accueil</a></li>
-                <li><a href="Entreprises.php">Entreprises</a></li>
                 <li><a href="Offres.php">Offres</a></li>
-                <li><a href="Wishlist.php">Wishlist</a></li>
+                <?php if ($_SESSION['user_type'] === 'etudiant'): ?>
+                    <li><a href="Wishlist.php">Wishlist</a></li>
+                <?php endif; ?>
+                <?php if ($_SESSION['user_type'] === 'admin'): ?>
+                    <li><a href="Admin.php">Espace-administration</a></li>
+                <?php endif; ?>
+                <?php if ($_SESSION['user_type'] === 'pilote'): ?>
+                    <li><a href="pilote.php">Espace-pilote</a></li>
+                <?php endif; ?>
                 <li><a href="Contact.php">Contact</a></li>
                 <div class="logout-container">
                     <button id="logout-btn" onclick="window.location.href='logout.php';">Déconnexion</button>
@@ -42,9 +47,7 @@ if (!isset($_SESSION['logged_in']) || $_SESSION['logged_in'] !== true) {
             </ul>
         </nav>
     </header>
-
     <br><br><br>
-
     <main>
         <section class="hero">
             <h2>Trouvez le stage idéal</h2>
@@ -55,7 +58,6 @@ if (!isset($_SESSION['logged_in']) || $_SESSION['logged_in'] !== true) {
                 <button type="submit">Rechercher</button>
             </form>
         </section>
-
         <section class="featured-offers">
             <h2>Offres de stage en vedette</h2>
             <div class="offers-grid">
@@ -69,7 +71,6 @@ if (!isset($_SESSION['logged_in']) || $_SESSION['logged_in'] !== true) {
             </div>
         </section>
     </main>
-
     <footer>
         <div class="pied">
             <div class="footer-content">
@@ -90,9 +91,10 @@ if (!isset($_SESSION['logged_in']) || $_SESSION['logged_in'] !== true) {
                 </div>
             </div>
             <div class="footer-bottom">
-                <p>&copy; 2024 - Tous droits réservés - Web4All</p>
+                <p>© 2024 - Tous droits réservés - Web4All</p>
             </div>
         </div>
     </footer>
+
 </body>
 </html>

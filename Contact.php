@@ -28,7 +28,7 @@ if (!isset($_SESSION['logged_in']) || $_SESSION['logged_in'] !== true) {
             </div>
             <ul class="main-nav">
                 <li><a href="Main.php">Accueil</a></li>
-                <li><a href="Entreprises.php">Entreprises</a></li>
+                
                 <li><a href="Offres.php">Offres</a></li>
                 <li><a href="Wishlist.php">Wishlist</a></li>
                 <li><a href="Contact.php"class="active">Contact</a></li>
