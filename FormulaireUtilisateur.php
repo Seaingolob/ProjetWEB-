@@ -46,19 +46,28 @@ if (!isset($_SESSION['logged_in']) || $_SESSION['logged_in'] !== true) {
     <div class="form-container">
         <h2>Ajouter un Utilisateur</h2>
         <form action="processFormulaireUtilisateur.php" method="post">
+            <br><br>
             <label for="nom">Nom:</label>
             <input type="text" id="nom" name="nom" required>
-            
-
+            <br>
+            <label for="prenom">Prénom:</label>
+            <input type="text" id="prenom" name="prenom" required>
+                    <br>
+            <label for="mot de passe">Mot de passe :</label>
+            <input type="email" id="mot de passe" name="mot de passe" required>
+            <br>
             <label for="email">Email:</label>
             <input type="email" id="email" name="email" required>
-            
+            <br>
+            <label for="telephone">N° de Téléphone:</label>
+            <input type="tel" id="telephone" name="telephone" required>
+            <br>
             <label for="campus">Campus:</label>
             <input type="text" id="campus" name="campus" required>
-            
+            <br>
             <label for="promotion">Promotion:</label>
             <input type="text" id="promotion" name="promotion" required>
-            
+            <br><br>
 
             <button type="submit">Ajouter</button>
         </form>

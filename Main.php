@@ -38,7 +38,7 @@ if (!isset($_SESSION['logged_in']) || $_SESSION['logged_in'] !== true) {
                     <li><a href="Admin.php">Espace-administration</a></li>
                 <?php endif; ?>
                 <?php if ($_SESSION['user_type'] === 'pilote'): ?>
-                    <li><a href="Admin.php">Espace-pilote</a></li>
+                    <li><a href="pilote.php">Espace-pilote</a></li>
                 <?php endif; ?>
                 <li><a href="Contact.php">Contact</a></li>
                 <div class="logout-container">
@@ -48,17 +48,13 @@ if (!isset($_SESSION['logged_in']) || $_SESSION['logged_in'] !== true) {
         </nav>
     </header>
     <br><br><br>
+    <div class="slogan">
+        <h1>Lebonplan</h1>
+        <p>Trouvez le stage de vos rêves en quelques clics !</p>
+    </div>
+    <br>
     <main>
-        <section class="hero">
-            <h2>Trouvez le stage idéal</h2>
-            <p><big>La plateforme qui simplifie vos recherches de stages</big></p>
-            <form class="search-form">
-                <input type="text" placeholder="Rechercher par mot-clé, compétence...">
-                <input type="text" placeholder="Ville ou région">
-                <button type="submit">Rechercher</button>
-            </form>
-        </section>
-        <section class="featured-offers">
+        <section class="contact-form">
             <h2>Offres de stage en vedette</h2>
             <div class="offers-grid">
                 <article class="offer-card">

@@ -1,16 +1,60 @@
 <?php
 // Démarrer la session
 session_start();
+
+// Inclure le fichier de configuration de la base de données
+require_once 'config.php';
+
 // Vérifier si l'utilisateur est connecté
 if (!isset($_SESSION['logged_in']) || $_SESSION['logged_in'] !== true) {
-    // Rediriger vers la page de connexion
     header("Location: connexion.php");
     exit();
 }
-?>
 
+// Vérifier si l'id_compte est défini
+if (!isset($_SESSION['user_id'])) {
+    die("Erreur : l'utilisateur n'est pas correctement connecté.");
+}
+
+$userId = $_SESSION['user_id'];
+
+// Récupérer les offres de la wishlist
+$sql = "SELECT o.*, e.nom AS nom_entreprise, v.nom_ville 
+        FROM offre o 
+        JOIN entreprise e ON o.Id_entreprise = e.Id_entreprise
+        JOIN adresse ad ON e.Id_adresse = ad.Id_adresse
+        JOIN ville v ON ad.Id_ville = v.Id_ville
+        JOIN souhaiter s ON o.id_offre = s.id_offre
+        WHERE s.id_compte = :user_id
+        ORDER BY o.date_publication DESC";
+
+try {
+    $stmt = $connexion->prepare($sql);
+    $stmt->bindValue(':user_id', $userId, PDO::PARAM_INT);
+    $stmt->execute();
+    $offres = $stmt->fetchAll(PDO::FETCH_ASSOC);
+} catch (PDOException $e) {
+    die("Erreur lors de la récupération des offres: " . $e->getMessage());
+}
+
+// Fonction pour récupérer les compétences pour chaque offre
+function getCompetencesForOffer($connexion, $idOffre) {
+    $sql = "SELECT c.nom FROM competence c 
+    JOIN contenir co ON c.Id_competence = co.Id_competence 
+    WHERE co.id_offre = :idOffre";
+    
+    try {
+        $stmt = $connexion->prepare($sql);
+        $stmt->bindValue(':idOffre', $idOffre, PDO::PARAM_INT);
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_COLUMN);
+    } catch (PDOException $e) {
+        return [];
+    }
+}
+?>
 <!DOCTYPE html>
-<php lang="fr">
+<html lang="fr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -23,79 +67,57 @@ if (!isset($_SESSION['logged_in']) || $_SESSION['logged_in'] !== true) {
             <div class="logo">
                 <a href="Main.php"><h1>lebonplan</h1></a>
             </div>
-            <div class="burger-menu">&#9776;</div>
-            <ul class="main-nav" id="menu">
-                <li><a href="Main.php">Accueil</a></li>
-                <li><a href="Offres.php">Offres</a></li>
-                <?php if ($_SESSION['user_type'] === 'etudiant'): ?>
-                    <li><a href="Wishlist.php" class = "active" >Wishlist</a></li>
-                <?php endif; ?>
-                <?php if ($_SESSION['user_type'] === 'admin'): ?>
-                    <li><a href="Admin.php">Espace-administration</a></li>
-                <?php endif; ?>
-                <?php if ($_SESSION['user_type'] === 'pilote'): ?>
-                    <li><a href="Admin.php">Espace-pilote</a></li>
-                <?php endif; ?>
-                <li><a href="Contact.php">Contact</a></li>
-                <div class="logout-container">
-                    <button id="logout-btn" onclick="window.location.href='logout.php';">Déconnexion</button>
-                </div>
-            </ul>
-        </nav>  
-    </header>
-    <br><br>
-         <h2>Offres de stage (45 résultats)</h2>
-         <select name="sort">
-            <option value="recent">Plus récentes</option>
-            <option value="company">Entreprise</option>
-            <option value="duration">Durée</option>
-        </select>
-        <br>    <br>
-            <article class="offer-card">
-                <div class="offer-header">
-                    <div class="company-info">
-                        <img src="company-logo.jpg" alt="Logo Web4All" class="company-logo">
-                        <div>
-                            <h3>Stage - Développeur FullStack</h3>
-                            <p class="company-name">Web4All</p>
-                        </div>
-                    </div>
-                    <span class="heart" onclick="toggleHeart()">🤍</span>
-                    <script src="script.js"></script>
-                </div>
-                <div class="offer-details">
-                    <span class="location">Paris (75)</span>
-                    <span class="duration">6 mois</span>
-                    <span class="date">Publié le 15/02/2024</span>
-                </div>
-                <div class="skills">
-                    <span class="skill-tag">React</span>
-                    <span class="skill-tag">Node.js</span>
-                    <span class="skill-tag">MongoDB</span>
-                </div>
-                <p class="description">
-                    Nous recherchons un stagiaire développeur fullstack pour participer au développement de nos applications web...
-                </p>
-                <div class="offer-footer">
-                    <a href="/offres/1234" class="view-details">Voir l'offre</a>
-                    <a href="/postuler/1234" class="apply-btn">Postuler</a>
-                </div>
-            </article>
+    <div class="burger-menu">&#9776;</div> <!-- Icône du menu burger -->
+    <ul class="main-nav" id="menu">
+        <li><a href="Main.php">Accueil</a></li>
 
-            <div class="pagination">
-                <button class="prev">Précédent</button>
-                <div class="pages">
-                    <span class="current">1</span>
-                    <a href="#">2</a>
-                    <a href="#">3</a>
+        <li><a href="Offres.php">Offres</a></li>
+        <li><a href="Wishlist.php"class="active">Wishlist</a></li>
+        <li><a href="Contact.php">Contact</a></li>
+        <div class="logout-container">
+            <button id="logout-btn" onclick="window.location.href='logout.php';">Déconnexion</button>
+        </div>
+    </ul>
+</nav> 
+    </header>
+    <main>
+        <section class="offers-list">
+            <br><br>
+            <h2>Mes offres favorites (<?php echo count($offres); ?>)</h2>
+            <?php if (empty($offres)): ?>
+            <p>Votre wishlist est vide.</p>
+            <?php else: ?>
+            <?php foreach ($offres as $offre): ?>
+            <?php 
+            // Récupérer les competences pour cette offre
+            $competences = getCompetencesForOffer($connexion, $offre['id_offre']);
+            ?>
+            <article class="offer-card">
+                <h3><?php echo htmlspecialchars($offre['titre']); ?></h3>
+                <p class="company-name"><?php echo htmlspecialchars($offre['nom_entreprise']); ?></p>
+                <p class="location">Lieu : <?php echo htmlspecialchars($offre['nom_ville'] ?? 'Non spécifié'); ?></p>
+                <p class="duration">Durée : <?php echo htmlspecialchars($offre['duree_mois']); ?> mois</p>
+                <p class="date">Publié le <?php echo date('d/m/Y', strtotime($offre['date_publication'])); ?></p>
+                
+                <?php if (!empty($competences)): ?>
+                <div class="skills">
+                    <?php foreach ($competences as $competence): ?>
+                    <span class="skill-tag"><?php echo htmlspecialchars($competence); ?></span>
+                    <?php endforeach; ?>
                 </div>
-                <button class="next">Suivant</button>
-            </div>
+                <?php else: ?>
+                <p class="no-skills">Aucune competence spécifiée</p>
+                <?php endif; ?>
+                
+                <a href="DetailsOffre.php?id=<?php echo $offre['id_offre']; ?>" class="view-details">Voir l'offre</a>
+                <div class="heart liked" data-id="<?php echo $offre['id_offre']; ?>" onclick="toggleHeart(event)">❤️</div>
+            </article>
+            <?php endforeach; ?>
+            <?php endif; ?>
         </section>
     </main>
-    <br>
     <footer>
-        <div class="pied">
+    <div class="pied">
             <div class="footer-content">
                 <div class="footer-section">
                     <h4>À propos</h4>
@@ -108,6 +130,7 @@ if (!isset($_SESSION['logged_in']) || $_SESSION['logged_in'] !== true) {
                 <div class="footer-section">
                     <h4>Ressources</h4>
                     <ul>
+                        <li><a href="Blog.php">Blog</a></li>
                         <li><a href="FAQ.php">FAQ</a></li>
                     </ul>
                 </div>

@@ -206,7 +206,7 @@ function getCompetencesForOffer($connexion, $idOffre) {
                         </option>
                         <?php endforeach; ?>
                     </select>
-                    <label for="competence">competences</label>
+                    <label for="competence">Competences</label>
                     <select id="competence" name="competence">
                         <option value="">Sélectionner une competence</option>
                         <?php foreach ($competences as $competence): ?>
@@ -259,8 +259,23 @@ function getCompetencesForOffer($connexion, $idOffre) {
                 <?php else: ?>
                 <p class="no-skills">Aucune competence spécifiée</p>
                 <?php endif; ?>
-                
                 <a href="DetailsOffre.php?id=<?php echo $offre['id_offre']; ?>" class="view-details">Voir l'offre</a>
+                
+                <?php
+                // Vérifier si l'utilisateur a liké l'offre
+                if (isset($_SESSION['user_id'])) {
+                    $userId = $_SESSION['user_id'];
+                    $sqlLiked = "SELECT * FROM souhaiter WHERE id_compte = :user_id AND id_offre = :offer_id";
+                    $stmtLiked = $connexion->prepare($sqlLiked);
+                    $stmtLiked->execute([':user_id' => $userId, ':offer_id' => $offre['id_offre']]);
+                    $isLiked = $stmtLiked->rowCount() > 0;
+                } else {
+                    $isLiked = false;
+                }
+                ?>
+                <div class="heart" data-id="<?php echo $offre['id_offre']; ?>" onclick="toggleHeart(event)">
+                <?php echo $isLiked ? '❤️' : '🤍'; ?>
+                </div>
 
             </article>
             <?php endforeach; ?>
@@ -280,25 +295,35 @@ function getCompetencesForOffer($connexion, $idOffre) {
                 $endPage = min($startPage + $maxPagesToShow - 1, $totalPages);
                 
                 if ($startPage > 1): ?>
-                <a href="?page=1<?php echo !empty($searchCompany) ? '&company-name=' . urlencode($searchCompany) : ''; ?><?php echo !empty($searchLocation) ? '&location=' . urlencode($searchLocation) : ''; ?><?php echo !empty($searchCompetence) ? '&competence=' . urlencode($searchCompetence) : ''; ?>">1</a>
+                <a href="?page=1<?php echo !empty($searchCompany) ? '&company-name=' . urlencode($searchCompany) : ''; ?>
+                <?php echo !empty($searchLocation) ? '&location=' . urlencode($searchLocation) : ''; ?>
+                <?php echo !empty($searchCompetence) ? '&competence=' . urlencode($searchCompetence) : ''; ?>">1</a>
                 <?php if ($startPage > 2): ?>
                 <span class="ellipsis">...</span>
                 <?php endif; ?>
                 <?php endif; ?>
                 
                 <?php for ($i = $startPage; $i <= $endPage; $i++): ?>
-                <a href="?page=<?php echo $i; ?><?php echo !empty($searchCompany) ? '&company-name=' . urlencode($searchCompany) : ''; ?><?php echo !empty($searchLocation) ? '&location=' . urlencode($searchLocation) : ''; ?><?php echo !empty($searchCompetence) ? '&competence=' . urlencode($searchCompetence) : ''; ?>" class="<?php echo $i == $page ? 'active' : ''; ?>"><?php echo $i; ?></a>
+                <a href="?page=<?php echo $i; ?><?php echo !empty($searchCompany) ? '&company-name=' . urlencode($searchCompany) : ''; ?>
+                <?php echo !empty($searchLocation) ? '&location=' . urlencode($searchLocation) : ''; ?>
+                <?php echo !empty($searchCompetence) ? '&competence=' . urlencode($searchCompetence) : ''; ?>" class="<?php echo $i == $page ? 'active' : ''; ?>"><?php echo $i; ?></a>
                 <?php endfor; ?>
                 
                 <?php if ($endPage < $totalPages): ?>
                 <?php if ($endPage < $totalPages - 1): ?>
                 <span class="ellipsis">...</span>
                 <?php endif; ?>
-                <a href="?page=<?php echo $totalPages; ?><?php echo !empty($searchCompany) ? '&company-name=' . urlencode($searchCompany) : ''; ?><?php echo !empty($searchLocation) ? '&location=' . urlencode($searchLocation) : ''; ?><?php echo !empty($searchCompetence) ? '&competence=' . urlencode($searchCompetence) : ''; ?>"><?php echo $totalPages; ?></a>
+                <a href="?page=<?php echo $totalPages; ?>
+                <?php echo !empty($searchCompany) ? '&company-name=' . urlencode($searchCompany) : ''; ?>
+                <?php echo !empty($searchLocation) ? '&location=' . urlencode($searchLocation) : ''; ?>
+                <?php echo !empty($searchCompetence) ? '&competence=' . urlencode($searchCompetence) : ''; ?>"><?php echo $totalPages; ?></a>
                 <?php endif; ?>
             </div>
             <?php if ($page < $totalPages): ?>
-            <a href="?page=<?php echo $page + 1; ?><?php echo !empty($searchCompany) ? '&company-name=' . urlencode($searchCompany) : ''; ?><?php echo !empty($searchLocation) ? '&location=' . urlencode($searchLocation) : ''; ?><?php echo !empty($searchCompetence) ? '&competence=' . urlencode($searchCompetence) : ''; ?>" class="next-page">Suivant »</a>
+            <a href="?page=<?php echo $page + 1; ?>
+            <?php echo !empty($searchCompany) ? '&company-name=' . urlencode($searchCompany) : ''; ?>
+            <?php echo !empty($searchLocation) ? '&location=' . urlencode($searchLocation) : ''; ?>
+            <?php echo !empty($searchCompetence) ? '&competence=' . urlencode($searchCompetence) : ''; ?>" class="next-page">Suivant »</a>
             <?php else:?>
               <span class="disabled">Suivant »</span>
             <?php endif; ?>
