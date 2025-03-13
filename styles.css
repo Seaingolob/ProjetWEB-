@@ -832,6 +832,24 @@ input:focus, select:focus, textarea:focus {
     margin: 5px 0;
   }
 
+  .offers-list {
+    border: 2px solid #1d7faa;
+    border-radius: 8px;
+    padding: 25px;
+    background-color: white;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    margin: 5px 0;
+  }
+
+  .search-section {
+    border: 2px solid #1d7faa;
+    border-radius: 8px;
+    padding: 25px;
+    background-color: white;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    margin: 5px 0;
+  }
+
   .slogan {
     font-size: 2.2rem;
     font-family: Arial, sans-serif;
@@ -1803,4 +1821,14 @@ input:focus, select:focus, textarea:focus {
     border-radius: 8px;
     margin-bottom: 20px;
 }
+
+.user-management, .offer-management {
+    display: none;
+}
+
+.user-management.active, .offer-management.active {
+    display: block;
+}
+
+
 
