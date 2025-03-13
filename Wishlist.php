@@ -109,7 +109,7 @@ function getCompetencesForOffer($connexion, $idOffre) {
                 <p class="no-skills">Aucune competence spécifiée</p>
                 <?php endif; ?>
                 
-                <a href="DetailsOffre.php?id=<?php echo $offre['id_offre']; ?>" class="view-details">Voir l'offre</a>
+                <a href="VoirOffre.php?id=<?php echo $offre['id_offre']; ?>" class="view-details">Voir l'offre</a>
                 <div class="heart liked" data-id="<?php echo $offre['id_offre']; ?>" onclick="toggleHeart(event)">❤️</div>
             </article>
             <?php endforeach; ?>

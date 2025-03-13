@@ -1,3 +1,4 @@
+
 :root {
     --primary-black: #000000;
     --primary-white: #ffffff;
@@ -1543,4 +1544,440 @@ input:focus, select:focus, textarea:focus {
         border-left-color: var(--primary-black);
     }
     
+}   
+
+.admin-content > div.active {
+    display: block;
+}
+
+.search-bar {
+    margin: 20px 0;
+    width: 100%;
+}
+
+.pied {
+    left: 0;
+    right: 0;
+    bottom: 0;
+    width: 100%;
+    background-color: #1d7faab1;
+    color: #fff;
+    padding: 15px;
+    display: flex; 
+    flex-direction: column;
+    position: relative; 
+    border-radius: 18px;
+}
+.search-bar input {
+    width: 70%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+.search-bar button {
+    padding: 10px 15px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.offer-card {
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    padding: 15px;
+    margin-bottom: 20px;
+}
+
+.offer-header {
+    background-color: #f1f1f1;
+    padding: 10px;
+    border-radius: 4px;
+    margin-bottom: 10px;
+    font-weight: bold;
+}
+
+.offer-details {
+    padding: 10px 0;
+}
+.offre-detail-container {
+    max-width: auto;
+    margin: 0 auto;
+    padding: 20px;
+    text-align: center;
+}
+
+.offre-header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 30px;
+    padding-bottom: 20px;
+    border-bottom: 2px solid var(--gray-300);
+}
+
+.logo-container {
+    width: 120px;
+    height: 120px;
+    margin-right: 30px;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: var(--shadow);
+}
+
+.logo-container img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.offre-title-container h1 {
+    margin-bottom: 10px;
+    font-size: 1.8rem;
+}
+
+.entreprise-name {
+    font-size: 1.2rem;
+    font-weight: 600;
+    margin-bottom: 8px;
+}
+
+.offre-meta {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    width: 100%;
+    margin-top: 10px;
+    padding: 0 10px;
+}
+
+.offre-meta-item {
+    display: flex;
+    align-items: center;
+    color: var(--gray-700);
+}
+
+.offre-meta-item:first-child {
+    justify-content: flex-start;
+}
+
+.offre-meta-item:nth-child(2) {
+    justify-content: center;
+}
+
+.offre-meta-item:last-child {
+    justify-content: flex-end;
+}
+
+.offre-location {   
+    display: flex;
+    justify-content: center;
+    align-items: center; 
+    gap: 5px;
+}
+
+.offre-content {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 30px;
+}
+
+.offre-details {
+    background-color: var(--primary-white);
+    border-radius: 12px;
+    padding: 25px;
+    box-shadow:  5px 5px 15px rgba(168, 204, 224, 0.7);
+}
+
+
+.section-title {
+    font-size: 1.2rem;
+    font-weight: 600;
+    margin-bottom: 15px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--gray-200);
+}
+
+.section-content {
+    margin-bottom: 25px;
+}
+
+.missions-list {
+    padding-left: 20px;
+}
+
+.missions-list li {
+    margin-bottom: 8px;
+}
+
+.skills-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 15px;
+}
+
+.skill-tag {
+    padding: 8px 12px;
+    background-color: var(--gray-100);
+    border-radius: 8px;
+    font-size: 0.9rem;
+}
+
+.postuler-sidebar {
+    background-color: var(--primary-white);
+    border-radius: 12px;
+    padding: 25px;
+    box-shadow: var(--shadow);
+    position: sticky;
+    top: 100px;
+    height: fit-content;
+}
+
+.file-upload-container {
+    margin-bottom: 15px;
+}
+
+.file-upload-label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 500;
+}
+
+.file-input-container {
+    position: relative;
+    margin-bottom: 20px;
+}
+
+.file-input {
+    width: 100%;
+    padding: 10px;
+    border: 1px dashed var(--gray-400);
+    border-radius: 8px;
+    text-align: center;
+    cursor: pointer;
+    background-color: var(--gray-50);
+}
+
+.file-input:hover {
+    background-color: var(--gray-100);
+    border-color: var(--gray-500);
+}
+
+.input-note {
+    display: block;
+    font-size: 0.8rem;
+    color: var(--gray-600);
+    margin-top: 5px;
+}
+
+.postuler-btn {
+    width: 100%;
+    padding: 12px;
+    background-color: var(--accent-blue);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: var(--transition-smooth);
+}
+
+.postuler-btn:hover {
+    background-color: #2980b9;
+    transform: translateY(-2px);
+}
+
+.alert-success {
+    background-color: #d4edda;
+    color: #155724;
+    padding: 15px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+}
+
+.alert-error {
+    background-color: #f8d7da;
+    color: #721c24;
+    padding: 15px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+}
+
+
+
+
+
+/* Masquer les sections par défaut */
+.user-management, .offer-management {
+    display: none;
+}
+
+/* Afficher uniquement la section active */
+.user-management.active, .offer-management.active {
+    display: block;
+}
+
+
+
+.status-postulée {
+    color: #2ecc71;
+    font-weight: bold;
+}
+.status-nonpostulée {
+    color: #e74c3c;
+    font-weight: bold;
+}
+
+.promotion-detail-card {
+    background-color: #f9f9f9;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    margin-bottom: 10px;
+    overflow: hidden;
+}
+
+.promotion-header {
+    background-color: #4a69bd;
+    color: white;
+    padding: 8px 12px;
+    font-weight: bold;
+}
+
+.promotion-content {
+    padding: 10px;
+}
+
+
+.offre-content {
+    background-color: #f9f9f9;
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+/* Ajout d'un style pour le titre de l'offre */
+.offre-title {
+    font-size: 24px;
+    font-weight: 600;
+    margin-bottom: 10px;
+}
+
+/* Ajout d'un style pour la section des détails de l'offre */
+.offre-details {
+    background-color: #ffffff;
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+/* Ajout d'un style pour la section des compétences requises */
+.skills-section {
+    background-color: #f9f9f9;
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+/* Ajout d'un style pour les tags de compétences */
+.skill-tag {
+    background-color: #4a69bd;
+    color: #ffffff;
+    padding: 10px 20px;
+    border-radius: 12px;
+    font-size: 16px;
+    margin: 10px;
+}
+
+/* Ajout d'un style pour le bouton de postulation */
+.postuler-btn {
+    background-color: #4a69bd;
+    color: #ffffff;
+    padding: 15px 30px;
+    border-radius: 12px;
+    font-size: 18px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.postuler-btn:hover {
+    background-color: #3573a5;
+}
+
+/* Ajout d'un style pour le conteneur d'évaluations */
+.evaluations-container {
+    background-color: #f9f9f9;
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+/* Ajout d'un style pour les cartes d'évaluations */
+.evaluation-card {
+    background-color: #ffffff;
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    margin-bottom: 20px;
+}
+
+.evaluation-card .evaluation-header {
+    font-size: 18px;
+    font-weight: 600;
+    margin-bottom: 10px;
+}
+
+.evaluation-card .evaluation-content {
+    font-size: 16px;
+    color: #666666;
+}
+
+
+/* Styles pour les boutons d'action */
+.offre-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 15px;
+    align-items: center;
+    justify-content: flex-start;
+}
+
+.action-btn {
+    padding: 10px 15px;
+    border-radius: 5px;
+    border: none;
+    font-weight: 600;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    min-width: 150px;
+}
+
+/* Style pour le bouton Postuler */
+.apply-btn {
+    background-color: #4CAF50;
+    color: white;
+}
+
+.apply-btn:hover {
+    background-color: #45a049;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+/* Style pour le bouton Déjà postulé */
+.applied-btn {
+    background-color: #ccc;
+    color: #555;
+    cursor: not-allowed;
+}
+
+/* Style pour les boutons de wishlist */
+.wishlist-btn {
+    background-color: #2196F3;
+    color: white;
 }

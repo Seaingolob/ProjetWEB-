@@ -182,9 +182,9 @@ function getCompetencesForOffer($connexion, $idOffre) {
         </nav>
     </header>
     <main>
+        <br><br>
         <section class="search-section">
-            <br>
-            <div><br></div>
+            
             <h2>Rechercher une offre</h2>
             <form class="advanced-search" method="GET" action="Offres.php">
                 <div class="search-filters">
@@ -206,9 +206,9 @@ function getCompetencesForOffer($connexion, $idOffre) {
                         </option>
                         <?php endforeach; ?>
                     </select>
-                    <label for="competence">Competences</label>
+                    <label for="competence">Compétences</label>
                     <select id="competence" name="competence">
-                        <option value="">Sélectionner une competence</option>
+                        <option value="">Sélectionner une compétence</option>
                         <?php foreach ($competences as $competence): ?>
                         <option value="<?php echo htmlspecialchars($competence); ?>" <?php echo $searchCompetence === $competence ? 'selected' : ''; ?>>
                             <?php echo htmlspecialchars($competence); ?>

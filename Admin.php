@@ -131,6 +131,8 @@ $offres = $stmt_offres->fetchAll(PDO::FETCH_ASSOC);
                 <button id="search-btn" onclick="search()">Rechercher</button>
             </div>
             <div class="admin-content">
+
+                
                 <!-- Section Utilisateurs -->
                 <div class="user-management <?php echo isset($_GET['tab']) && $_GET['tab'] === 'utilisateur' ? 'active' : ''; ?>" id="section-utilisateur">
                     <h3>Gestion des utilisateurs :</h3>

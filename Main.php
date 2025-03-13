@@ -70,7 +70,7 @@ function getCompetencesForOffer($connexion, $id_offre) {
                     <li><a href="Admin.php">Espace-administration</a></li>
                 <?php endif; ?>
                 <?php if ($_SESSION['user_type'] === 'pilote'): ?>
-                    <li><a href="pilote.php">Espace-pilote</a></li>
+                    <li><a href="Admin.php">Espace-pilote</a></li>
                 <?php endif; ?>
                 <li><a href="Contact.php">Contact</a></li>
                 <div class="logout-container">
@@ -91,6 +91,9 @@ function getCompetencesForOffer($connexion, $id_offre) {
         <?php if (empty($offres)): ?>
             <p class="no-results">Aucune offre ne correspond à votre recherche.</p>
         <?php else: ?>
+            <div class="contact-form">
+            <h2>Offres de stage en vedettes</h2>
+            <br>
             <?php foreach ($offres as $offre): ?>
                 <?php 
                 // Récupérer les competences pour cette offre
@@ -106,6 +109,7 @@ function getCompetencesForOffer($connexion, $id_offre) {
                     $isLiked = false;
                 }
                 ?>
+                
                 <article class="offer-card">
                     <h3><?php echo htmlspecialchars($offre['titre']); ?></h3>
                     <p class="company-name"><?php echo isset($offre['nom_entreprise']) ? htmlspecialchars($offre['nom_entreprise']) : 'Entreprise non spécifiée'; ?></p>
@@ -130,7 +134,9 @@ function getCompetencesForOffer($connexion, $id_offre) {
                     </div>
                     <?php endif; ?>
                 </article>
+                
             <?php endforeach; ?>
+            </div>
         <?php endif; ?>
     </section>
 
