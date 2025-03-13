@@ -930,7 +930,7 @@ input:focus, select:focus, textarea:focus {
 }
 
 .action-btn {
-    background-color: var(--accent-blue);
+    background-color: #4CAF50;
     margin-bottom: 1rem;
 }
 
@@ -1276,10 +1276,6 @@ input:focus, select:focus, textarea:focus {
     margin-top: 0.5rem;
 }
 
-.action-btn {
-    background-color: var(--accent-blue);
-    margin-bottom: 1rem;
-}
 
 /* Amélioration des boutons d'action */
 .edit-btn, .view-btn, .delete-btn {
@@ -1792,17 +1788,17 @@ input:focus, select:focus, textarea:focus {
 .postuler-btn {
     width: 100%;
     padding: 12px;
-    background-color: var(--accent-blue);
-    color: white;
+    background-color: #2497c8;
+    color: rgb(255, 255, 255);
     border: none;
     border-radius: 8px;
-    font-weight: 600;
+    font-weight: 600;   
     cursor: pointer;
     transition: var(--transition-smooth);
 }
 
 .postuler-btn:hover {
-    background-color: #2980b9;
+    background-color: #2497c8;
     transform: translateY(-2px);
 }
 
