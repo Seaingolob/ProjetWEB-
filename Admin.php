@@ -308,6 +308,7 @@ $offres = $stmt_offres->fetchAll(PDO::FETCH_ASSOC);
         </div>
     </footer>
     <script>
+
     function search() {
         const searchInput = document.getElementById('search-input').value;
         const urlParams = new URLSearchParams(window.location.search);

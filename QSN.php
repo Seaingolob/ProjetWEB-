@@ -63,19 +63,19 @@ if (!isset($_SESSION['logged_in']) || $_SESSION['logged_in'] !== true) {
                 <div class="team-member">
                     <img src="images/KillianB.jpg" alt="Membre 2">
                     <h3>Killian Berthier</h3>
-                    <p>Product Owner</p>
+                    <p>Dev JavaScript</p>
                 </div>
 
                 <div class="team-member">
                     <img src="images/NielsB.jpg" alt="Membre 3">
-                    <h3>Nom Prénom</h3>
-                    <p>UX / UI Designer</p>
+                    <h3>Niels Bourg</h3>
+                    <p>Interface Utilisateur</p>
                 </div>
 
                 <div class="team-member">
                     <img src="images/SamC.jpg" alt="Membre 4">
-                    <h3>Nom Prénom</h3>
-                    <p>Administrateur système / DevOps</p>
+                    <h3>Samuel Ceccarelli</h3>
+                    <p>Dev Backend PHP</p>
                 </div>
 
                 <div class="team-member">

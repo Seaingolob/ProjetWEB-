@@ -1981,3 +1981,47 @@ input:focus, select:focus, textarea:focus {
     background-color: #2196F3;
     color: white;
 }
+
+
+
+
+
+
+
+
+
+
+
+.competence-row {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.competence-row select {
+    flex: 1;
+    margin-right: 10px;
+}
+
+.add-competence-btn, .remove-competence-btn {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    margin-right: 5px;
+    cursor: pointer;
+    font-weight: bold;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid #ddd;
+}
+
+.add-competence-btn {
+    background-color: #e0f7e0;
+    color: #2e7d32;
+}
+
+.remove-competence-btn {
+    background-color: #ffebee;
+    color: #c62828;
+}
