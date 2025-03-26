@@ -1,2 +1,2 @@
 # ProjetWEB-
-Un projet web classique, pas chill depuis le php et la bdd
+Un projet web classique, chill

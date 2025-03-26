@@ -1,79 +1,166 @@
-<main class="wishlist-page" style="display: none;">
-    <section class="wishlist-header">
-        <h2>Mes offres favorites</h2>
-        <div class="wishlist-filters">
-            <select name="status">
-                <option value="all">Tous</option>
-                <option value="active">Actifs</option>
-                <option value="expired">Expirés</option>
-            </select>
-        </div>
-    </section>
+<?php
+// Démarrer la session
+session_start();
 
-    <section class="wishlist-content">
-        <article class="offer-card saved">
-            <div class="offer-header">
-                <div class="company-info">
-                    <img src="company-logo.jpg" alt="Logo DataTech" class="company-logo">
-                    <div>
-                        <h3>Stage - Data Analyst</h3>
-                        <p class="company-name">DataTech Solutions</p>
-                    </div>
+// Vérifier si la session existe et si elle a expiré
+if (isset($_SESSION['last_activity']) && (time() - $_SESSION['last_activity'] > 3600)) {
+    // La session a expiré, déconnecter l'utilisateur
+    session_unset();
+    session_destroy();
+    header("Location: connexion.php?expired=1");
+    exit();
+}
+// Mettre à jour le timestamp de dernière activité
+$_SESSION['last_activity'] = time();
+
+
+// Vérifier que l'utilisateur est un étudiant
+if ($_SESSION['user_type'] !== 'etudiant') {
+    // Rediriger vers la page principale si ce n'est pas un étudiant
+    header("Location: Main.php");
+    exit();
+}
+
+// Inclure le fichier de configuration de la base de données
+require_once 'config.php';
+
+// Vérifier si l'utilisateur est connecté
+if (!isset($_SESSION['logged_in']) || $_SESSION['logged_in'] !== true) {
+    header("Location: connexion.php");
+    exit();
+}
+
+// Vérifier si l'id_compte est défini
+if (!isset($_SESSION['user_id'])) {
+    die("Erreur : l'utilisateur n'est pas correctement connecté.");
+}
+
+$userId = $_SESSION['user_id'];
+
+// Récupérer les offres de la wishlist
+$sql = "SELECT o.*, e.nom AS nom_entreprise, v.nom_ville 
+        FROM offre o 
+        JOIN entreprise e ON o.Id_entreprise = e.Id_entreprise
+        JOIN adresse ad ON e.Id_adresse = ad.Id_adresse
+        JOIN ville v ON ad.Id_ville = v.Id_ville
+        JOIN souhaiter s ON o.id_offre = s.id_offre
+        WHERE s.id_compte = :user_id
+        ORDER BY o.date_publication DESC";
+
+try {
+    $stmt = $connexion->prepare($sql);
+    $stmt->bindValue(':user_id', $userId, PDO::PARAM_INT);
+    $stmt->execute();
+    $offres = $stmt->fetchAll(PDO::FETCH_ASSOC);
+} catch (PDOException $e) {
+    die("Erreur lors de la récupération des offres: " . $e->getMessage());
+}
+
+// Fonction pour récupérer les compétences pour chaque offre
+function getCompetencesForOffer($connexion, $idOffre) {
+    $sql = "SELECT c.nom FROM competence c 
+    JOIN contenir co ON c.Id_competence = co.Id_competence 
+    WHERE co.id_offre = :idOffre";
+    
+    try {
+        $stmt = $connexion->prepare($sql);
+        $stmt->bindValue(':idOffre', $idOffre, PDO::PARAM_INT);
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_COLUMN);
+    } catch (PDOException $e) {
+        return [];
+    }
+}
+?>
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LeBonPlan - Offres de Stage</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header>
+    <nav>
+            <div class="logo">
+                <a href="Main.php"><h1>lebonplan</h1></a>
+            </div>
+    <div class="burger-menu">&#9776;</div> <!-- Icône du menu burger -->
+    <ul class="main-nav" id="menu">
+        <li><a href="Main.php">Accueil</a></li>
+
+        <li><a href="Offres.php">Offres</a></li>
+        <li><a href="Wishlist.php"class="active">Wishlist</a></li>
+        <li><a href="Contact.php">Contact</a></li>
+        <div class="logout-container">
+            <button id="logout-btn" onclick="window.location.href='logout.php';">Déconnexion</button>
+        </div>
+    </ul>
+</nav> 
+    </header>
+    <main>
+        <section class="offers-list">
+            <br><br>
+            <h2>Mes offres favorites (<?php echo count($offres); ?>)</h2>
+            <?php if (empty($offres)): ?>
+                <div class="empty-wishlist">
+                    <p>Votre wishlist est vide.</p>
                 </div>
-                <button class="wishlist-btn active" aria-label="Retirer des favoris">❤️</button>
-            </div>
-            <div class="offer-details">
-                <span class="location">Lyon (69)</span>
-                <span class="duration">4 mois</span>
-                <span class="date">Ajouté le 14/02/2024</span>
-            </div>
-            <div class="skills">
-                <span class="skill-tag">Python</span>
-                <span class="skill-tag">SQL</span>
-                <span class="skill-tag">Tableau</span>
-            </div>
-            <p class="description">
-                Stage en analyse de données pour participer à des projets Big Data...
-            </p>
-            <div class="offer-footer">
-                <span class="status active">Offre active</span>
-                <div class="actions">
-                    <a href="/offres/5678" class="view-details">Voir l'offre</a>
-                    <a href="/postuler/5678" class="apply-btn">Postuler</a>
+            <?php else: ?>
+            <?php foreach ($offres as $offre): ?>
+            <?php 
+            // Récupérer les competences pour cette offre
+            $competences = getCompetencesForOffer($connexion, $offre['id_offre']);
+            ?>
+            <article class="offer-card">
+                <h3><?php echo htmlspecialchars($offre['titre']); ?></h3>
+                <p class="company-name"><?php echo htmlspecialchars($offre['nom_entreprise']); ?></p>
+                <p class="location">Lieu : <?php echo htmlspecialchars($offre['nom_ville'] ?? 'Non spécifié'); ?></p>
+                <p class="duration">Durée : <?php echo htmlspecialchars($offre['duree_mois']); ?> mois</p>
+                <p class="date">Publié le <?php echo date('d/m/Y', strtotime($offre['date_publication'])); ?></p>
+                
+                <?php if (!empty($competences)): ?>
+                <div class="skills">
+                    <?php foreach ($competences as $competence): ?>
+                    <span class="skill-tag"><?php echo htmlspecialchars($competence); ?></span>
+                    <?php endforeach; ?>
+                </div>
+                <?php else: ?>
+                <p class="no-skills">Aucune competence spécifiée</p>
+                <?php endif; ?>
+                
+                <a href="VoirOffre.php?id=<?php echo $offre['id_offre']; ?>" class="view-details">Voir l'offre</a>
+                <div class="heart liked" data-id="<?php echo $offre['id_offre']; ?>" onclick="toggleHeart(event)">❤️</div>
+            </article>
+            <?php endforeach; ?>
+            <?php endif; ?>
+        </section>
+    </main>
+    <footer>
+    <div class="pied">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h4>À propos</h4>
+                    <ul>
+                        <li><a href="QSN.php">Qui sommes-nous</a></li>
+                        <li><a href="MentionLegales.php">Mentions légales</a></li>
+                        <li><a href="CGU.php">CGU</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>Ressources</h4>
+                    <ul>
+                        <li><a href="Blog.php">Blog</a></li>
+                        <li><a href="FAQ.php">FAQ</a></li>
+                    </ul>
                 </div>
             </div>
-        </article>
-
-        <div class="no-results" style="display: none;">
-            <p>Vous n'avez pas encore d'offres favorites.</p>
-            <a href="/offres" class="browse-offers">Parcourir les offres</a>
+            <div class="footer-bottom">
+                <p>© 2024 - Tous droits réservés - Web4All</p>
+            </div>
         </div>
-    </section>
-</main>
-
-<footer>
-    <div class="footer-content">
-        <div class="footer-section">
-            <h4>À propos</h4>
-            <ul>
-                <li><a href="/qui-sommes-nous">Qui sommes-nous</a></li>
-                <li><a href="/mentions-legales">Mentions légales</a></li>
-                <li><a href="CGU.html">CGU</a></li>
-
-            </ul>
-        </div>
-        <div class="footer-section">
-            <h4>Ressources</h4>
-            <ul>
-                <li><a href="/aide">Centre d'aide</a></li>
-                <li><a href="Blog.html">Blog</a></li>
-                <li><a href="/faq">FAQ</a></li>
-            </ul>
-        </div>
-    </div>
-    <div class="footer-bottom">
-        <p>&copy; 2024 - Tous droits réservés - Web4All</p>
-    </div>
-</footer>
+    </footer>
+    <script src="script.js"></script>
 </body>
 </html>

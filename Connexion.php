@@ -1,3 +1,26 @@
+<?php
+
+// Démarrer la session
+session_start();
+
+// Vérifier si la session existe et si elle a expiré
+if (isset($_SESSION['last_activity']) && (time() - $_SESSION['last_activity'] > 3600)) {
+    // La session a expiré, déconnecter l'utilisateur
+    session_unset();
+    session_destroy();
+    header("Location: connexion.php?expired=1");
+    exit();
+}
+// Mettre à jour le timestamp de dernière activité
+$_SESSION['last_activity'] = time();
+
+// Rediriger si l'utilisateur est déjà connecté
+if (isset($_SESSION['logged_in']) && $_SESSION['logged_in'] === true) {
+    header("Location: Main.php");
+    exit();
+}
+?>
+
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -6,8 +29,12 @@
     <title>Se connecter</title>
     <link rel="stylesheet" href="styles.css">
     <script src="script.js"></script>
+    <script>
+        window.onload = function() {
+            connexion();
+        };
+    </script>
 </head>
-
 <body>
     <header>
         <nav>
@@ -16,60 +43,27 @@
             </div>
         </nav>
     </header>
-
     <div class="login-container">
         <div class="login-box">
             <h2>Connexion</h2>
-            <form id="login-form" action="Main.php" method="post">
+            <?php
+            if (isset($_SESSION['error_message'])) {
+                echo '<div class="err_message" style="color: red; margin-top: 10px;">' . $_SESSION['error_message'] . '</div>';
+                unset($_SESSION['error_message']);
+            }
+            ?>
+            <form id="login-form" action="login_process.php" method="post">
                 <label for="identifiant">Identifiant</label>
-                <input type="text" id="identifiant" required>
-
+                <input type="text" id="identifiant" name="identifiant">
+                <div id="utilisateur-message" class="message">Veuillez entrer votre identifiant</div>
                 <label for="motdepasse">Mot de passe</label>
-                <input type="password" id="motdepasse" required>
-
+                <input type="password" id="motdepasse" name="motdepasse">
+                <div id="mdp-message" class="message">Veuillez entrer votre mot de passe</div>
                 <div class="btn-container">
                     <button type="submit">Se connecter</button>
                 </div>
             </form>
         </div>
     </div>
-
-    <script>
-    document.addEventListener("DOMContentLoaded", function () {
-        const identifiant = document.getElementById("identifiant");
-        const motdepasse = document.getElementById("motdepasse");
-        const submitBtn = document.querySelector("button[type='submit']");
-        const form = document.getElementById("login-form");
-
-        // Initialement grisé et désactivé
-        submitBtn.style.opacity = 0.5;  // Rend le bouton gris
-        submitBtn.disabled = true;      // Désactive le bouton
-
-        function checkFields() {
-            if (identifiant.value.trim() !== "" && motdepasse.value.trim() !== "") {
-                // Le bouton devient actif et pleinement visible
-                submitBtn.style.transition = "opacity 0.3s ease";  // Transition pour l'opacité
-                submitBtn.style.opacity = 1;  // Le bouton devient totalement visible
-                submitBtn.disabled = false;  // Le bouton devient activable
-            } else {
-                // Le bouton devient gris et désactivé
-                submitBtn.style.opacity = 0.5;  // Le bouton devient gris
-                submitBtn.disabled = true;      // Le bouton est désactivé
-            }
-        }
-
-        // Vérifie les champs à chaque modification
-        identifiant.addEventListener("input", checkFields);
-        motdepasse.addEventListener("input", checkFields);
-
-        // Soumettre le formulaire si les champs sont remplis
-        form.addEventListener("submit", function (e) {
-            if (identifiant.value.trim() === "" || motdepasse.value.trim() === "") {
-                e.preventDefault();  // Empêche l'envoi du formulaire si les champs sont vides
-                alert("Veuillez remplir tous les champs.");
-            }
-        });
-    });
-    </script>  
 </body>
 </html>
