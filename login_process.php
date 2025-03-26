@@ -2,6 +2,22 @@
 // Démarrer la session
 session_start();
 
+// Définir la durée de la session à 1 heure (en secondes)
+ini_set('session.gc_maxlifetime', 3600); // 60 minutes * 60 secondes = 3600 secondes
+session_set_cookie_params(3600);
+
+// Vérifier si la session existe déjà et si elle a expiré
+if (isset($_SESSION['last_activity']) && (time() - $_SESSION['last_activity'] > 3600)) {
+    // La session a expiré, déconnecter l'utilisateur
+    session_unset();
+    session_destroy();
+    header("Location: connexion.php?expired=1");
+    exit();
+}
+
+// Mettre à jour le timestamp de dernière activité
+$_SESSION['last_activity'] = time();
+
 // Inclure le fichier de configuration
 require_once 'config.php';
 
@@ -12,7 +28,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $motdepasse = $_POST['motdepasse'];
     
     // Préparer la requête pour vérifier l'existence de l'utilisateur
-    $sql = "SELECT * FROM Utilisateur WHERE id_compte = :identifiant";
+    $sql = "SELECT id_compte, mot_de_passe FROM Utilisateur WHERE id_compte = :identifiant";
     
     try {
         $stmt = $connexion->prepare($sql);
@@ -23,11 +39,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         if ($stmt->rowCount() === 1) {
             $user = $stmt->fetch(PDO::FETCH_ASSOC);
             
-            // Vérification du mot de passe
-            if ($motdepasse === $user['mot_de_passe']) {
+            // Vérification du mot de passe avec password_verify
+            if (password_verify($motdepasse, $user['mot_de_passe'])) {
                 // Authentification réussie
                 $_SESSION['user_id'] = $user['id_compte'];
                 $_SESSION['logged_in'] = true;
+                $_SESSION['last_activity'] = time(); // Enregistrer le moment de la connexion
                 
                 // Déterminer le type d'utilisateur de façon sécurisée
                 try {
@@ -80,7 +97,7 @@ function determinerTypeUtilisateur($connexion, $id_compte) {
             $stmt->execute();
 
             if ($stmt->rowCount() === 1) { // Si l'utilisateur est trouvé
-                return $type; // Revoyer le type
+                return $type; // Réponse le type
             }
         } catch (PDOException $e) {
             throw new Exception("Erreur lors de la préparation de la requête $type: " . $e->getMessage());

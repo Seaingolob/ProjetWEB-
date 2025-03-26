@@ -1,6 +1,18 @@
+
 <?php
 // Démarrer la session
 session_start();
+
+// Vérifier si la session existe et si elle a expiré
+if (isset($_SESSION['last_activity']) && (time() - $_SESSION['last_activity'] > 3600)) {
+    // La session a expiré, déconnecter l'utilisateur
+    session_unset();
+    session_destroy();
+    header("Location: connexion.php?expired=1");
+    exit();
+}
+// Mettre à jour le timestamp de dernière activité
+$_SESSION['last_activity'] = time();
 
 // Vérifier si l'utilisateur est connecté
 if (!isset($_SESSION['logged_in']) || $_SESSION['logged_in'] !== true) {
@@ -30,11 +42,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         
         try {
             // Vérifier que l'offre existe
-            $stmt = $connexion->prepare("SELECT COUNT(*) FROM offre WHERE id_offre = :id_offre");
+            $stmt = $connexion->prepare("SELECT 1 FROM offre WHERE id_offre = :id_offre");
             $stmt->bindParam(':id_offre', $id_offre);
             $stmt->execute();
             
-            if ($stmt->fetchColumn() == 0) {
+            if (!$stmt->fetch()) {
                 // L'offre n'existe pas
                 $_SESSION['error'] = "L'offre spécifiée n'existe pas.";
                 header("Location: Offres.php");
@@ -42,12 +54,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             }
             
             // Vérifier si l'utilisateur a déjà évalué cette offre
-            $stmt = $connexion->prepare("SELECT COUNT(*) FROM evaluation WHERE id_compte = :id_compte AND id_offre = :id_offre");
+            $stmt = $connexion->prepare("SELECT 1 FROM evaluation WHERE id_compte = :id_compte AND id_offre = :id_offre");
             $stmt->bindParam(':id_compte', $id_compte);
             $stmt->bindParam(':id_offre', $id_offre);
             $stmt->execute();
             
-            if ($stmt->fetchColumn() > 0) {
+            if ($stmt->fetch()) {
                 // L'utilisateur a déjà évalué cette offre
                 $_SESSION['error'] = "Vous avez déjà évalué cette offre.";
                 header("Location: VoirOffre.php?id=" . $id_offre);

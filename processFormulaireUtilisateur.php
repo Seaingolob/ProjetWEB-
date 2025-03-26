@@ -2,6 +2,17 @@
 // Démarrer la session
 session_start();
 
+// Vérifier si la session existe et si elle a expiré
+if (isset($_SESSION['last_activity']) && (time() - $_SESSION['last_activity'] > 3600)) {
+    // La session a expiré, déconnecter l'utilisateur
+    session_unset();
+    session_destroy();
+    header("Location: connexion.php?expired=1");
+    exit();
+}
+// Mettre à jour le timestamp de dernière activité
+$_SESSION['last_activity'] = time();
+
 // Vérifier si l'utilisateur est connecté
 if (!isset($_SESSION['logged_in']) || $_SESSION['logged_in'] !== true) {
     // Rediriger vers la page de connexion
@@ -22,13 +33,16 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $nom = htmlspecialchars($_POST['nom']);
         $prenom = htmlspecialchars($_POST['prenom']);
         $mail = filter_var($_POST['mail'], FILTER_SANITIZE_EMAIL);
-        $mot_de_passe = $_POST['mot_de_passe']; // Note: Idéalement, utilisez password_hash
+        
+        // Hashage du mot de passe
+        $mot_de_passe_hash = password_hash($_POST['mot_de_passe'], PASSWORD_DEFAULT);
+        
         $telephone = htmlspecialchars($_POST['telephone']);
         $type_utilisateur = $_POST['type_utilisateur'];
         
         // Insérer dans la table utilisateur
         $stmt = $connexion->prepare("INSERT INTO utilisateur (nom, prenom, mail, mot_de_passe, telephone) VALUES (?, ?, ?, ?, ?)");
-        $stmt->execute([$nom, $prenom, $mail, $mot_de_passe, $telephone]);
+        $stmt->execute([$nom, $prenom, $mail, $mot_de_passe_hash, $telephone]);
         $id_compte = $connexion->lastInsertId();
         
         // En fonction du type d'utilisateur

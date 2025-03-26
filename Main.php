@@ -1,6 +1,18 @@
 <?php
 // Démarrer la session
 session_start();
+
+// Vérifier si la session existe et si elle a expiré
+if (isset($_SESSION['last_activity']) && (time() - $_SESSION['last_activity'] > 3600)) {
+    // La session a expiré, déconnecter l'utilisateur
+    session_unset();
+    session_destroy();
+    header("Location: connexion.php?expired=1");
+    exit();
+}
+// Mettre à jour le timestamp de dernière activité
+$_SESSION['last_activity'] = time();
+
 // Vérifier si l'utilisateur est connecté
 if (!isset($_SESSION['logged_in']) || $_SESSION['logged_in'] !== true) {
     // Rediriger vers la page de connexion
@@ -12,7 +24,8 @@ if (!isset($_SESSION['logged_in']) || $_SESSION['logged_in'] !== true) {
 require_once "config.php";
 
  // Récupérer les offres avec leurs notes moyennes
- $sql = "SELECT o.*, ev.nom AS nom_entreprise, v.nom_ville, AVG(e.note) AS moyenne_note
+ $sql = "SELECT o.id_offre, o.titre, o.duree_mois, o.date_publication, o.id_entreprise, 
+ ev.nom AS nom_entreprise, v.nom_ville, AVG(e.note) AS moyenne_note
  FROM offre o
  LEFT JOIN evaluation e ON o.id_offre = e.id_offre
  JOIN entreprise ev ON o.id_entreprise = ev.id_entreprise

@@ -1,6 +1,61 @@
+// Requête pour récupérer les utilisateurs avec limite et offset
+$sql = "SELECT id_compte, nom, prenom, mail, telephone 
+        FROM utilisateur 
+        WHERE nom LIKE :search OR prenom LIKE :search 
+        LIMIT :limit OFFSET :offset";
+$stmt = $connexion->prepare($sql);
+$stmt->bindValue(':search', '%' . $search . '%', PDO::PARAM_STR);
+$stmt->bindParam(':limit', $itemsPerPage, PDO::PARAM_INT);
+$stmt->bindParam(':offset', $offset, PDO::PARAM_INT);
+$stmt->execute();
+$utilisateurs = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+// Requête pour récupérer les offres avec limite et offset
+$sql_offres = "SELECT id_offre, titre, description, duree_mois, date_publication 
+               FROM offre 
+               WHERE titre LIKE :search 
+               LIMIT :limit OFFSET :offset";
+$stmt_offres = $connexion->prepare($sql_offres);
+$stmt_offres->bindValue(':search', '%' . $search . '%', PDO::PARAM_STR);
+$stmt_offres->bindParam(':limit', $itemsPerPageOffres, PDO::PARAM_INT);
+$stmt_offres->bindParam(':offset', $offsetOffres, PDO::PARAM_INT);
+$stmt_offres->execute();
+$offres = $stmt_offres->fetchAll(PDO::FETCH_ASSOC);
+
+Il est également important de spécifier les champs lors de la récupération du nombre total d'utilisateurs et d'offres :
+
+// Requête pour récupérer le nombre total d'utilisateurs
+$sql_count = "SELECT COUNT(id_compte) FROM utilisateur WHERE nom LIKE :search OR prenom LIKE :search";
+$stmt_count = $connexion->prepare($sql_count);
+$stmt_count->bindValue(':search', '%' . $search . '%', PDO::PARAM_STR);
+$stmt_count->execute();
+$totalItems = $stmt_count->fetchColumn();
+$totalPages = ceil($totalItems / $itemsPerPage);
+
+// Requête pour récupérer le nombre total d'offres
+$sql_count_offres = "SELECT COUNT(id_offre) FROM offre WHERE titre LIKE :search";
+$stmt_count_offres = $connexion->prepare($sql_count_offres);
+$stmt_count_offres->bindValue(':search', '%' . $search . '%', PDO::PARAM_STR);
+$stmt_count_offres->execute();
+$totalItemsOffres = $stmt_count_offres->fetchColumn();
+$totalPagesOffres = ceil($totalItemsOffres / $itemsPerPageOffres);
+
+Voici le fichier entier mis à jour avec les nouvelles requêtes :
+
 <?php
 // Démarrer la session
 session_start();
+// Vérifier si la session existe et si elle a expiré
+if (isset($_SESSION['last_activity']) && (time() - $_SESSION['last_activity'] > 3600)) {
+    // La session a expiré, déconnecter l'utilisateur
+    session_unset();
+    session_destroy();
+    header("Location: connexion.php?expired=1");
+    exit();
+}
+// Mettre à jour le timestamp de dernière activité
+$_SESSION['last_activity'] = time();
+
 // Vérifier si l'utilisateur est connecté
 if (!isset($_SESSION['logged_in']) || $_SESSION['logged_in'] !== true) {
     // Rediriger vers la page de connexion
@@ -48,7 +103,7 @@ $offsetOffres = ($pageOffres - 1) * $itemsPerPageOffres;
 $search = isset($_GET['search']) ? $_GET['search'] : '';
 
 // Requête pour récupérer le nombre total d'utilisateurs
-$sql_count = "SELECT COUNT(*) FROM utilisateur WHERE nom LIKE :search OR prenom LIKE :search";
+$sql_count = "SELECT COUNT(id_compte) FROM utilisateur WHERE nom LIKE :search OR prenom LIKE :search";
 $stmt_count = $connexion->prepare($sql_count);
 $stmt_count->bindValue(':search', '%' . $search . '%', PDO::PARAM_STR);
 $stmt_count->execute();
@@ -56,7 +111,10 @@ $totalItems = $stmt_count->fetchColumn();
 $totalPages = ceil($totalItems / $itemsPerPage);
 
 // Requête pour récupérer les utilisateurs avec limite et offset
-$sql = "SELECT * FROM utilisateur WHERE nom LIKE :search OR prenom LIKE :search LIMIT :limit OFFSET :offset";
+$sql = "SELECT id_compte, nom, prenom, mail, telephone 
+        FROM utilisateur 
+        WHERE nom LIKE :search OR prenom LIKE :search 
+        LIMIT :limit OFFSET :offset";
 $stmt = $connexion->prepare($sql);
 $stmt->bindValue(':search', '%' . $search . '%', PDO::PARAM_STR);
 $stmt->bindParam(':limit', $itemsPerPage, PDO::PARAM_INT);
@@ -65,7 +123,7 @@ $stmt->execute();
 $utilisateurs = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 // Requête pour récupérer le nombre total d'offres
-$sql_count_offres = "SELECT COUNT(*) FROM offre WHERE titre LIKE :search";
+$sql_count_offres = "SELECT COUNT(id_offre) FROM offre WHERE titre LIKE :search";
 $stmt_count_offres = $connexion->prepare($sql_count_offres);
 $stmt_count_offres->bindValue(':search', '%' . $search . '%', PDO::PARAM_STR);
 $stmt_count_offres->execute();
@@ -73,7 +131,10 @@ $totalItemsOffres = $stmt_count_offres->fetchColumn();
 $totalPagesOffres = ceil($totalItemsOffres / $itemsPerPageOffres);
 
 // Requête pour récupérer les offres avec limite et offset
-$sql_offres = "SELECT * FROM offre WHERE titre LIKE :search LIMIT :limit OFFSET :offset";
+$sql_offres = "SELECT id_offre, titre, description, duree_mois, date_publication 
+               FROM offre 
+               WHERE titre LIKE :search 
+               LIMIT :limit OFFSET :offset";
 $stmt_offres = $connexion->prepare($sql_offres);
 $stmt_offres->bindValue(':search', '%' . $search . '%', PDO::PARAM_STR);
 $stmt_offres->bindParam(':limit', $itemsPerPageOffres, PDO::PARAM_INT);
@@ -303,7 +364,7 @@ $offres = $stmt_offres->fetchAll(PDO::FETCH_ASSOC);
                 </div>
             </div>
             <div class="footer-bottom">
-                <p>© 2024 - Tous droits réservés - Web4All</p>
+                <p> 2024 - Tous droits réservés - Web4All</p>
             </div>
         </div>
     </footer>
