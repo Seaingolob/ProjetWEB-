@@ -4,6 +4,17 @@
 // Démarrer la session
 session_start();
 
+// Vérifier si la session existe et si elle a expiré
+if (isset($_SESSION['last_activity']) && (time() - $_SESSION['last_activity'] > 3600)) {
+    // La session a expiré, déconnecter l'utilisateur
+    session_unset();
+    session_destroy();
+    header("Location: connexion.php?expired=1");
+    exit();
+}
+// Mettre à jour le timestamp de dernière activité
+$_SESSION['last_activity'] = time();
+
 // Vérifier si l'utilisateur est connecté
 if (!isset($_SESSION['logged_in']) || $_SESSION['logged_in'] !== true) {
     // Rediriger vers la page de connexion
@@ -23,17 +34,24 @@ if (!isset($_SESSION['logged_in']) || $_SESSION['logged_in'] !== true) {
 </head>
 <body>
     <header>
-        <nav>
+    <nav>
             <div class="logo">
                 <a href="Main.php"><h1>lebonplan</h1></a>
             </div>
-            <ul class="main-nav">
-                <li><a href="Main.php">Accueil</a></li>
-                
+            <div class="burger-menu">&#9776;</div>
+            <ul class="main-nav" id="menu">
+                <li><a href="Main.php" >Accueil</a></li>
                 <li><a href="Offres.php">Offres</a></li>
-                <li><a href="Wishlist.php">Wishlist</a></li>
+                <?php if ($_SESSION['user_type'] === 'etudiant'): ?>
+                    <li><a href="Wishlist.php">Wishlist</a></li>
+                <?php endif; ?>
+                <?php if ($_SESSION['user_type'] === 'admin'): ?>
+                    <li><a href="Admin.php">Espace-administration</a></li>
+                <?php endif; ?>
+                <?php if ($_SESSION['user_type'] === 'pilote'): ?>
+                    <li><a href="Admin.php">Espace-pilote</a></li>
+                <?php endif; ?>
                 <li><a href="Contact.php">Contact</a></li>
-
                 <div class="logout-container">
                     <button id="logout-btn" onclick="window.location.href='logout.php';">Déconnexion</button>
                 </div>
@@ -56,25 +74,25 @@ if (!isset($_SESSION['logged_in']) || $_SESSION['logged_in'] !== true) {
                 <div class="team-member">
                     <img src="images/KillianB.jpg" alt="Membre 2">
                     <h3>Killian Berthier</h3>
-                    <p>Product Owner</p>
+                    <p>Dev JavaScript</p>
                 </div>
 
                 <div class="team-member">
                     <img src="images/NielsB.jpg" alt="Membre 3">
-                    <h3>Nom Prénom</h3>
-                    <p>UX / UI Designer</p>
+                    <h3>Niels Bourg</h3>
+                    <p>Interface Utilisateur</p>
                 </div>
 
                 <div class="team-member">
                     <img src="images/SamC.jpg" alt="Membre 4">
-                    <h3>Nom Prénom</h3>
-                    <p>Administrateur système / DevOps</p>
+                    <h3>Samuel Ceccarelli</h3>
+                    <p>Dev Backend PHP</p>
                 </div>
 
                 <div class="team-member">
                     <img src="images/JorisDS.jpg" alt="Membre 5">
                     <h3>Joris Dos-Santos</h3>
-                    <p>Développeur Full-stack</p>
+                    <p>Expert CSS</p>
                 </div>
             </div>
         </section>

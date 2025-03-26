@@ -1,13 +1,58 @@
 <?php
 // Démarrer la session
 session_start();
+
+// Vérifier si la session existe et si elle a expiré
+if (isset($_SESSION['last_activity']) && (time() - $_SESSION['last_activity'] > 3600)) {
+    // La session a expiré, déconnecter l'utilisateur
+    session_unset();
+    session_destroy();
+    header("Location: connexion.php?expired=1");
+    exit();
+}
+// Mettre à jour le timestamp de dernière activité
+$_SESSION['last_activity'] = time();
+
 // Vérifier si l'utilisateur est connecté
 if (!isset($_SESSION['logged_in']) || $_SESSION['logged_in'] !== true) {
     // Rediriger vers la page de connexion
     header("Location: connexion.php");
     exit();
 }
+
+// Inclure le fichier de configuration
+require_once "config.php";
+
+ // Récupérer les offres avec leurs notes moyennes
+ $sql = "SELECT o.id_offre, o.titre, o.duree_mois, o.date_publication, o.id_entreprise, 
+ ev.nom AS nom_entreprise, v.nom_ville, AVG(e.note) AS moyenne_note
+ FROM offre o
+ LEFT JOIN evaluation e ON o.id_offre = e.id_offre
+ JOIN entreprise ev ON o.id_entreprise = ev.id_entreprise
+ JOIN adresse ad ON ev.id_adresse = ad.id_adresse
+ JOIN ville v ON ad.id_ville = v.id_ville
+ LEFT JOIN contenir co ON o.id_offre = co.id_offre
+ LEFT JOIN competence c ON co.id_competence = c.id_competence
+ GROUP BY o.id_offre, ev.nom, v.nom_ville
+ ORDER BY moyenne_note DESC
+ LIMIT 2";
+$stmt = $connexion->prepare($sql);
+$stmt->execute();
+$offres = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+function getCompetencesForOffer($connexion, $id_offre) {
+    $sql = "SELECT c.nom 
+            FROM competence c
+            INNER JOIN contenir co ON c.id_competence = co.id_competence
+            WHERE co.id_offre = :id_offre";
+    $stmt = $connexion->prepare($sql);
+    $stmt->execute([':id_offre' => $id_offre]);
+    return $stmt->fetchAll(PDO::FETCH_COLUMN);
+}
+
 ?>
+
+
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -38,7 +83,7 @@ if (!isset($_SESSION['logged_in']) || $_SESSION['logged_in'] !== true) {
                     <li><a href="Admin.php">Espace-administration</a></li>
                 <?php endif; ?>
                 <?php if ($_SESSION['user_type'] === 'pilote'): ?>
-                    <li><a href="pilote.php">Espace-pilote</a></li>
+                    <li><a href="Admin.php">Espace-pilote</a></li>
                 <?php endif; ?>
                 <li><a href="Contact.php">Contact</a></li>
                 <div class="logout-container">
@@ -54,21 +99,73 @@ if (!isset($_SESSION['logged_in']) || $_SESSION['logged_in'] !== true) {
     </div>
     <br>
     <main>
-        <section class="contact-form">
-            <h2>Offres de stage en vedette</h2>
-            <div class="offers-grid">
+        <section class="offers-list">
+
+        <?php if (empty($offres)): ?>
+            <p class="no-results">Aucune offre ne correspond à votre recherche.</p>
+        <?php else: ?>
+            <div class="contact-form">
+            <h2>Offres de stage en vedettes</h2>
+            <br>
+            <?php foreach ($offres as $offre): ?>
+                <?php 
+                // Récupérer les competences pour cette offre
+                $competences = getCompetencesForOffer($connexion, $offre['id_offre']);
+                // Vérifier si l'utilisateur a liké l'offre
+                if (isset($_SESSION['user_id'])) {
+                    $userId = $_SESSION['user_id'];
+                    $sqlLiked = "SELECT * FROM souhaiter WHERE id_compte = :user_id AND id_offre = :offer_id";
+                    $stmtLiked = $connexion->prepare($sqlLiked);
+                    $stmtLiked->execute([':user_id' => $userId, ':offer_id' => $offre['id_offre']]);
+                    $isLiked = $stmtLiked->rowCount() > 0;
+                } else {
+                    $isLiked = false;
+                }
+                ?>
+                
                 <article class="offer-card">
-                    <h3>Stage - Développeur Web Full Stack</h3>
-                    <p class="company">Web4All</p>
-                    <p class="location">Paris</p>
-                    <p class="duration">6 mois</p>
-                    <a href="/offres/1" class="view-offer">Voir l'offre</a>
-                </article>
+                <div class="offre-titre">
+                <p><?php echo htmlspecialchars($offre['titre']); ?></p>
+                </div>
+                <div class="offre-texte">
+                    <div class="left">
+                        <p>Nom : <?php echo htmlspecialchars($offre['nom_entreprise']); ?></p>
+                        <p>Lieu : <?php echo htmlspecialchars($offre['nom_ville'] ?? 'Non spécifié'); ?></p>
+                    </div>
+                    <div class="right">
+                        <p>Durée : <?php echo htmlspecialchars($offre['duree_mois']); ?> mois</p>
+                        <p>Publié le <?php echo date('d/m/Y', strtotime($offre['date_publication'])); ?></p>
+                    </div>
+                </div>
+                <div class="comp">
+                <?php if (!empty($competences)): ?>
+                <div class="skills">
+                    <?php foreach ($competences as $competence): ?>
+                    <span class="skill-tag"><?php echo htmlspecialchars($competence); ?></span>
+                    <?php endforeach; ?>
+                </div>
+                <?php else: ?>
+                <p class="no-skills">Aucune competence spécifiée</p>
+                <?php endif; ?>
+                <a href="VoirOffre.php?id=<?php echo $offre['id_offre']; ?>" class="view-details">Voir l'offre</a>
+                </div>
+
+                <?php if ($_SESSION['user_type'] === 'etudiant'): ?>
+                <div class="heart" data-id="<?php echo $offre['id_offre']; ?>" onclick="toggleHeart(event)">
+                <?php echo $isLiked ? '❤️' : '🤍'; ?>
+                </div>
+                <?php endif; ?>
+            </article>  
+            <?php endforeach; ?>
             </div>
-        </section>
+        <?php endif; ?>
+    </section>
+
 
         <section class="statistics">
             <h2>Nos chiffres clés</h2>
+            <br>
+            
             <div class="stats-container">
                 <div class="stat-item">
                     <p class="stat-number">500+</p>
