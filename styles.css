@@ -448,7 +448,7 @@ nav {
     transform: scaleX(1);
 }
 
-/* Cards et Conteneurs */
+
 .company-card, .offer-card {
     background-color: var(--primary-white);
     border: 1px solid var(--gray-200);
@@ -1831,13 +1831,6 @@ input:focus, select:focus, textarea:focus {
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 }
 
-/* Ajout d'un style pour la section des compétences requises */
-.skills-section {
-    background-color: #f9f9f9;
-    padding: 20px;
-    border-radius: 12px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-}
 
 /* Ajout d'un style pour les tags de compétences */
 .skill-tag {
@@ -2015,5 +2008,37 @@ input:focus, select:focus, textarea:focus {
 }
 
 .view-details{
-    font-size: 1.2rem;
+    display: inline-block;
+    padding: 10px 20px;
+    background-color: #4CAF50; 
+    color: white;
+    text-decoration: none;
+    border-radius: 5px;
+    font-weight: bold;
+    transition: background 0.3s;
 }
+
+.view-details:hover {
+    background-color: #1e5220; 
+}
+
+.no-skills{
+    margin-bottom: 20px;
+}
+
+.info-row{
+    background-color: var(--primary-white);
+    border: 1px solid var(--gray-200);
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3);
+    transition: var(--transition-smooth);
+}
+
+.info-row:hover{
+    transform: translateY(-2px);
+    box-shadow: black;
+    border-color: var(--gray-300);
+}
+

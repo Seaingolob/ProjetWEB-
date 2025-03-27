@@ -176,19 +176,19 @@ try {
         </div>
 
         <div class="offre-content">
-            <div class="offre-detail-grid">
+            <div class="info-row">
                 <div class="offre-main-info">
-                    <div class="info-section">
+                    <div class="info-row">
                         <h3>Détails de l'offre</h3>
-                        <div class="info-row">
+                        <div class="info-section">
                             <span class="info-label">Date de publication:</span>
                             <span class="info-value"><?php echo date('d/m/Y', strtotime($offre['date_publication'])); ?></span>
                         </div>
-                        <div class="info-row">
+                        <div class="info-section">
                             <span class="info-label">Durée:</span>
                             <span class="info-value"><?php echo $offre['duree_mois']; ?> mois</span>
                         </div>
-                        <div class="info-row">
+                        <div class="info-section">
                             <span class="info-label">Créé par:</span>
                             <span class="info-value">
                                 <?php if ($_SESSION['user_type'] === 'admin' || $_SESSION['user_type'] === 'pilote'): ?>
@@ -202,16 +202,20 @@ try {
                     
                     <div class="description-section">
                         <h3>Description</h3>
-                        <p><?php echo nl2br(htmlspecialchars($offre['description'])); ?></p>
+                        <div class="info-row">
+                            <p><?php echo nl2br(htmlspecialchars($offre['description'])); ?></p>
+                        </div>
                     </div>
                     
                     <div class="skills-section">
                         <h3>Compétences requises</h3>
                         <?php if (!empty($competences)): ?>
-                            <div class="skill-tags">
-                                <?php foreach ($competences as $competence): ?>
-                                    <span class="skill-tag"><?php echo htmlspecialchars($competence['nom']); ?></span>
-                                <?php endforeach; ?>
+                            <div class="info-row">
+                                <div class="skill-tags">
+                                    <?php foreach ($competences as $competence): ?>
+                                        <span class="skill-tag"><?php echo htmlspecialchars($competence['nom']); ?></span>
+                                    <?php endforeach; ?>
+                                </div>
                             </div>
                         <?php else: ?>
                             <p>Aucune compétence spécifique requise.</p>
@@ -222,7 +226,7 @@ try {
                 <div class="offre-side-info">
                     <div class="company-section">
                         <h3>Entreprise</h3>
-                        <div class="company-card">
+                        <div class="info-row">
                             <h4><?php echo htmlspecialchars($offre['entreprise_nom']); ?></h4>
                             <p><?php echo nl2br(htmlspecialchars($offre['entreprise_description'] ?? 'Aucune description disponible.')); ?></p>
                             <?php if (!empty($offre['entreprise_site'])): ?>
@@ -241,9 +245,11 @@ try {
                     
                     <div class="location-section">
                         <h3>Localisation</h3>
-                        <div class="location-card">
-                            <p><i class="fa fa-map-marker" aria-hidden="true"></i> <?php echo htmlspecialchars($offre['nom_adresse']); ?></p>
-                            <p><?php echo htmlspecialchars($offre['nom_ville']); ?>, <?php echo htmlspecialchars($offre['nom_region']); ?></p>
+                        <div class="info-row">
+                            <div class="location-card">
+                                <p><i class="fa fa-map-marker" aria-hidden="true"></i> <?php echo htmlspecialchars($offre['nom_adresse']); ?></p>
+                                <p><?php echo htmlspecialchars($offre['nom_ville']); ?>, <?php echo htmlspecialchars($offre['nom_region']); ?></p>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -318,21 +324,26 @@ try {
     </div>
 
     <footer>
-        <div class="footer-content">
-            <div class="footer-section">
-                <h3>À propos</h3>
-                <p>LeBonPlan est la plateforme de stages pour les étudiants de l'école.</p>
+        <div class="pied">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h4>À propos</h4>
+                    <ul>
+                        <li><a href="QSN.php">Qui sommes-nous</a></li>
+                        <li><a href="MentionLegales.php">Mentions légales</a></li>
+                        <li><a href="CGU.php">CGU</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>Ressources</h4>
+                    <ul>
+                        <li><a href="FAQ.php">FAQ</a></li>
+                    </ul>
+                </div>
             </div>
-            <div class="footer-section">
-                <h3>Liens utiles</h3>
-                <ul>
-                    <li><a href="Main.php">Accueil</a></li>
-                    <li><a href="Contact.php">Contact</a></li>
-                </ul>
+            <div class="footer-bottom">
+                <p>© 2024 - Tous droits réservés - Web4All</p>
             </div>
-        </div>
-        <div class="footer-bottom">
-            <p>&copy; 2024 - Tous droits réservés - Web4All</p>
         </div>
     </footer>
 </body>

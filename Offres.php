@@ -357,7 +357,7 @@ function getCompetencesForOffer($connexion, $idOffre) {
                     <?php endforeach; ?>
                 </div>
                 <?php else: ?>
-                <p class="no-skills">Aucune competence spécifiée</p>
+                <p class="no-skills">Aucune compétence spécifiée</p>
                 <?php endif; ?>
                 <a href="VoirOffre.php?id=<?php echo $offre['id_offre']; ?>" class="view-details">Voir l'offre</a>
                 </div>
