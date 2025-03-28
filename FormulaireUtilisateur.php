@@ -20,6 +20,13 @@ if (!isset($_SESSION['logged_in']) || $_SESSION['logged_in'] !== true) {
     exit();
 }
 
+// vérifier si l'utilisateur est un administrateur
+if ($_SESSION['user_type'] !== 'admin') {
+    // Rediriger vers la page principale si ce n'est pas un administrateur
+    header("Location: Main.php");
+    exit();
+}
+
 // Inclusion du fichier de configuration
 require_once 'config.php';
 

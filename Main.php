@@ -36,6 +36,7 @@ require_once "config.php";
  GROUP BY o.id_offre, ev.nom, v.nom_ville
  ORDER BY moyenne_note DESC
  LIMIT 2";
+
 $stmt = $connexion->prepare($sql);
 $stmt->execute();
 $offres = $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -112,8 +113,8 @@ function getCompetencesForOffer($connexion, $id_offre) {
                 // Récupérer les competences pour cette offre
                 $competences = getCompetencesForOffer($connexion, $offre['id_offre']);
                 // Vérifier si l'utilisateur a liké l'offre
-                if (isset($_SESSION['id_compte'])) {
-                    $userId = $_SESSION['id_compte'];
+                if (isset($_SESSION['user_id'])) {
+                    $userId = $_SESSION['user_id'];
                     $sqlLiked = "SELECT * FROM souhaiter WHERE id_compte = :user_id AND id_offre = :offer_id";
                     $stmtLiked = $connexion->prepare($sqlLiked);
                     $stmtLiked->execute([':user_id' => $userId, ':offer_id' => $offre['id_offre']]);
@@ -124,30 +125,38 @@ function getCompetencesForOffer($connexion, $id_offre) {
                 ?>
                 
                 <article class="offer-card">
-                    <h3><?php echo htmlspecialchars($offre['titre']); ?></h3>
-                    <p class="company-name"><?php echo isset($offre['nom_entreprise']) ? htmlspecialchars($offre['nom_entreprise']) : 'Entreprise non spécifiée'; ?></p>
-                    <p class="location">Lieu : <?php echo isset($offre['nom_ville']) ? htmlspecialchars($offre['nom_ville']) : 'Non spécifié'; ?></p>
-                    <p class="duration">Durée : <?php echo htmlspecialchars($offre['duree_mois']); ?> mois</p>
-                    <p class="date">Publié le <?php echo date('d/m/Y', strtotime($offre['date_publication'])); ?></p>
-                    
-                    <?php if (!empty($competences)): ?>
-                    <div class="skills">
-                        <?php foreach ($competences as $competence): ?>
-                        <span class="skill-tag"><?php echo htmlspecialchars($competence); ?></span>
-                        <?php endforeach; ?>
+                <div class="offre-titre">
+                <p><?php echo htmlspecialchars($offre['titre']); ?></p>
+                </div>
+                <div class="offre-texte">
+                    <div class="left">
+                        <p>Nom : <?php echo htmlspecialchars($offre['nom_entreprise']); ?></p>
+                        <p>Lieu : <?php echo htmlspecialchars($offre['nom_ville'] ?? 'Non spécifié'); ?></p>
                     </div>
-                    <?php else: ?>
-                    <p class="no-skills">Aucune compétence spécifiée</p>
-                    <?php endif; ?>
-                    <a href="VoirOffre.php?id=<?php echo $offre['id_offre']; ?>" class="view-details">Voir l'offre</a>
-                    
-                    <?php if ($_SESSION['user_type'] === 'etudiant'): ?>
-                    <div class="heart" data-id="<?php echo $offre['id_offre']; ?>" onclick="toggleHeart(event)">
-                        <?php echo $isLiked ? '❤️' : '🤍'; ?>
+                    <div class="right">
+                        <p>Durée : <?php echo htmlspecialchars($offre['duree_mois']); ?> mois</p>
+                        <p>Publié le <?php echo date('d/m/Y', strtotime($offre['date_publication'])); ?></p>
                     </div>
-                    <?php endif; ?>
-                </article>
-                
+                </div>
+                <div class="comp">
+                <?php if (!empty($competences)): ?>
+                <div class="skills">
+                    <?php foreach ($competences as $competence): ?>
+                    <span class="skill-tag"><?php echo htmlspecialchars($competence); ?></span>
+                    <?php endforeach; ?>
+                </div>
+                <?php else: ?>
+                <p class="no-skills">Aucune competence spécifiée</p>
+                <?php endif; ?>
+                <a href="VoirOffre.php?id=<?php echo $offre['id_offre']; ?>" class="view-details">Voir l'offre</a>
+                </div>
+
+                <?php if ($_SESSION['user_type'] === 'etudiant'): ?>
+                <div class="heart" data-id="<?php echo $offre['id_offre']; ?>" onclick="toggleHeart(event)">
+                <?php echo $isLiked ? '❤️' : '🤍'; ?>
+                </div>
+                <?php endif; ?>
+            </article>  
             <?php endforeach; ?>
             </div>
         <?php endif; ?>

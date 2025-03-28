@@ -220,41 +220,6 @@ function getCompetencesForOffer($connexion, $idOffre) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>LeBonPlan - Offres de Stage</title>
     <link rel="stylesheet" href="styles.css">
-    <style>
-    .competence-row {
-        display: flex;
-        align-items: center;
-        margin-bottom: 10px;
-    }
-
-    .competence-row select {
-        flex: 1;
-        margin-right: 10px;
-    }
-
-    .add-competence-btn, .remove-competence-btn {
-        width: 30px;
-        height: 30px;
-        border-radius: 50%;
-        margin-right: 5px;
-        cursor: pointer;
-        font-weight: bold;
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        border: 1px solid #ddd;
-    }
-
-    .add-competence-btn {
-        background-color: #e0f7e0;
-        color: #2e7d32;
-    }
-
-    .remove-competence-btn {
-        background-color: #ffebee;
-        color: #c62828;
-    }
-    </style>
 </head>
 <body>
     <header>
@@ -360,8 +325,8 @@ function getCompetencesForOffer($connexion, $idOffre) {
             // Récupérer les competences pour cette offre
             $competences = getCompetencesForOffer($connexion, $offre['id_offre']);
             // Vérifier si l'utilisateur a liké l'offre
-            if (isset($_SESSION['id_compte'])) {
-                $userId = $_SESSION['id_compte'];
+            if (isset($_SESSION['user_id'])) {
+                $userId = $_SESSION['user_id'];
                 $sqlLiked = "SELECT * FROM souhaiter WHERE id_compte = :user_id AND id_offre = :offer_id";
                 $stmtLiked = $connexion->prepare($sqlLiked);
                 $stmtLiked->execute([':user_id' => $userId, ':offer_id' => $offre['id_offre']]);
@@ -371,12 +336,20 @@ function getCompetencesForOffer($connexion, $idOffre) {
             }
             ?>
             <article class="offer-card">
-                <h3><?php echo htmlspecialchars($offre['titre']); ?></h3>
-                <p class="company-name"><?php echo htmlspecialchars($offre['nom_entreprise']); ?></p>
-                <p class="location">Lieu : <?php echo htmlspecialchars($offre['nom_ville'] ?? 'Non spécifié'); ?></p>
-                <p class="duration">Durée : <?php echo htmlspecialchars($offre['duree_mois']); ?> mois</p>
-                <p class="date">Publié le <?php echo date('d/m/Y', strtotime($offre['date_publication'])); ?></p>
-                
+                <div class="offre-titre">
+                <p><?php echo htmlspecialchars($offre['titre']); ?></p>
+                </div>
+                <div class="offre-texte">
+                    <div class="left">
+                        <p>Nom : <?php echo htmlspecialchars($offre['nom_entreprise']); ?></p>
+                        <p>Lieu : <?php echo htmlspecialchars($offre['nom_ville'] ?? 'Non spécifié'); ?></p>
+                    </div>
+                    <div class="right">
+                        <p>Durée : <?php echo htmlspecialchars($offre['duree_mois']); ?> mois</p>
+                        <p>Publié le <?php echo date('d/m/Y', strtotime($offre['date_publication'])); ?></p>
+                    </div>
+                </div>
+                <div class="comp">
                 <?php if (!empty($competences)): ?>
                 <div class="skills">
                     <?php foreach ($competences as $competence): ?>
@@ -384,10 +357,11 @@ function getCompetencesForOffer($connexion, $idOffre) {
                     <?php endforeach; ?>
                 </div>
                 <?php else: ?>
-                <p class="no-skills">Aucune competence spécifiée</p>
+                <p class="no-skills">Aucune compétence spécifiée</p>
                 <?php endif; ?>
                 <a href="VoirOffre.php?id=<?php echo $offre['id_offre']; ?>" class="view-details">Voir l'offre</a>
-                
+                </div>
+
                 <?php if ($_SESSION['user_type'] === 'etudiant'): ?>
                 <div class="heart" data-id="<?php echo $offre['id_offre']; ?>" onclick="toggleHeart(event)">
                 <?php echo $isLiked ? '❤️' : '🤍'; ?>

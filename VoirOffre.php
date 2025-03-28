@@ -60,13 +60,13 @@ try {
     $stmt->bindParam(':id', $id_offre);
     $stmt->execute();
     $offre = $stmt->fetch(PDO::FETCH_ASSOC);
-    
+
     if (!$offre) {
         // L'offre n'existe pas, rediriger
         header("Location: Offres.php");
         exit();
     }
-    
+
     // Récupérer les compétences associées à l'offre
     $stmt = $connexion->prepare("SELECT c.id_competence, c.nom
                                 FROM contenir co
@@ -75,7 +75,7 @@ try {
     $stmt->bindParam(':id', $id_offre);
     $stmt->execute();
     $competences = $stmt->fetchAll(PDO::FETCH_ASSOC);
-    
+
     // Récupérer les secteurs d'activité de l'entreprise
     $stmt = $connexion->prepare("SELECT sa.id_secteur_activite, sa.nom
                                 FROM travailler t
@@ -86,7 +86,7 @@ try {
     $stmt->bindParam(':id', $id_offre);
     $stmt->execute();
     $secteurs = $stmt->fetchAll(PDO::FETCH_ASSOC);
-    
+
     // Vérifier si l'utilisateur actuel a déjà postulé à cette offre
     $stmt = $connexion->prepare("SELECT COUNT(*) AS postule
                                 FROM postuler
@@ -95,7 +95,7 @@ try {
     $stmt->bindParam(':id_offre', $id_offre);
     $stmt->execute();
     $postule = $stmt->fetch(PDO::FETCH_ASSOC)['postule'] > 0;
-    
+
     // Vérifier si l'utilisateur a ajouté l'offre à sa wishlist
     $stmt = $connexion->prepare("SELECT COUNT(*) AS wishlist
                                 FROM souhaiter
@@ -104,7 +104,7 @@ try {
     $stmt->bindParam(':id_offre', $id_offre);
     $stmt->execute();
     $wishlist = $stmt->fetch(PDO::FETCH_ASSOC)['wishlist'] > 0;
-    
+
     // Récupérer les évaluations de l'offre
     $stmt = $connexion->prepare("SELECT 
                                 e.note, 
@@ -118,7 +118,7 @@ try {
     $stmt->bindParam(':id', $id_offre);
     $stmt->execute();
     $evaluations = $stmt->fetchAll(PDO::FETCH_ASSOC);
-    
+
     // Vérifier si l'utilisateur actuel a déjà évalué cette offre
     $stmt = $connexion->prepare("SELECT COUNT(*) AS evalue
                                 FROM evaluation
@@ -127,8 +127,7 @@ try {
     $stmt->bindParam(':id_offre', $id_offre);
     $stmt->execute();
     $a_evalue = $stmt->fetch(PDO::FETCH_ASSOC)['evalue'] > 0;
-    
-} catch(PDOException $e) {
+} catch (PDOException $e) {
     echo "Erreur : " . $e->getMessage();
     exit();
 }
@@ -136,18 +135,22 @@ try {
 
 <!DOCTYPE html>
 <html lang="fr">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>LeBonPlan - Détail Offre</title>
     <link rel="stylesheet" href="styles.css">
-    <script src="script.js"></script>
+    <script src="script.js" defer></script>
 </head>
+
 <body>
     <header>
         <nav>
             <div class="logo">
-                <a href="Main.php"><h1>lebonplan</h1></a>
+                <a href="Main.php">
+                    <h1>lebonplan</h1>
+                </a>
             </div>
             <div class="burger-menu">&#9776;</div>
             <ul class="main-nav" id="menu">
@@ -199,12 +202,12 @@ try {
                             </span>
                         </div>
                     </div>
-                    
+
                     <div class="description-section">
                         <h3>Description</h3>
                         <p><?php echo nl2br(htmlspecialchars($offre['description'])); ?></p>
                     </div>
-                    
+
                     <div class="skills-section">
                         <h3>Compétences requises</h3>
                         <?php if (!empty($competences)): ?>
@@ -218,7 +221,7 @@ try {
                         <?php endif; ?>
                     </div>
                 </div>
-                
+
                 <div class="offre-side-info">
                     <div class="company-section">
                         <h3>Entreprise</h3>
@@ -228,7 +231,7 @@ try {
                             <?php if (!empty($offre['entreprise_site'])): ?>
                                 <a href="<?php echo htmlspecialchars($offre['entreprise_site']); ?>" target="_blank" class="company-site">Site web</a>
                             <?php endif; ?>
-                            
+
                             <?php if (!empty($secteurs)): ?>
                                 <div class="sector-tags">
                                     <?php foreach ($secteurs as $secteur): ?>
@@ -238,7 +241,7 @@ try {
                             <?php endif; ?>
                         </div>
                     </div>
-                    
+
                     <div class="location-section">
                         <h3>Localisation</h3>
                         <div class="location-card">
@@ -248,24 +251,49 @@ try {
                     </div>
                 </div>
             </div>
-            
-            <div class="reviews-section">
 
-            <div class="offre-actions">
-                <?php if ($_SESSION['user_type'] === 'etudiant'): ?>
-                    <?php if (!$postule): ?>
-                        <button class="action-btn apply-btn" onclick="window.location.href='Postuler.php?id=<?php echo $offre['id_offre']; ?>';">Postuler</button>
-                    <?php else: ?>
-                        <button class="action-btn applied-btn" disabled>Déjà postulé</button>
+            <div class="reviews-section">
+                <div class="offre-actions">
+                    <?php if ($_SESSION['user_type'] === 'etudiant'): ?>
+                        <?php if (!$postule): ?>
+                            <form id="postulerForm" action="Postuler.php" method="post" enctype="multipart/form-data">
+                                <input type="hidden" name="id" value="<?php echo $offre['id_offre']; ?>">
+
+                                <div class="file-upload-container">
+                                    <label class="file-upload-label" for="cv">CV</label>
+                                    <div class="file-input-container">
+                                        <div class="message" id="cv_message" style="display: none;">
+                                            Veuillez insérer votre CV
+                                        </div>
+                                        <input type="file" id="cv" name="cv" class="file-input" accept=".pdf">
+                                        <span class="input-note">Format accepté: PDF uniquement</span>
+                                    </div>
+                                </div>
+
+                                <div class="file-upload-container">
+                                    <label class="file-upload-label" for="lettre_motivation">Lettre de motivation</label>
+                                    <div class="file-input-container">
+                                        <div class="message" id="lettre_motivation_message" style="display: none;">
+                                            Veuillez insérer votre lettre de motivation
+                                        </div>
+                                        <input type="file" id="lettre_motivation" name="lettre_motivation" class="file-input" accept=".pdf">
+                                        <span class="input-note">Format accepté: PDF uniquement</span>
+                                    </div>
+                                </div>
+
+                                <button type="submit" class="action-btn apply-btn">Postuler</button>
+                            </form>
+                        <?php else: ?>
+                     
+                            <button class="action-btn applied-btn" disabled>Déjà postulé</button>
+                           
+                        <?php endif; ?>
                     <?php endif; ?>
 
-                <?php endif; ?>
-                
-                <?php if ($_SESSION['user_type'] === 'admin'): ?>
-                    <button class="action-btn edit-btn" onclick="window.location.href='ModifierOffre.php?id=<?php echo $offre['id_offre']; ?>';">Modifier</button>
-                    <button class="action-btn delete-btn" onclick="if(confirm('Êtes-vous sûr de vouloir supprimer cette offre?')) window.location.href='SupprimerOffre.php?id=<?php echo $offre['id_offre']; ?>';">Supprimer</button>
-                <?php endif; ?>
-            </div>
+                    <?php if ($_SESSION['user_type'] === 'admin'): ?>
+                        <button class="action-btn delete-btn" onclick="if(confirm('Êtes-vous sûr de vouloir supprimer cette offre?')) window.location.href='SupprimerOffre.php?id=<?php echo $offre['id_offre']; ?>';">Supprimer</button>
+                    <?php endif; ?>
+                </div>
 
                 <h3>Évaluations</h3>
                 <?php if ($_SESSION['user_type'] === 'etudiant' && !$a_evalue): ?>
@@ -291,14 +319,14 @@ try {
                         </form>
                     </div>
                 <?php endif; ?>
-                
+
                 <div class="reviews-list">
                     <?php if (!empty($evaluations)): ?>
                         <?php foreach ($evaluations as $evaluation): ?>
                             <div class="review-card">
                                 <div class="review-header">
                                     <span class="reviewer-name">
-                                         <a href="VoirEleve.php?id=<?php echo $evaluation['id_compte']; ?>"><?php echo htmlspecialchars($evaluation['prenom'] . ' ' . $evaluation['nom']); ?></a>
+                                        <a href="VoirEleve.php?id=<?php echo $evaluation['id_compte']; ?>"><?php echo htmlspecialchars($evaluation['prenom'] . ' ' . $evaluation['nom']); ?></a>
                                     </span>
                                     <span class="review-rating <?php echo strtolower(str_replace(' ', '-', $evaluation['note'])); ?>"><?php echo htmlspecialchars($evaluation['note']); ?></span>
                                 </div>
@@ -335,5 +363,7 @@ try {
             <p>&copy; 2024 - Tous droits réservés - Web4All</p>
         </div>
     </footer>
+
 </body>
+
 </html>
