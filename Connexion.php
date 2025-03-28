@@ -3,17 +3,6 @@
 // Démarrer la session
 session_start();
 
-// Vérifier si la session existe et si elle a expiré
-if (isset($_SESSION['last_activity']) && (time() - $_SESSION['last_activity'] > 3600)) {
-    // La session a expiré, déconnecter l'utilisateur
-    session_unset();
-    session_destroy();
-    header("Location: connexion.php?expired=1");
-    exit();
-}
-// Mettre à jour le timestamp de dernière activité
-$_SESSION['last_activity'] = time();
-
 // Rediriger si l'utilisateur est déjà connecté
 if (isset($_SESSION['logged_in']) && $_SESSION['logged_in'] === true) {
     header("Location: Main.php");

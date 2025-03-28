@@ -36,6 +36,7 @@ require_once "config.php";
  GROUP BY o.id_offre, ev.nom, v.nom_ville
  ORDER BY moyenne_note DESC
  LIMIT 2";
+ 
 $stmt = $connexion->prepare($sql);
 $stmt->execute();
 $offres = $stmt->fetchAll(PDO::FETCH_ASSOC);
