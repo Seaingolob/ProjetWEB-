@@ -1,93 +1,83 @@
 <?php
+// Démarrer la session
 session_start();
 
+// Vérifier si la session existe et si elle a expiré
+if (isset($_SESSION['last_activity']) && (time() - $_SESSION['last_activity'] > 3600)) {
+    // La session a expiré, déconnecter l'utilisateur
+    session_unset();
+    session_destroy();
+    header("Location: Connexion.php?expired=1");
+    exit();
+}
+// Mettre à jour le timestamp de dernière activité
+$_SESSION['last_activity'] = time();
+
+// Vérifier si l'utilisateur est connecté
 if (!isset($_SESSION['logged_in']) || $_SESSION['logged_in'] !== true) {
-    header("Location: connexion.php");
+    // Rediriger vers la page de connexion
+    header("Location: Connexion.php");
+    exit();
+}
+
+// Vérifier si l'utilisateur est un étudiant
+if ($_SESSION['user_type'] !== 'etudiant') {
+    // Rediriger vers la page principale
+    header("Location: Main.php");
+    exit();
+}
+
+// Inclure le fichier de configuration de la base de données
+require_once 'config.php';
+
+// Vérifier si l'ID de l'offre est fourni
+if (!isset($_GET['id']) || empty($_GET['id'])) {
+    // Rediriger vers la page des offres
+    header("Location: Offres.php");
+    exit();
+}
+
+// Récupérer l'ID de l'offre
+$id_offre = intval($_GET['id']);
+$id_compte = $_SESSION['user_id'];
+
+try {
+    // Vérifier si l'offre existe
+    $stmt = $connexion->prepare("SELECT COUNT(*) FROM offre WHERE id_offre = :id");
+    $stmt->bindParam(':id', $id_offre);
+    $stmt->execute();
+    
+    if ($stmt->fetchColumn() == 0) {
+        // L'offre n'existe pas
+        header("Location: Offres.php");
+        exit();
+    }
+    
+    // Vérifier si l'étudiant a déjà postulé à cette offre
+    $stmt = $connexion->prepare("SELECT COUNT(*) FROM postuler WHERE id_compte = :id_compte AND id_offre = :id_offre");
+    $stmt->bindParam(':id_compte', $id_compte);
+    $stmt->bindParam(':id_offre', $id_offre);
+    $stmt->execute();
+    
+    if ($stmt->fetchColumn() > 0) {
+        // L'étudiant a déjà postulé
+        header("Location: VoirOffre.php?id=" . $id_offre . "&error=already_applied");
+        exit();
+    }
+    
+    // Insérer la candidature
+    $stmt = $connexion->prepare("INSERT INTO postuler (id_compte, id_offre) VALUES (:id_compte, :id_offre)");
+    $stmt->bindParam(':id_compte', $id_compte);
+    $stmt->bindParam(':id_offre', $id_offre);
+    $stmt->execute();
+    
+    // Rediriger vers la page de détail avec un message de succès
+    header("Location: VoirOffre.php?id=" . $id_offre . "&success=applied");
+    exit();
+    
+} catch(PDOException $e) {
+    // En cas d'erreur, afficher un message et rediriger
+    echo "Erreur : " . $e->getMessage();
     exit();
 }
 ?>
-
-<!DOCTYPE html>
-<html lang="fr">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LeBonPlan - Postuler</title>
-    <link rel="stylesheet" href="styles.css">
-    <script src="script.js"></script>
-</head>
-<body>
-    <header>
-        <nav>
-            <div class="logo">
-                <a href="Main.html"><h1>lebonplan</h1></a>
-            </div>
-            <ul class="main-nav">
-                <li><a href="Main.php">Accueil</a></li>
-                <li><a href="Entreprises.php">Entreprises</a></li>
-                <li><a href="Offres.php" >Offres</a></li>
-                <li><a href="Postuler.php" class="active">Postuler</a></li>
-                <li><a href="Wishlist.php">Wishlist</a></li>
-                <li><a href="Contact.php">Contact</a></li>
-                <div class="logout-container">
-                    <button id="logout-btn" onclick="window.location.href='Connexion.php';">Déconnexion</button>
-                </div>
-            </ul>
-        </nav>
-    </header>
-
-    <main>
-        <section class="application-section">
-            <h2>Postuler à une offre</h2>
-            <form class="application-form">
-                <div class="form-group">
-                    <label for="full-name">Nom complet :</label>
-                    <input type="text" id="full-name" name="full-name" placeholder="Ex: Jean Dupont" required>
-                </div>
-                <br>
-                <div class="form-group">
-                    <label for="email">Email :</label>
-                    <input type="email" id="email" name="email" placeholder="Ex: jean.dupont@email.com" required>
-                </div>
-                <br>
-                <div class="form-group">
-                    <label for="cv">CV (PDF uniquement) :</label>
-                    <input type="file" id="cv" name="cv" accept="application/pdf" required>
-                </div>
-                <br>
-                <div class="form-group">
-                    <label for="cover-letter">Lettre de motivation :</label>
-                    <textarea id="cover-letter" name="cover-letter" placeholder="Expliquez pourquoi vous êtes motivé pour ce poste..." required></textarea>
-                </div>
-                <br>
-                <button type="submit">Envoyer la candidature</button>
-                <br>
-                <br>
-            </form>
-        </section>
-    </main>
-
-    <footer>
-        <div class="footer-content">
-            <div class="footer-section">
-                <h4>À propos</h4>
-                <ul>
-                    <li><a href="QSN.html">Qui sommes-nous</a></li>
-                    <li><a href="MentionLegales.html">Mentions légales</a></li>
-                    <li><a href="/cgu">CGU</a></li>
-                </ul>
-            </div>
-            <div class="footer-section">
-                <h4>Ressources</h4>
-                <ul>
-                    <li><a href="/blog">Blog</a></li>
-                    <li><a href="FAQ.html">FAQ</a></li>
-                </ul>
-            </div>
-        </div>
-        <div class="footer-bottom">
-            <p>&copy; 2024 - Tous droits réservés - Web4All</p>
-        </div>
-    </footer>
-</body>
-</html>

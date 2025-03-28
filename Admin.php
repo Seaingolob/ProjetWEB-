@@ -19,6 +19,13 @@ if (!isset($_SESSION['logged_in']) || $_SESSION['logged_in'] !== true) {
     exit();
 }
 
+// Vérifier que l'utilisateur est un admin ou un pilote
+if ($_SESSION['user_type'] !== 'admin' && $_SESSION['user_type'] !== 'pilote') {
+    // Rediriger vers la page principale si ce n'est pas un admin ou un pilote
+    header("Location: Main.php");
+    exit();
+}
+
 // Inclure le fichier de configuration
 require_once 'config.php';
 
@@ -324,8 +331,8 @@ $offres = $stmt_offres->fetchAll(PDO::FETCH_ASSOC);
             </div>
         </div>
     </footer>
-    <script>
 
+    <script>
     function search() {
         const searchInput = document.getElementById('search-input').value;
         const urlParams = new URLSearchParams(window.location.search);
@@ -357,5 +364,6 @@ $offres = $stmt_offres->fetchAll(PDO::FETCH_ASSOC);
         switchTab(activeTab);
     });
     </script>
+
 </body>
 </html>

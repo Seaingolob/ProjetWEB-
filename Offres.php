@@ -80,19 +80,19 @@ if (!empty($searchCompany)) {
 }
 
 if (!empty($searchLocation)) {
-    $whereConditions[] = "(v.nom_ville LIKE :location OR r.nom_région LIKE :location)";
+    $whereConditions[] = "(v.nom_ville LIKE :location OR r.nom_region LIKE :location)";
     
     // S'assurer que region est inclus dans la requête
-    if (strpos($sqlOffres, "JOIN région r") === false) {
+    if (strpos($sqlOffres, "JOIN region r") === false) {
         $sqlOffres = str_replace(
             "JOIN ville v ON ad.Id_ville = v.Id_ville",
-            "JOIN ville v ON ad.Id_ville = v.Id_ville JOIN région r ON v.Id_région = r.Id_région",
+            "JOIN ville v ON ad.Id_ville = v.Id_ville JOIN region r ON v.Id_region = r.Id_region",
             $sqlOffres
         );
         
         $sqlCount = str_replace(
             "JOIN ville v ON ad.Id_ville = v.Id_ville",
-            "JOIN ville v ON ad.Id_ville = v.Id_ville JOIN région r ON v.Id_région = r.Id_région",
+            "JOIN ville v ON ad.Id_ville = v.Id_ville JOIN region r ON v.Id_region = r.Id_region",
             $sqlCount
         );
     }

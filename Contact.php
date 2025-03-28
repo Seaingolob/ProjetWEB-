@@ -2,17 +2,6 @@
 // Démarrer la session
 session_start();
 
-// Vérifier si la session existe et si elle a expiré
-if (isset($_SESSION['last_activity']) && (time() - $_SESSION['last_activity'] > 3600)) {
-    // La session a expiré, déconnecter l'utilisateur
-    session_unset();
-    session_destroy();
-    header("Location: connexion.php?expired=1");
-    exit();
-}
-// Mettre à jour le timestamp de dernière activité
-$_SESSION['last_activity'] = time();
-
 // Vérifier si l'utilisateur est connecté
 if (!isset($_SESSION['logged_in']) || $_SESSION['logged_in'] !== true) {
     // Rediriger vers la page de connexion
@@ -21,6 +10,7 @@ if (!isset($_SESSION['logged_in']) || $_SESSION['logged_in'] !== true) {
 }
 ?>
 
+
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -28,10 +18,16 @@ if (!isset($_SESSION['logged_in']) || $_SESSION['logged_in'] !== true) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>LeBonPlan - Contact et Mentions Légales</title>
     <link rel="stylesheet" href="styles.css">
+    <script src="script.js"></script>
+    <script>
+        window.onload = function() {
+            compteurmessage();
+        };
+    </script>
 </head>
 <body>
     <header>
-        <nav>
+    <nav>
             <div class="logo">
                 <a href="Main.php"><h1>lebonplan</h1></a>
             </div>
@@ -48,21 +44,21 @@ if (!isset($_SESSION['logged_in']) || $_SESSION['logged_in'] !== true) {
                 <?php if ($_SESSION['user_type'] === 'pilote'): ?>
                     <li><a href="Admin.php">Espace-pilote</a></li>
                 <?php endif; ?>
-                <li><a href="Contact.php" class="active">Contact</a></li>
+                <li><a href="Contact.php" class ="active">Contact</a></li>
                 <div class="logout-container">
                     <button id="logout-btn" onclick="window.location.href='logout.php';">Déconnexion</button>
                 </div>
             </ul>
         </nav>
     </header>
-    
+
     <main>
         <br><br><br>
         <section class="contact-form">
             <h2>Contactez-nous</h2>
             <p>Notre équipe est à votre disposition pour répondre à toutes vos questions</p>
         </section>
-        <br>
+        <br>            
         <section class="contact-info">
             <div class="contact-form">
                 <h3>Siège social</h3>
@@ -86,77 +82,75 @@ if (!isset($_SESSION['logged_in']) || $_SESSION['logged_in'] !== true) {
                         <a href="tel:+33123456789">01 23 45 67 89</a>
                     </li>
                     <li>
-                        <span>Horaires: Du lundi au vendredi, de 9h à 18h</span>
+                        <span>Horaires:</span>
+                        <p>Du lundi au vendredi, de 9h à 18h</p>
                     </li>
                 </ul>
             </div>
         </section>
-        <br>
+        <br>            
         <section class="contact-form">
             <h3>Formulaire de contact</h3>
-
-            <form id="contactForm" action="submit.php" method="POST">
-                <div class="form-group">
+            <form id="contact-form">
+                    <div id="sujet_message" class="message">
+                    Veuillez choisir un sujet    
+                    </div>
                     <label for="subject">Sujet *</label>
-                    <select id="subject" name="subject" required>
+                    <div id="subject_message" class="message">
+                    Veuillez sélectionner un sujet
+                    </div>
+                    <select id="subject" name="subject">
                         <option value="">Choisissez un sujet</option>
                         <option value="info">Demande d'information</option>
                         <option value="problem">Signaler un problème</option>
                         <option value="partnership">Proposition de partenariat</option>
-                        <option value="demande_de_changement">Demande de changement / Ajout</option>
                         <option value="other">Autre</option>
-                    </select>
-                </div>
-
-                <div class="form-group">
+                    </select>            
                     <label for="name">Nom complet *</label>
-                    <input type="text" id="name" name="name" required>
-                </div>
-
-                <div class="form-group">
+                    <div id="nom_message" class="message">
+                    Veuillez entrer votre nom    
+                    </div>    
+                    <input type="text" id="name" name="name">
                     <label for="email">Email *</label>
-                    <input type="email" id="email" name="email" required>
-                </div>
-
-                <div class="form-group">
-                    <label for="message">Message *</label>
-                    <textarea id="message" name="message" rows="5" required></textarea>
-                </div>
-
-                <div class="form-group">
+                    <div id="email_message" class="message">
+                    Veuillez entrer votre email    
+                    </div>
+                    <input type="email" id="email" name="email">
+                    <label for="message">Message *</d>
+                    <div id="commentaire_message" class ="message">
+                    Veuillez entrer un message
+                    </div>
+                    <textarea id="message" name="message" rows="5" maxlength="300"></textarea>
+                    <div id="compteur">0/300</div>
                     <label class="checkbox-label">
-                        <br>
-                        En envoyant le formulaire, vous consentez à ce que vous données soient traitées conformément à la politique de confidentialité</label>
-                </div>
-                <button type="submit">Envoyer</button>
+                        En envoyant le formulaire, vous consentez à ce que vous données soient traitées conformément à la politique de confidentialité
+                    </label>
+                    <br>    
+                <button type="submit" onclick="contact()">Envoyer</button>
             </form>
         </section>
         <br><br>
-        
         <footer>
-            <div class="pied">
-                <div class="footer-content">
-                    <div class="footer-section">
-                        <h4>À propos</h4>
-                        <ul>
-                            <li><a href="QSN.php">Qui sommes-nous</a></li>
-                            <li><a href="MentionLegales.php">Mentions légales</a></li>
-                            <li><a href="CGU.php">CGU</a></li>
-                        </ul>
-                    </div>
-                    <div class="footer-section">
-                        <h4>Ressources</h4>
-                        <ul>
-                            <li><a href="FAQ.php">FAQ</a></li>
-                        </ul>
-                    </div>
+        <div class="pied">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h4>À propos</h4>
+                    <ul>
+                        <li><a href="QSN.php">Qui sommes-nous</a></li>
+                        <li><a href="MentionLegales.php">Mentions légales</a></li>
+                        <li><a href="CGU.php">CGU</a></li>
+                    </ul>
                 </div>
-                <div class="footer-bottom">
-                    <p>© 2024 - Tous droits réservés - Web4All</p>
+                <div class="footer-section">
+                    <h4>Ressources</h4>
+                    <ul>
+                        <li><a href="FAQ.php">FAQ</a></li>
+                    </ul>
                 </div>
             </div>
-        </footer>
-    </main>
-    <script src="script.js"></script>
-</body>
+            <div class="footer-bottom">
+                <p>© 2024 - Tous droits réservés - Web4All</p>
+            </div>
+        </div>
+    </footer>
 </html>

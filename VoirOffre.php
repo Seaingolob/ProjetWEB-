@@ -60,13 +60,13 @@ try {
     $stmt->bindParam(':id', $id_offre);
     $stmt->execute();
     $offre = $stmt->fetch(PDO::FETCH_ASSOC);
-    
+
     if (!$offre) {
         // L'offre n'existe pas, rediriger
         header("Location: Offres.php");
         exit();
     }
-    
+
     // Récupérer les compétences associées à l'offre
     $stmt = $connexion->prepare("SELECT c.id_competence, c.nom
                                 FROM contenir co
@@ -75,7 +75,7 @@ try {
     $stmt->bindParam(':id', $id_offre);
     $stmt->execute();
     $competences = $stmt->fetchAll(PDO::FETCH_ASSOC);
-    
+
     // Récupérer les secteurs d'activité de l'entreprise
     $stmt = $connexion->prepare("SELECT sa.id_secteur_activite, sa.nom
                                 FROM travailler t
@@ -86,7 +86,7 @@ try {
     $stmt->bindParam(':id', $id_offre);
     $stmt->execute();
     $secteurs = $stmt->fetchAll(PDO::FETCH_ASSOC);
-    
+
     // Vérifier si l'utilisateur actuel a déjà postulé à cette offre
     $stmt = $connexion->prepare("SELECT COUNT(*) AS postule
                                 FROM postuler
@@ -95,7 +95,7 @@ try {
     $stmt->bindParam(':id_offre', $id_offre);
     $stmt->execute();
     $postule = $stmt->fetch(PDO::FETCH_ASSOC)['postule'] > 0;
-    
+
     // Vérifier si l'utilisateur a ajouté l'offre à sa wishlist
     $stmt = $connexion->prepare("SELECT COUNT(*) AS wishlist
                                 FROM souhaiter
@@ -104,7 +104,7 @@ try {
     $stmt->bindParam(':id_offre', $id_offre);
     $stmt->execute();
     $wishlist = $stmt->fetch(PDO::FETCH_ASSOC)['wishlist'] > 0;
-    
+
     // Récupérer les évaluations de l'offre
     $stmt = $connexion->prepare("SELECT 
                                 e.note, 
@@ -118,7 +118,7 @@ try {
     $stmt->bindParam(':id', $id_offre);
     $stmt->execute();
     $evaluations = $stmt->fetchAll(PDO::FETCH_ASSOC);
-    
+
     // Vérifier si l'utilisateur actuel a déjà évalué cette offre
     $stmt = $connexion->prepare("SELECT COUNT(*) AS evalue
                                 FROM evaluation
@@ -127,8 +127,7 @@ try {
     $stmt->bindParam(':id_offre', $id_offre);
     $stmt->execute();
     $a_evalue = $stmt->fetch(PDO::FETCH_ASSOC)['evalue'] > 0;
-    
-} catch(PDOException $e) {
+} catch (PDOException $e) {
     echo "Erreur : " . $e->getMessage();
     exit();
 }
@@ -136,18 +135,22 @@ try {
 
 <!DOCTYPE html>
 <html lang="fr">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>LeBonPlan - Détail Offre</title>
     <link rel="stylesheet" href="styles.css">
-    <script src="script.js"></script>
+    <script src="script.js" defer></script>
 </head>
+
 <body>
     <header>
         <nav>
             <div class="logo">
-                <a href="Main.php"><h1>lebonplan</h1></a>
+                <a href="Main.php">
+                    <h1>lebonplan</h1>
+                </a>
             </div>
             <div class="burger-menu">&#9776;</div>
             <ul class="main-nav" id="menu">
@@ -176,19 +179,19 @@ try {
         </div>
 
         <div class="offre-content">
-            <div class="info-row">
+            <div class="offre-detail-grid">
                 <div class="offre-main-info">
-                    <div class="info-row">
-                        <h3>Détails de l'offre</h3>
-                        <div class="info-section">
+                    <div class="info-section">
+                        <h2>Détails de l'offre</h2>
+                        <div class="info-row">
                             <span class="info-label">Date de publication:</span>
                             <span class="info-value"><?php echo date('d/m/Y', strtotime($offre['date_publication'])); ?></span>
                         </div>
-                        <div class="info-section">
+                        <div class="info-row">
                             <span class="info-label">Durée:</span>
                             <span class="info-value"><?php echo $offre['duree_mois']; ?> mois</span>
                         </div>
-                        <div class="info-section">
+                        <div class="info-row">
                             <span class="info-label">Créé par:</span>
                             <span class="info-value">
                                 <?php if ($_SESSION['user_type'] === 'admin' || $_SESSION['user_type'] === 'pilote'): ?>
@@ -199,40 +202,40 @@ try {
                             </span>
                         </div>
                     </div>
-                    
+
                     <div class="description-section">
-                        <h3>Description</h3>
-                        <div class="info-row">
+                        <div class="info-section">
+                            <h2>Description</h2>
                             <p><?php echo nl2br(htmlspecialchars($offre['description'])); ?></p>
                         </div>
                     </div>
-                    
+
                     <div class="skills-section">
-                        <h3>Compétences requises</h3>
+                        <div class="info-section">
+                        <h2>Compétences requises</h2>
                         <?php if (!empty($competences)): ?>
-                            <div class="info-row">
-                                <div class="skill-tags">
-                                    <?php foreach ($competences as $competence): ?>
-                                        <span class="skill-tag"><?php echo htmlspecialchars($competence['nom']); ?></span>
-                                    <?php endforeach; ?>
-                                </div>
+                            <div class="skill-tags">
+                                <?php foreach ($competences as $competence): ?>
+                                    <span class="skill-tag"><?php echo htmlspecialchars($competence['nom']); ?></span>
+                                <?php endforeach; ?>
                             </div>
                         <?php else: ?>
                             <p>Aucune compétence spécifique requise.</p>
                         <?php endif; ?>
+                        </div>
                     </div>
                 </div>
-                
+
                 <div class="offre-side-info">
                     <div class="company-section">
-                        <h3>Entreprise</h3>
-                        <div class="info-row">
+                        <div class="info-section">
+                            <h2>Entreprise</h2>
                             <h4><?php echo htmlspecialchars($offre['entreprise_nom']); ?></h4>
                             <p><?php echo nl2br(htmlspecialchars($offre['entreprise_description'] ?? 'Aucune description disponible.')); ?></p>
                             <?php if (!empty($offre['entreprise_site'])): ?>
                                 <a href="<?php echo htmlspecialchars($offre['entreprise_site']); ?>" target="_blank" class="company-site">Site web</a>
                             <?php endif; ?>
-                            
+
                             <?php if (!empty($secteurs)): ?>
                                 <div class="sector-tags">
                                     <?php foreach ($secteurs as $secteur): ?>
@@ -242,82 +245,105 @@ try {
                             <?php endif; ?>
                         </div>
                     </div>
-                    
+
                     <div class="location-section">
-                        <h3>Localisation</h3>
-                        <div class="info-row">
-                            <div class="location-card">
-                                <p><i class="fa fa-map-marker" aria-hidden="true"></i> <?php echo htmlspecialchars($offre['nom_adresse']); ?></p>
-                                <p><?php echo htmlspecialchars($offre['nom_ville']); ?>, <?php echo htmlspecialchars($offre['nom_region']); ?></p>
-                            </div>
+                        <div class="info-section">
+                            <h2>Localisation</h2>
+                            <p><i class="fa fa-map-marker" aria-hidden="true"></i> <?php echo htmlspecialchars($offre['nom_adresse']); ?></p>
+                            <p><?php echo htmlspecialchars($offre['nom_ville']); ?>, <?php echo htmlspecialchars($offre['nom_region']); ?></p>
                         </div>
                     </div>
                 </div>
             </div>
-            
+
             <div class="reviews-section">
+                <div class="offre-actions">
+                    <?php if ($_SESSION['user_type'] === 'etudiant'): ?>
+                        <?php if (!$postule): ?>
+                            <form id="postulerForm" action="Postuler.php" method="post" enctype="multipart/form-data">
+                                <input type="hidden" name="id" value="<?php echo $offre['id_offre']; ?>">
 
-            <div class="offre-actions">
-                <?php if ($_SESSION['user_type'] === 'etudiant'): ?>
-                    <?php if (!$postule): ?>
-                        <button class="action-btn apply-btn" onclick="window.location.href='Postuler.php?id=<?php echo $offre['id_offre']; ?>';">Postuler</button>
-                    <?php else: ?>
-                        <button class="action-btn applied-btn" disabled>Déjà postulé</button>
-                    <?php endif; ?>
-
-                <?php endif; ?>
-                
-                <?php if ($_SESSION['user_type'] === 'admin'): ?>
-                    <button class="action-btn edit-btn" onclick="window.location.href='ModifierOffre.php?id=<?php echo $offre['id_offre']; ?>';">Modifier</button>
-                    <button class="action-btn delete-btn" onclick="if(confirm('Êtes-vous sûr de vouloir supprimer cette offre?')) window.location.href='SupprimerOffre.php?id=<?php echo $offre['id_offre']; ?>';">Supprimer</button>
-                <?php endif; ?>
-            </div>
-
-                <h3>Évaluations</h3>
-                <?php if ($_SESSION['user_type'] === 'etudiant' && !$a_evalue): ?>
-                    <div class="review-form-container">
-                        <h4>Ajouter une évaluation</h4>
-                        <form action="AjouterEvaluation.php" method="post">
-                            <input type="hidden" name="id_offre" value="<?php echo $offre['id_offre']; ?>">
-                            <div class="form-group">
-                                <label for="note">Note:</label>
-                                <select name="note" id="note" required>
-                                    <option value="Excellent">Excellent</option>
-                                    <option value="Très bien">Très bien</option>
-                                    <option value="Bien">Bien</option>
-                                    <option value="Moyen">Moyen</option>
-                                    <option value="À éviter">À éviter</option>
-                                </select>
-                            </div>
-                            <div class="form-group">
-                                <label for="avis">Avis (facultatif):</label>
-                                <textarea name="avis" id="avis" rows="4"></textarea>
-                            </div>
-                            <button type="submit" class="submit-btn">Envoyer</button>
-                        </form>
-                    </div>
-                <?php endif; ?>
-                
-                <div class="reviews-list">
-                    <?php if (!empty($evaluations)): ?>
-                        <?php foreach ($evaluations as $evaluation): ?>
-                            <div class="review-card">
-                                <div class="review-header">
-                                    <span class="reviewer-name">
-                                         <a href="VoirEleve.php?id=<?php echo $evaluation['id_compte']; ?>"><?php echo htmlspecialchars($evaluation['prenom'] . ' ' . $evaluation['nom']); ?></a>
-                                    </span>
-                                    <span class="review-rating <?php echo strtolower(str_replace(' ', '-', $evaluation['note'])); ?>"><?php echo htmlspecialchars($evaluation['note']); ?></span>
-                                </div>
-                                <?php if (!empty($evaluation['avis'])): ?>
-                                    <div class="review-content">
-                                        <p><?php echo nl2br(htmlspecialchars($evaluation['avis'])); ?></p>
+                                <div class="file-upload-container">
+                                    <label class="file-upload-label" for="cv">CV</label>
+                                    <div class="file-input-container">
+                                        <div class="message" id="cv_message" style="display: none;">
+                                            Veuillez insérer votre CV
+                                        </div>
+                                        <input type="file" id="cv" name="cv" class="file-input" accept=".pdf">
+                                        <span class="input-note">Format accepté: PDF uniquement</span>
                                     </div>
-                                <?php endif; ?>
-                            </div>
-                        <?php endforeach; ?>
-                    <?php else: ?>
-                        <p class="no-reviews">Aucune évaluation disponible pour cette offre.</p>
+                                </div>
+
+                                <div class="file-upload-container">
+                                    <label class="file-upload-label" for="lettre_motivation">Lettre de motivation</label>
+                                    <div class="file-input-container">
+                                        <div class="message" id="lettre_motivation_message" style="display: none;">
+                                            Veuillez insérer votre lettre de motivation
+                                        </div>
+                                        <input type="file" id="lettre_motivation" name="lettre_motivation" class="file-input" accept=".pdf">
+                                        <span class="input-note">Format accepté: PDF uniquement</span>
+                                    </div>
+                                </div>
+
+                                <button type="submit" class="action-btn apply-btn">Postuler</button>
+                            </form>
+                        <?php else: ?>
+                            <button class="action-btn applied-btn" disabled>Déjà postulé</button>
+                        <?php endif; ?>
                     <?php endif; ?>
+
+                    <?php if ($_SESSION['user_type'] === 'admin'): ?>
+                        <button class="action-btn delete-btn" onclick="if(confirm('Êtes-vous sûr de vouloir supprimer cette offre?')) window.location.href='SupprimerOffre.php?id=<?php echo $offre['id_offre']; ?>';">Supprimer</button>
+                    <?php endif; ?>
+                </div>
+
+                <div class="offre-actions">
+                    <h3>Évaluations</h3>
+                    <?php if ($_SESSION['user_type'] === 'etudiant' && !$a_evalue): ?>
+                        <div class="review-form-container">
+                            <h4>Ajouter une évaluation</h4>
+                            <form action="AjouterEvaluation.php" method="post">
+                                <input type="hidden" name="id_offre" value="<?php echo $offre['id_offre']; ?>">
+                                <div class="form-group">
+                                    <label for="note">Note:</label>
+                                    <select name="note" id="note" required>
+                                        <option value="Excellent">Excellent</option>
+                                        <option value="Très bien">Très bien</option>
+                                        <option value="Bien">Bien</option>
+                                        <option value="Moyen">Moyen</option>
+                                        <option value="À éviter">À éviter</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="avis">Avis (facultatif):</label>
+                                    <textarea name="avis" id="avis" rows="4"></textarea>
+                                </div>
+                                <button type="submit" class="submit-btn">Envoyer</button>
+                            </form>
+                        </div>
+                    <?php endif; ?>
+
+                    <div class="reviews-list">
+                        <?php if (!empty($evaluations)): ?>
+                            <?php foreach ($evaluations as $evaluation): ?>
+                                <div class="review-card">
+                                    <div class="review-header">
+                                        <span class="reviewer-name">
+                                            <a href="VoirEleve.php?id=<?php echo $evaluation['id_compte']; ?>"><?php echo htmlspecialchars($evaluation['prenom'] . ' ' . $evaluation['nom']); ?></a>
+                                        </span>
+                                        <span class="review-rating <?php echo strtolower(str_replace(' ', '-', $evaluation['note'])); ?>"><?php echo htmlspecialchars($evaluation['note']); ?></span>
+                                    </div>
+                                    <?php if (!empty($evaluation['avis'])): ?>
+                                        <div class="review-content">
+                                            <p><?php echo nl2br(htmlspecialchars($evaluation['avis'])); ?></p>
+                                        </div>
+                                    <?php endif; ?>
+                                </div>
+                            <?php endforeach; ?>
+                        <?php else: ?>
+                            <p class="no-reviews">Aucune évaluation disponible pour cette offre.</p>
+                        <?php endif; ?>
+                    </div>
                 </div>
             </div>
         </div>
@@ -346,5 +372,7 @@ try {
             </div>
         </div>
     </footer>
+
 </body>
+
 </html>
