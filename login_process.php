@@ -3,8 +3,11 @@
 session_start();
 
 // Définir la durée de la session à 1 heure (en secondes)
-ini_set('session.gc_maxlifetime', 3600); // 60 minutes * 60 secondes = 3600 secondes
-session_set_cookie_params(3600);
+if (session_status() === PHP_SESSION_NONE) {
+    ini_set('session.use_only_cookies', 1);
+    session_set_cookie_params(['lifetime' => 86400, 'path' => '/', 'httponly' => true]);
+    session_start();
+}
 
 // Vérifier si la session existe déjà et si elle a expiré
 if (isset($_SESSION['last_activity']) && (time() - $_SESSION['last_activity'] > 3600)) {

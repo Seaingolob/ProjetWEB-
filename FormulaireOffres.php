@@ -124,22 +124,23 @@ $regions = $stmt->fetchAll(PDO::FETCH_ASSOC);
     <div class="form-container">
         <h2>Ajouter une Offre</h2>
         <form action="processFormulaireOffre.php" method="post">
-            <div class="form-group">
-                <label for="titre">Titre de l'offre:</label>
+            <div class="form-section">
+                <div class="form-title">Titre de l'offre :</div>
                 <input type="text" id="titre" name="titre" required>
             </div>
             
-            <div class="entreprise-section">
-                <h3>Informations sur l'entreprise</h3>
-                <div class="form-group">
+            <div class="form-section">
+                <div class="form-title">Informations sur l'entreprise</div>
+                <div class="radio-group form-group">
                     <div>
-                        <input type="radio" id="entreprise-existante" name="entreprise-choix" value="existante" checked>
                         <label for="entreprise-existante">Choisir une entreprise existante</label>
+                        <input type="radio" id="entreprise-existante" name="entreprise-choix" value="existante" checked>
                     </div>
-                    
+                </div>
+                <div class="radio-group form-group">
                     <div>
-                        <input type="radio" id="nouvelle-entreprise" name="entreprise-choix" value="nouvelle">
                         <label for="nouvelle-entreprise">Ajouter une nouvelle entreprise</label>
+                        <input type="radio" id="nouvelle-entreprise" name="entreprise-choix" value="nouvelle">  
                     </div>
                 </div>
                 
@@ -255,7 +256,7 @@ $regions = $stmt->fetchAll(PDO::FETCH_ASSOC);
             </div>
             
             <div class="form-section">
-                <h3>Détails de l'offre</h3>
+                <div class="form-title">Détails de l'offre</div>
                 
                 <div class="form-group">
                     <label for="duree">Durée (en mois):</label>
@@ -287,9 +288,9 @@ $regions = $stmt->fetchAll(PDO::FETCH_ASSOC);
                     <?php endforeach; ?>
                 </div>
                 
-                <div class="form-group">
-                    <input type="checkbox" id="nouvelle-competence-check" name="nouvelle-competence-check">
+                <div class="radio-group form-group">
                     <label for="nouvelle-competence-check">Ajouter d'autres compétences</label>
+                    <input type="checkbox" id="nouvelle-competence-check" name="nouvelle-competence-check">
                 </div>
                 
                 <div id="nouvelle-competence-section" class="hidden form-group">

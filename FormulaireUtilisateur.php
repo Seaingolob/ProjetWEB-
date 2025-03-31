@@ -129,11 +129,10 @@ try {
         </nav>
     </header>
     <div class="form-container">
-        <h2>Ajouter un Utilisateur</h2>
+        <br>
         <form action="processFormulaireUtilisateur.php" method="post">
             <div class="form-section">
-                <h3>Informations personnelles</h3>
-                
+                <div class="form-title">Informations personnelles</div>                
                 <div class="form-group">
                     <label for="nom">Nom:</label>
                     <input type="text" id="nom" name="nom" required>
@@ -161,7 +160,7 @@ try {
             </div>
             
             <div class="form-section">
-                <h3>Type d'utilisateur</h3>
+                <div class="form-title">Type d'utilisateur</div>
                 <div class="form-group">
                     <div class="radio-group">
                         <input type="radio" id="type-etudiant" name="type_utilisateur" value="etudiant" checked>
@@ -182,19 +181,19 @@ try {
             
             <!-- Section commune pour Campus et Promotion (utilisée par étudiant et pilote) -->
             <div id="section-campus-promotion" class="form-section">
-                <h3>Informations Campus et Promotion</h3>
+                <div class="form-title">Informations Campus et Promotion</div>
                 
                 <div class="form-section">
                     <h4>Campus</h4>
                     
                     <div class="radio-group form-group">
-                        <input type="radio" id="campus-existant" name="campus-choix" value="existant" checked>
                         <label for="campus-existant">Choisir un campus existant</label>
+                        <input type="radio" id="campus-existant" name="campus-choix" value="existant" checked>
                     </div>
                     
                     <div class="radio-group form-group">
-                        <input type="radio" id="nouveau-campus" name="campus-choix" value="nouveau">
                         <label for="nouveau-campus">Ajouter un nouveau campus</label>
+                        <input type="radio" id="nouveau-campus" name="campus-choix" value="nouveau">
                     </div>
                     
                     <div id="section-campus-existant" class="form-group">
@@ -211,8 +210,6 @@ try {
                         <label for="nouveau-campus-nom">Nom du nouveau campus:</label>
                         <input type="text" id="nouveau-campus-nom" name="nouveau-campus-nom">
                         
-                        <h5>Adresse du nouveau campus</h5>
-                        
                         <div class="form-group">
                             <label for="region">Région:</label>
                             <select id="region" name="region_id" required>
@@ -223,24 +220,28 @@ try {
                             </select>
                         </div>
                         
-                        <div class="form-group">
-                            <div class="radio-group">
-                                <input type="radio" id="ville-existante" name="ville-choix" value="existante" checked>
-                                <label for="ville-existante">Choisir une ville existante</label>
-                            </div>
-                            
-                            <div class="radio-group">
-                                <input type="radio" id="nouvelle-ville" name="ville-choix" value="nouvelle">
-                                <label for="nouvelle-ville">Ajouter une nouvelle ville</label>
-                            </div>
-                        </div>
-                        
+
                         <div id="section-ville-existante" class="form-group">
                             <label for="ville">Ville:</label>
+                        </div>
+
+                        <div class="form-group">
+                            <div class="radio-group form-group">
+                                <label for="ville-existante">Choisir une ville existante</label>
+                                <input type="radio" id="ville-existante" name="ville-choix" value="existante" checked>
+                            </div>
+                            
                             <select id="ville" name="ville_id" disabled>
                                 <option value="">D'abord sélectionner une région</option>
                             </select>
+
+                            <div class="radio-group form-group">
+                                <label for="nouvelle-ville">Ajouter une nouvelle ville</label>
+                                <input type="radio" id="nouvelle-ville" name="ville-choix" value="nouvelle">
+                            </div>
                         </div>
+                        
+                        
                         
                         <div id="section-nouvelle-ville" class="hidden form-group">
                             <label for="nouvelle-ville-nom">Nom de la nouvelle ville:</label>
@@ -258,13 +259,13 @@ try {
                     <h4>Promotion</h4>
                     
                     <div class="radio-group form-group">
-                        <input type="radio" id="promotion-existante" name="promotion-choix" value="existante" checked>
                         <label for="promotion-existante">Choisir une promotion existante</label>
+                        <input type="radio" id="promotion-existante" name="promotion-choix" value="existante" checked>
                     </div>
                     
                     <div class="radio-group form-group">
-                        <input type="radio" id="nouvelle-promotion" name="promotion-choix" value="nouvelle">
                         <label for="nouvelle-promotion">Ajouter une nouvelle promotion</label>
+                        <input type="radio" id="nouvelle-promotion" name="promotion-choix" value="nouvelle">
                     </div>
                     
                     <div id="section-promotion-existante" class="form-group">
