@@ -38,8 +38,6 @@ if (isset($_GET['action']) && isset($_GET['id'])) {
         $stmt_delete_user = $connexion->prepare($sql_delete_user);
         $stmt_delete_user->bindParam(':id', $id, PDO::PARAM_INT);
         $stmt_delete_user->execute();
-
-    
     } elseif ($_GET['action'] === 'delete_offer') {
         // Supprimer l'offre
         $sql_delete_offer = "DELETE FROM offre WHERE id_offre = :id";
@@ -107,6 +105,7 @@ $offres = $stmt_offres->fetchAll(PDO::FETCH_ASSOC);
 ?>
 <!DOCTYPE html>
 <html lang="fr">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -114,24 +113,32 @@ $offres = $stmt_offres->fetchAll(PDO::FETCH_ASSOC);
     <link rel="stylesheet" href="styles.css">
     <script src="script.js"></script>
 </head>
+
 <body>
-    <header>
+<header>
         <nav>
             <div class="logo">
-                <a href="Main.php"><h1>lebonplan</h1></a>
+                <a href="Main.php">
+                    <h1>lebonplan</h1>
+                </a>
+            </div>
+            <div class="user-info-left"> 
+                <a href="VoirEleve.php?id=<?php echo $_SESSION['user_id']; ?>" class="profile-link">
+                    👤 <?php echo $_SESSION['user_name']; ?>
+                </a>
             </div>
             <div class="burger-menu">☰</div>
             <ul class="main-nav" id="menu">
                 <li><a href="Main.php">Accueil</a></li>
                 <li><a href="Offres.php">Offres</a></li>
                 <?php if ($_SESSION['user_type'] === 'etudiant'): ?>
-                <li><a href="Wishlist.php">Wishlist</a></li>
+                    <li><a href="Wishlist.php">Wishlist</a></li>
                 <?php endif; ?>
                 <?php if ($_SESSION['user_type'] === 'admin'): ?>
-                <li><a href="Admin.php" class="active">Espace-administration</a></li>
+                    <li><a href="Admin.php" class="active">Espace-administration</a></li>
                 <?php endif; ?>
                 <?php if ($_SESSION['user_type'] === 'pilote'): ?>
-                <li><a href="Admin.php" class="active">Espace-pilote</a></li>
+                    <li><a href="Admin.php" class="active">Espace-pilote</a></li>
                 <?php endif; ?>
                 <li><a href="Contact.php">Contact</a></li>
                 <div class="logout-container">
@@ -140,6 +147,10 @@ $offres = $stmt_offres->fetchAll(PDO::FETCH_ASSOC);
             </ul>
         </nav>
     </header>
+
+
+
+
     <div class="admin-dashboard">
         <div class="admin-header">
             <h2>Tableau de bord Administration</h2>
@@ -156,14 +167,12 @@ $offres = $stmt_offres->fetchAll(PDO::FETCH_ASSOC);
             </div>
             <div class="admin-content">
 
-                
+
                 <!-- Section Utilisateurs -->
                 <div class="user-management <?php echo isset($_GET['tab']) && $_GET['tab'] === 'utilisateur' ? 'active' : ''; ?>" id="section-utilisateur">
                     <h3>Gestion des utilisateurs :</h3>
-                    <?php if ($_SESSION['user_type'] === 'admin'): ?>
                     <button class="action-btn" onclick="window.location.href='FormulaireUtilisateur.php';">Ajouter un utilisateur</button>
-                    <?php endif; ?>
-                    
+
                     <div class="users-grid">
                         <?php
                         if (count($utilisateurs) > 0) {
@@ -200,7 +209,7 @@ $offres = $stmt_offres->fetchAll(PDO::FETCH_ASSOC);
                         <?php endif; ?>
 
                         <div class="page-numbers">
-                            <?php 
+                            <?php
                             $maxPagesToShow = 5;
                             $startPage = max(1, min($page - floor($maxPagesToShow / 2), $totalPages - $maxPagesToShow + 1));
                             $endPage = min($startPage + $maxPagesToShow - 1, $totalPages);
@@ -236,7 +245,7 @@ $offres = $stmt_offres->fetchAll(PDO::FETCH_ASSOC);
                 <div class="offer-management <?php echo isset($_GET['tab']) && $_GET['tab'] === 'offre' ? 'active' : ''; ?>" id="section-offre">
                     <h3>Gestion des offres :</h3>
                     <button class="action-btn" onclick="window.location.href='FormulaireOffres.php';">Ajouter une offre</button>
-                    
+
                     <div class="offers-container">
                         <?php
                         if (count($offres) > 0) {
@@ -274,7 +283,7 @@ $offres = $stmt_offres->fetchAll(PDO::FETCH_ASSOC);
                         <?php endif; ?>
 
                         <div class="page-numbers">
-                            <?php 
+                            <?php
                             $maxPagesToShow = 5;
                             $startPage = max(1, min($pageOffres - floor($maxPagesToShow / 2), $totalPagesOffres - $maxPagesToShow + 1));
                             $endPage = min($startPage + $maxPagesToShow - 1, $totalPagesOffres);
@@ -333,37 +342,38 @@ $offres = $stmt_offres->fetchAll(PDO::FETCH_ASSOC);
     </footer>
 
     <script>
-    function search() {
-        const searchInput = document.getElementById('search-input').value;
-        const urlParams = new URLSearchParams(window.location.search);
-        const activeTab = urlParams.get('tab') || 'utilisateur';
-        window.location.href = `Admin.php?tab=${activeTab}&search=${searchInput}`;
-    }
-
-    document.addEventListener('DOMContentLoaded', function() {
-        const tabBtns = document.querySelectorAll('.admin-tab');
-        const sections = document.querySelectorAll('.admin-content > div');
-        const searchInput = document.getElementById('search-input');
-        
-        function switchTab(targetId) {
-            tabBtns.forEach(b => b.classList.remove('active'));
-            sections.forEach(s => s.classList.remove('active'));
-            
-            document.getElementById('btn-' + targetId).classList.add('active');
-            document.getElementById('section-' + targetId).classList.add('active');
-            
-            if (targetId === 'utilisateur') {
-                searchInput.placeholder = "Recherchez un utilisateur par ID...";
-            } else if (targetId === 'offre') {
-                searchInput.placeholder = "Recherchez une offre par ID...";
-            }
+        function search() {
+            const searchInput = document.getElementById('search-input').value;
+            const urlParams = new URLSearchParams(window.location.search);
+            const activeTab = urlParams.get('tab') || 'utilisateur';
+            window.location.href = `Admin.php?tab=${activeTab}&search=${searchInput}`;
         }
-        
-        const urlParams = new URLSearchParams(window.location.search);
-        const activeTab = urlParams.get('tab') || 'utilisateur';
-        switchTab(activeTab);
-    });
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const tabBtns = document.querySelectorAll('.admin-tab');
+            const sections = document.querySelectorAll('.admin-content > div');
+            const searchInput = document.getElementById('search-input');
+
+            function switchTab(targetId) {
+                tabBtns.forEach(b => b.classList.remove('active'));
+                sections.forEach(s => s.classList.remove('active'));
+
+                document.getElementById('btn-' + targetId).classList.add('active');
+                document.getElementById('section-' + targetId).classList.add('active');
+
+                if (targetId === 'utilisateur') {
+                    searchInput.placeholder = "Recherchez un utilisateur par ID...";
+                } else if (targetId === 'offre') {
+                    searchInput.placeholder = "Recherchez une offre par ID...";
+                }
+            }
+
+            const urlParams = new URLSearchParams(window.location.search);
+            const activeTab = urlParams.get('tab') || 'utilisateur';
+            switchTab(activeTab);
+        });
     </script>
 
 </body>
+
 </html>

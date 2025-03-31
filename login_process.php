@@ -28,7 +28,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $motdepasse = $_POST['motdepasse'];
     
     // Préparer la requête pour vérifier l'existence de l'utilisateur
-    $sql = "SELECT id_compte, mot_de_passe FROM Utilisateur WHERE id_compte = :identifiant";
+    $sql = "SELECT id_compte, mot_de_passe, nom, prenom FROM Utilisateur WHERE id_compte = :identifiant";
     
     try {
         $stmt = $connexion->prepare($sql);
@@ -45,6 +45,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 $_SESSION['user_id'] = $user['id_compte'];
                 $_SESSION['logged_in'] = true;
                 $_SESSION['last_activity'] = time(); // Enregistrer le moment de la connexion
+                $_SESSION['user_name'] = $user['nom'] . " " . $user['prenom'];
                 
                 // Déterminer le type d'utilisateur de façon sécurisée
                 try {

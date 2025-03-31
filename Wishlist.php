@@ -86,6 +86,11 @@ function getCompetencesForOffer($connexion, $idOffre) {
             <div class="logo">
                 <a href="Main.php"><h1>lebonplan</h1></a>
             </div>
+            <div class="user-info-left"> 
+                <a href="VoirEleve.php?id=<?php echo $_SESSION['user_id']; ?>" class="profile-link">
+                    👤 <?php echo $_SESSION['user_name']; ?>
+                </a>
+            </div>
     <div class="burger-menu">&#9776;</div> <!-- Icône du menu burger -->
     <ul class="main-nav" id="menu">
         <li><a href="Main.php">Accueil</a></li>
@@ -114,12 +119,20 @@ function getCompetencesForOffer($connexion, $idOffre) {
             $competences = getCompetencesForOffer($connexion, $offre['id_offre']);
             ?>
             <article class="offer-card">
-                <h3><?php echo htmlspecialchars($offre['titre']); ?></h3>
-                <p class="company-name"><?php echo htmlspecialchars($offre['nom_entreprise']); ?></p>
-                <p class="location">Lieu : <?php echo htmlspecialchars($offre['nom_ville'] ?? 'Non spécifié'); ?></p>
-                <p class="duration">Durée : <?php echo htmlspecialchars($offre['duree_mois']); ?> mois</p>
-                <p class="date">Publié le <?php echo date('d/m/Y', strtotime($offre['date_publication'])); ?></p>
-                
+                <div class="offre-titre">
+                <p><?php echo htmlspecialchars($offre['titre']); ?></p>
+                </div>
+                <div class="offre-texte">
+                    <div class="left">
+                        <p>Nom : <?php echo htmlspecialchars($offre['nom_entreprise']); ?></p>
+                        <p>Lieu : <?php echo htmlspecialchars($offre['nom_ville'] ?? 'Non spécifié'); ?></p>
+                    </div>
+                    <div class="right">
+                        <p>Durée : <?php echo htmlspecialchars($offre['duree_mois']); ?> mois</p>
+                        <p>Publié le <?php echo date('d/m/Y', strtotime($offre['date_publication'])); ?></p>
+                    </div>
+                </div>
+                <div class="comp">
                 <?php if (!empty($competences)): ?>
                 <div class="skills">
                     <?php foreach ($competences as $competence): ?>
@@ -127,10 +140,11 @@ function getCompetencesForOffer($connexion, $idOffre) {
                     <?php endforeach; ?>
                 </div>
                 <?php else: ?>
-                <p class="no-skills">Aucune competence spécifiée</p>
+                <p class="no-skills">Aucune compétence spécifiée</p>
                 <?php endif; ?>
-                
                 <a href="VoirOffre.php?id=<?php echo $offre['id_offre']; ?>" class="view-details">Voir l'offre</a>
+                </div>
+                
                 <div class="heart liked" data-id="<?php echo $offre['id_offre']; ?>" onclick="toggleHeart(event)">❤️</div>
             </article>
             <?php endforeach; ?>

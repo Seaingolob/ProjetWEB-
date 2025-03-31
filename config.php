@@ -9,7 +9,7 @@ $mot_de_passe = $parametres['mot_de_passe'];
 $base_de_donnees = $parametres['base_de_donnees'];
 
 // Définit le DSN de connexion à la base de données
-$dsn = "mysql:host=$serveur;dbname=$base_de_donnees;charset=utf8mb4";
+$dsn = "mysql:host=$serveur;dbname=$base_de_donnees;charset=utf8";
 
 
 try {

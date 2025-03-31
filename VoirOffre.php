@@ -30,6 +30,21 @@ if (!isset($_GET['id']) || empty($_GET['id'])) {
     exit();
 }
 
+
+// Gérer les actions de suppression
+if (isset($_GET['action']) && isset($_GET['id'])) {
+    if ($_GET['action'] == 'delete') {
+        $id = (int)$_GET['id'];
+        $sql_delete_offer = "DELETE FROM offre WHERE id_offre = :id";
+        $stmt_delete_offer = $connexion->prepare($sql_delete_offer);
+        $stmt_delete_offer->bindParam(':id', $id, PDO::PARAM_INT);
+        $stmt_delete_offer->execute();
+        header("Location: VoirOffre.php");
+        exit();
+    }
+}
+
+
 // Récupérer l'ID de l'offre
 $id_offre = intval($_GET['id']);
 
@@ -150,6 +165,11 @@ try {
             <div class="logo">
                 <a href="Main.php">
                     <h1>lebonplan</h1>
+                </a>
+            </div>
+            <div class="user-info-left"> 
+                <a href="VoirEleve.php?id=<?php echo $_SESSION['user_id']; ?>" class="profile-link">
+                    👤 <?php echo $_SESSION['user_name']; ?>
                 </a>
             </div>
             <div class="burger-menu">&#9776;</div>
@@ -289,8 +309,7 @@ try {
                     <?php endif; ?>
 
                     <?php if ($_SESSION['user_type'] === 'admin'): ?>
-                        <button class="action-btn edit-btn" onclick="window.location.href='ModifierOffre.php?id=<?php echo $offre['id_offre']; ?>';">Modifier</button>
-                        <button class="action-btn delete-btn" onclick="if(confirm('Êtes-vous sûr de vouloir supprimer cette offre?')) window.location.href='SupprimerOffre.php?id=<?php echo $offre['id_offre']; ?>';">Supprimer</button>
+                        <button class="action-btn delete-btn" onclick="window.location.href='VoirOffre.php?action=delete&id=<?php echo $offre['id_offre']; ?>'">Supprimer</button>
                     <?php endif; ?>
                 </div>
 

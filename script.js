@@ -23,83 +23,7 @@ document.addEventListener("DOMContentLoaded", function() {
             menu.classList.toggle("active");
         });
     }
-    
-    // Initialisation des différents formulaires
-    
-    // Formulaire de candidature/postulation
-    const postulerForm = document.getElementById('postulerForm');
-    if (postulerForm) {
-        const cvInput = document.getElementById('cv');
-        const cvMessage = document.getElementById('cv_message');
-        const lettreInput = document.getElementById('lettre_motivation');
-        const lettreMessage = document.getElementById('lettre_motivation_message');
-        
-        if (cvInput && cvMessage && lettreInput && lettreMessage) {
-            verifierChamps(postulerForm, [
-                { input: cvInput, message: cvMessage },
-                { input: lettreInput, message: lettreMessage }
-            ]);
-        }
-    }
-    
-    // Formulaire de connexion
-    const loginForm = document.getElementById("login-form");
-    if (loginForm) {
-        const identifiantInput = document.getElementById("identifiant");
-        const identifiantMessage = document.getElementById("utilisateur-message");
-        const mdpInput = document.getElementById("motdepasse");
-        const mdpMessage = document.getElementById("mdp-message");
-        
-        if (identifiantInput && identifiantMessage && mdpInput && mdpMessage) {
-            verifierChamps(loginForm, [
-                { input: identifiantInput, message: identifiantMessage },
-                { input: mdpInput, message: mdpMessage }
-            ]);
-        }
-    }
-    
-    // Formulaire de contact
-    const contactForm = document.getElementById("contact-form");
-    if (contactForm) {
-        const nameInput = document.getElementById("name");
-        const nameMessage = document.getElementById("nom_message");
-        const emailInput = document.getElementById("email");
-        const emailMessage = document.getElementById("email_message");
-        const messageInput = document.getElementById("message");
-        const messageMessage = document.getElementById("commentaire_message");
-        const subjectInput = document.getElementById("subject");
-        const subjectMessage = document.getElementById("subject_message");
-        
-        if (nameInput && nameMessage && emailInput && emailMessage && 
-            messageInput && messageMessage && subjectInput && subjectMessage) {
-            verifierChamps(contactForm, [
-                { input: nameInput, message: nameMessage },
-                { input: emailInput, message: emailMessage },
-                { input: messageInput, message: messageMessage },
-                { input: subjectInput, message: subjectMessage }
-            ]);
-        }
-        
-        // Compteur de caractères pour le message
-        if (messageInput) {
-            const compteur = document.getElementById("compteur");
-            if (compteur) {
-                messageInput.addEventListener("input", function() {
-                    const maxLength = 300;
-                    const currentLength = this.value.length;
-                    
-                    compteur.textContent = `${currentLength}/${maxLength}`;
-                    
-                    if (currentLength >= 250) {
-                        compteur.classList.add("compteur_active");
-                    } else {
-                        compteur.classList.remove("compteur_active");
-                    }
-                });
-            }
-        }
-    }
-});
+})
 
 // Fonction pour colorer un champ en erreur
 function colorfield(input, message) {
@@ -111,14 +35,31 @@ function colorfield(input, message) {
 
 // Fonction pour vérifier un champ
 function checkfield(input, message) {
+    if (input.classList.contains('hidden') || input.closest('.hidden')) {
+        return false; // Ignorer les champs cachés
+    }
     if (input.value.trim() === "" || (input.files && input.files.length === 0)) {
         return true; // Champ vide
+    } else if (input.files && input.files.length > 0) {
+        const file = input.files[0];
+        if (file.type !== "application/pdf") {
+            input.style.border = "2px solid red";
+            message.textContent = "Veuillez insérer un fichier PDF.";
+            message.style.display = "block";
+            return true; // Fichier non PDF
+        } else {
+            input.style.border = "";
+            message.style.display = "none";
+            return false; // Champ rempli avec un PDF
+        }
     } else {
         input.style.border = "";
         message.style.display = "none";
         return false; // Champ rempli
     }
 }
+
+
 
 // Fonction principale pour vérifier tous les champs d'un formulaire
 function verifierChamps(form, champs) {
@@ -149,7 +90,7 @@ function verifierChamps(form, champs) {
             champs.forEach(champ => {
                 colorfield(champ.input, champ.message);
             });
-            alert("Veuillez remplir tous les champs requis avant de soumettre le formulaire.");
+
         }
     });
 }
@@ -189,4 +130,76 @@ function toggleHeart(event) {
         },
         body: 'offer_id=' + offerId + '&liked=' + (isLiked ? 1 : 0)
     });
+}
+
+function compteurmessage(){
+    document.getElementById("message").addEventListener("input", function() {
+    const maxLength = 300;
+    const currentLength = this.value.length;
+
+    document.getElementById("compteur").textContent = `${this.value.length}/${maxLength}`;
+
+    if (currentLength == 250){
+        compteur.classList.add("compteur_active");
+    }
+});
+}
+
+function connexion() { 
+    verifierChamps(document.getElementById("login-form"), [ 
+        { input: document.getElementById("identifiant"), message: document.getElementById("utilisateur-message") }, 
+        { input: document.getElementById("motdepasse"), message: document.getElementById("mdp-message") } 
+    ]); 
+}
+
+function contact(){
+    verifierChamps(document.getElementById("contact-form") , [
+        { input: document.getElementById("name"), message: document.getElementById("nom_message")},
+        { input: document.getElementById("email"), message: document.getElementById("email_message")},
+        { input: document.getElementById("message"), message: document.getElementById("commentaire_message")},
+        { input: document.getElementById("subject"), message: document.getElementById("subject_message")}
+    ])
+}
+
+function postuleroffre(){
+    verifierChamps(document.getElementById("postulerForm") , [
+        { input: document.getElementById("cv"), message: document.getElementById("cv_message")},
+        { input: document.getElementById("lettre_motivation"), message: document.getElementById("lettre_motivation_message")}
+    ])
+}
+
+function creationoffre(){
+    verifierChamps(document.getElementById("form-offres") , [
+        { input: document.getElementById("titre"), message: document.getElementById("titre_offre_message")},
+        { input: document.getElementById("entreprise-select"), message: document.getElementById("entreprise_select_message")},
+        { input: document.getElementById("nouvelle-entreprise-nom"), message: document.getElementById("nouvelle_entreprise_nom")},
+        { input: document.getElementById("entreprise-description"), message: document.getElementById("entreprise_description_message")},
+        { input: document.getElementById("entreprise-site"), message: document.getElementById("entreprise_site_message")},
+        { input: document.getElementById("region"), message: document.getElementById("region_message")},
+        { input: document.getElementById("ville"), message: document.getElementById("ville_message")},
+        { input: document.getElementById("nouvelle-ville-nom"), message: document.getElementById("nouvelle_ville_nom_message")},
+        { input: document.getElementById("adresse"), message: document.getElementById("adresse_message")},
+        { input: document.getElementById("duree"), message: document.getElementById("duree_message")},
+        { input: document.getElementById("date-debut"), message: document.getElementById("date_debut_message")},
+        { input: document.getElementById("description"), message: document.getElementById("description_message")},
+        { input: document.getElementById("nouvelles-competences"), message: document.getElementById("nouvelles_competences_message")},
+    ])
+}
+
+function creationutilisateur(){
+    verifierChamps(document.getElementById("form-utilisateur") , [
+        { input: document.getElementById("nom"), message: document.getElementById("nom_message")},
+        { input: document.getElementById("prenom"), message: document.getElementById("prenom_message")},
+        { input: document.getElementById("mail"), message: document.getElementById("mail_message")},
+        { input: document.getElementById("mot_de_passe"), message: document.getElementById("mot_de_passe_message")},
+        { input: document.getElementById("telephone"), message: document.getElementById("telephone_message")},
+        { input: document.getElementById("campus-select"), message: document.getElementById("campus_select_message")},
+        { input: document.getElementById("ville"), message: document.getElementById("ville_message")},
+        { input: document.getElementById("nouvelle-ville-nom"), message: document.getElementById("nouvelle_ville_nom_message")},
+        { input: document.getElementById("adresse"), message: document.getElementById("adresse_message")},
+        { input: document.getElementById("promotion-select"), message: document.getElementById("promotion_select_message")},
+        { input: document.getElementById("nouvelle-promotion-nom"), message: document.getElementById("nouvelle_promotion_nom_message")},
+        { input: document.getElementById("region"), message: document.getElementById("region_message")},
+        { input: document.getElementById("nouveau-campus-nom"), message: document.getElementById("nouveau_campus_nom")},   
+    ])
 }
