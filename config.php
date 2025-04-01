@@ -14,6 +14,8 @@ $dsn = "mysql:host=$serveur;dbname=$base_de_donnees;charset=utf8";
 
 try {
     // Création de la connexion PDO
+    // Utilise l'option PDO::ATTR_PERSISTENT pour une connexion persistante
+    // Cela peut améliorer les performances en évitant de recréer la connexion à chaque requête
     $connexion = new PDO($dsn, $utilisateur, $mot_de_passe, array(PDO::ATTR_PERSISTENT => true));
     
     // Définit le mode d'erreur de PDO pour afficher les exceptions en cas d'erreur

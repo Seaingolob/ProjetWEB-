@@ -20,8 +20,7 @@ if (!isset($_SESSION['logged_in']) || $_SESSION['logged_in'] !== true) {
     exit();
 }
 
-// vérifier si l'utilisateur est un administrateur
-if ($_SESSION['user_type'] !== 'admin') {
+if ($_SESSION['user_type'] == 'etudiant') {
     // Rediriger vers la page principale si ce n'est pas un administrateur
     header("Location: Main.php");
     exit();
@@ -64,43 +63,7 @@ try {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Ajouter un Utilisateur</title>
     <link rel="stylesheet" href="styles.css">
-    <style>
-        .hidden {
-            display: none;
-        }
-        .form-group {
-            margin-bottom: 15px;
-        }
-        .form-section {
-            border-top: 1px solid #eee;
-            padding-top: 15px;
-            margin-top: 15px;
-        }
-        label {
-            display: block;
-            margin-bottom: 5px;
-            font-weight: bold;
-        }
-        input[type="text"], 
-        input[type="email"], 
-        input[type="tel"], 
-        input[type="password"],
-        select {
-            width: 100%;
-            padding: 8px;
-            margin-bottom: 10px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-        }
-        .radio-group {
-            margin-bottom: 10px;
-        }
-        .radio-group label {
-            display: inline;
-            font-weight: normal;
-            margin-left: 5px;
-        }
-    </style>
+
 <script src="script.js"></script>
 <script>
         window.onload = function() {
@@ -122,7 +85,7 @@ try {
                     <li><a href="Wishlist.php">Wishlist</a></li>
                 <?php endif; ?>
                 <?php if ($_SESSION['user_type'] === 'admin'): ?>
-                    <li><a href="Admin.php" class="active">Espace-administration</a></li>
+                    <li><a href="Admin.php">Espace-administration</a></li>
                 <?php endif; ?>
                 <?php if ($_SESSION['user_type'] === 'pilote'): ?>
                     <li><a href="Admin.php">Espace-pilote</a></li>
@@ -328,13 +291,6 @@ try {
                     </div>
                 </div>
             </div>
-            
-            <div id="section-admin" class="form-section hidden">
-                <h3>Informations administrateur</h3>
-
-                <p>Aucune information supplémentaire requise pour les administrateurs.</p>
-            </div>
-            
             <button type="submit" class="btn-submit">Ajouter l'utilisateur</button>
         </form>
     </div>

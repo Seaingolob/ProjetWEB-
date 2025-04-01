@@ -28,7 +28,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $motdepasse = $_POST['motdepasse'];
     
     // Préparer la requête pour vérifier l'existence de l'utilisateur
-    $sql = "SELECT id_compte, mot_de_passe, nom, prenom FROM Utilisateur WHERE id_compte = :identifiant";
+    $sql = "SELECT id_compte, mot_de_passe, nom, prenom FROM utilisateur WHERE id_compte = :identifiant";
     
     try {
         $stmt = $connexion->prepare($sql);

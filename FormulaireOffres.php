@@ -69,37 +69,7 @@ $regions = $stmt->fetchAll(PDO::FETCH_ASSOC);
             creationoffre();
         };
     </script>
-    <style>
-        .hidden {
-            display: none;
-        }
-        .competences-container, .secteurs-container {
-            margin-bottom: 20px;
-            max-height: 200px;
-            overflow-y: auto;
-            border: 1px solid #ddd;
-            padding: 10px;
-        }
-        .competence-item, .secteur-item {
-            display: inline-block;
-            margin-right: 15px;
-            margin-bottom: 10px;
-        }
-        .entreprise-section {
-            margin-bottom: 20px;
-            padding: 15px;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-        }
-        .form-group {
-            margin-bottom: 15px;
-        }
-        .form-section {
-            border-top: 1px solid #eee;
-            padding-top: 15px;
-            margin-top: 15px;
-        }
-    </style>
+
 </head>
 <body>
     <header>
@@ -115,7 +85,7 @@ $regions = $stmt->fetchAll(PDO::FETCH_ASSOC);
                     <li><a href="Wishlist.php">Wishlist</a></li>
                 <?php endif; ?>
                 <?php if ($_SESSION['user_type'] === 'admin'): ?>
-                    <li><a href="Admin.php" class="active">Espace-administration</a></li>
+                    <li><a href="Admin.php">Espace-administration</a></li>
                 <?php endif; ?>
                 <?php if ($_SESSION['user_type'] === 'pilote'): ?>
                     <li><a href="Admin.php">Espace-pilote</a></li>
