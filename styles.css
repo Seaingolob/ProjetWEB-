@@ -2176,4 +2176,26 @@ select {
     font-weight: normal;
     margin-left: 5px;
 }
+
+@media screen and (max-width: 768px) {
+    .card {
+        padding: 15px;
+    }
     
+    .offre-texte {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .left, .right {
+        width: 100%;
+        margin-bottom: 10px;
+    }
+
+    .buttons {
+        flex-direction: row;
+        gap: 10px;
+    }
+
+}
+
