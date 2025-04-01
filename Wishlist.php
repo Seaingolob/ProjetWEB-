@@ -81,7 +81,7 @@ function getCompetencesForOffer($connexion, $idOffre) {
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <header>
+<header class="header">
     <nav>
             <div class="logo">
                 <a href="Main.php"><h1>lebonplan</h1></a>

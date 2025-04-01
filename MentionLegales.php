@@ -31,7 +31,7 @@ if (!isset($_SESSION['logged_in']) || $_SESSION['logged_in'] !== true) {
     <script src="backButton.js"></script>
 </head>
 <body>
-    <header>
+<header class="header">
     <nav>
             <div class="logo">
                 <a href="Main.php"><h1>lebonplan</h1></a>
