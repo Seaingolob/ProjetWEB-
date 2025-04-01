@@ -72,7 +72,7 @@ $regions = $stmt->fetchAll(PDO::FETCH_ASSOC);
   
 </head>
 <body>
-    <header>
+<header class="header">
     <nav>
             <div class="logo">
                 <a href="Main.php"><h1>lebonplan</h1></a>

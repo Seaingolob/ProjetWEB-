@@ -115,12 +115,10 @@ $offres = $stmt_offres->fetchAll(PDO::FETCH_ASSOC);
 </head>
 
 <body>
-<header>
+<header class="header">
         <nav>
             <div class="logo">
-                <a href="Main.php">
-                    <h1>lebonplan</h1>
-                </a>
+                <a href="Main.php"><h1>lebonplan</h1></a>
             </div>
             <div class="user-info-left"> 
                 <a href="VoirEleve.php?id=<?php echo $_SESSION['user_id']; ?>" class="profile-link">

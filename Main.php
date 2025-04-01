@@ -67,7 +67,7 @@ function getCompetencesForOffer($connexion, $id_offre) {
         <p>Nous utilisons des cookies pour améliorer votre expérience sur notre site...</p>
         <button id="accept-cookies">Accepter</button>
     </div>
-    <header>
+    <header class="header">
         <nav>
             <div class="logo">
                 <a href="Main.php"><h1>lebonplan</h1></a>

@@ -162,7 +162,7 @@ try {
     <script src="script.js"></script>
 </head>
 <body>
-    <header>
+<header class="header">
         <nav>
             <div class="logo">
                 <a href="Main.php"><h1>lebonplan</h1></a>
