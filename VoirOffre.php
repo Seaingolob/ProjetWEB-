@@ -30,6 +30,21 @@ if (!isset($_GET['id']) || empty($_GET['id'])) {
     exit();
 }
 
+
+// Gérer les actions de suppression
+if (isset($_GET['action']) && isset($_GET['id'])) {
+    if ($_GET['action'] == 'delete') {
+        $id = (int)$_GET['id'];
+        $sql_delete_offer = "DELETE FROM offre WHERE id_offre = :id";
+        $stmt_delete_offer = $connexion->prepare($sql_delete_offer);
+        $stmt_delete_offer->bindParam(':id', $id, PDO::PARAM_INT);
+        $stmt_delete_offer->execute();
+        header("Location: VoirOffre.php");
+        exit();
+    }
+}
+
+
 // Récupérer l'ID de l'offre
 $id_offre = intval($_GET['id']);
 
@@ -152,6 +167,11 @@ try {
                     <h1>lebonplan</h1>
                 </a>
             </div>
+            <div class="user-info-left"> 
+                <a href="VoirEleve.php?id=<?php echo $_SESSION['user_id']; ?>" class="profile-link">
+                    👤 <?php echo $_SESSION['user_name']; ?>
+                </a>
+            </div>
             <div class="burger-menu">&#9776;</div>
             <ul class="main-nav" id="menu">
                 <li><a href="Main.php">Accueil</a></li>
@@ -182,7 +202,7 @@ try {
             <div class="offre-detail-grid">
                 <div class="offre-main-info">
                     <div class="info-section">
-                        <h2>Détails de l'offre</h2>
+                        <h3>Détails de l'offre</h3>
                         <div class="info-row">
                             <span class="info-label">Date de publication:</span>
                             <span class="info-value"><?php echo date('d/m/Y', strtotime($offre['date_publication'])); ?></span>
@@ -204,15 +224,12 @@ try {
                     </div>
 
                     <div class="description-section">
-                        <div class="info-section">
-                            <h2>Description</h2>
-                            <p><?php echo nl2br(htmlspecialchars($offre['description'])); ?></p>
-                        </div>
+                        <h3>Description</h3>
+                        <p><?php echo nl2br(htmlspecialchars($offre['description'])); ?></p>
                     </div>
 
                     <div class="skills-section">
-                        <div class="info-section">
-                        <h2>Compétences requises</h2>
+                        <h3>Compétences requises</h3>
                         <?php if (!empty($competences)): ?>
                             <div class="skill-tags">
                                 <?php foreach ($competences as $competence): ?>
@@ -222,14 +239,13 @@ try {
                         <?php else: ?>
                             <p>Aucune compétence spécifique requise.</p>
                         <?php endif; ?>
-                        </div>
                     </div>
                 </div>
 
                 <div class="offre-side-info">
                     <div class="company-section">
-                        <div class="info-section">
-                            <h2>Entreprise</h2>
+                        <h3>Entreprise</h3>
+                        <div class="company-card">
                             <h4><?php echo htmlspecialchars($offre['entreprise_nom']); ?></h4>
                             <p><?php echo nl2br(htmlspecialchars($offre['entreprise_description'] ?? 'Aucune description disponible.')); ?></p>
                             <?php if (!empty($offre['entreprise_site'])): ?>
@@ -247,8 +263,8 @@ try {
                     </div>
 
                     <div class="location-section">
-                        <div class="info-section">
-                            <h2>Localisation</h2>
+                        <h3>Localisation</h3>
+                        <div class="location-card">
                             <p><i class="fa fa-map-marker" aria-hidden="true"></i> <?php echo htmlspecialchars($offre['nom_adresse']); ?></p>
                             <p><?php echo htmlspecialchars($offre['nom_ville']); ?>, <?php echo htmlspecialchars($offre['nom_region']); ?></p>
                         </div>
@@ -293,83 +309,76 @@ try {
                     <?php endif; ?>
 
                     <?php if ($_SESSION['user_type'] === 'admin'): ?>
-                        <button class="action-btn delete-btn" onclick="if(confirm('Êtes-vous sûr de vouloir supprimer cette offre?')) window.location.href='SupprimerOffre.php?id=<?php echo $offre['id_offre']; ?>';">Supprimer</button>
+                        <button class="action-btn delete-btn" onclick="window.location.href='VoirOffre.php?action=delete&id=<?php echo $offre['id_offre']; ?>'">Supprimer</button>
                     <?php endif; ?>
                 </div>
 
-                <div class="offre-actions">
-                    <h3>Évaluations</h3>
-                    <?php if ($_SESSION['user_type'] === 'etudiant' && !$a_evalue): ?>
-                        <div class="review-form-container">
-                            <h4>Ajouter une évaluation</h4>
-                            <form action="AjouterEvaluation.php" method="post">
-                                <input type="hidden" name="id_offre" value="<?php echo $offre['id_offre']; ?>">
-                                <div class="form-group">
-                                    <label for="note">Note:</label>
-                                    <select name="note" id="note" required>
-                                        <option value="Excellent">Excellent</option>
-                                        <option value="Très bien">Très bien</option>
-                                        <option value="Bien">Bien</option>
-                                        <option value="Moyen">Moyen</option>
-                                        <option value="À éviter">À éviter</option>
-                                    </select>
-                                </div>
-                                <div class="form-group">
-                                    <label for="avis">Avis (facultatif):</label>
-                                    <textarea name="avis" id="avis" rows="4"></textarea>
-                                </div>
-                                <button type="submit" class="submit-btn">Envoyer</button>
-                            </form>
-                        </div>
-                    <?php endif; ?>
-
-                    <div class="reviews-list">
-                        <?php if (!empty($evaluations)): ?>
-                            <?php foreach ($evaluations as $evaluation): ?>
-                                <div class="review-card">
-                                    <div class="review-header">
-                                        <span class="reviewer-name">
-                                            <a href="VoirEleve.php?id=<?php echo $evaluation['id_compte']; ?>"><?php echo htmlspecialchars($evaluation['prenom'] . ' ' . $evaluation['nom']); ?></a>
-                                        </span>
-                                        <span class="review-rating <?php echo strtolower(str_replace(' ', '-', $evaluation['note'])); ?>"><?php echo htmlspecialchars($evaluation['note']); ?></span>
-                                    </div>
-                                    <?php if (!empty($evaluation['avis'])): ?>
-                                        <div class="review-content">
-                                            <p><?php echo nl2br(htmlspecialchars($evaluation['avis'])); ?></p>
-                                        </div>
-                                    <?php endif; ?>
-                                </div>
-                            <?php endforeach; ?>
-                        <?php else: ?>
-                            <p class="no-reviews">Aucune évaluation disponible pour cette offre.</p>
-                        <?php endif; ?>
+                <h3>Évaluations</h3>
+                <?php if ($_SESSION['user_type'] === 'etudiant' && !$a_evalue): ?>
+                    <div class="review-form-container">
+                        <h4>Ajouter une évaluation</h4>
+                        <form action="AjouterEvaluation.php" method="post">
+                            <input type="hidden" name="id_offre" value="<?php echo $offre['id_offre']; ?>">
+                            <div class="form-group">
+                                <label for="note">Note:</label>
+                                <select name="note" id="note" required>
+                                    <option value="Excellent">Excellent</option>
+                                    <option value="Très bien">Très bien</option>
+                                    <option value="Bien">Bien</option>
+                                    <option value="Moyen">Moyen</option>
+                                    <option value="À éviter">À éviter</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="avis">Avis (facultatif):</label>
+                                <textarea name="avis" id="avis" rows="4"></textarea>
+                            </div>
+                            <button type="submit" class="submit-btn">Envoyer</button>
+                        </form>
                     </div>
+                <?php endif; ?>
+
+                <div class="reviews-list">
+                    <?php if (!empty($evaluations)): ?>
+                        <?php foreach ($evaluations as $evaluation): ?>
+                            <div class="review-card">
+                                <div class="review-header">
+                                    <span class="reviewer-name">
+                                        <a href="VoirEleve.php?id=<?php echo $evaluation['id_compte']; ?>"><?php echo htmlspecialchars($evaluation['prenom'] . ' ' . $evaluation['nom']); ?></a>
+                                    </span>
+                                    <span class="review-rating <?php echo strtolower(str_replace(' ', '-', $evaluation['note'])); ?>"><?php echo htmlspecialchars($evaluation['note']); ?></span>
+                                </div>
+                                <?php if (!empty($evaluation['avis'])): ?>
+                                    <div class="review-content">
+                                        <p><?php echo nl2br(htmlspecialchars($evaluation['avis'])); ?></p>
+                                    </div>
+                                <?php endif; ?>
+                            </div>
+                        <?php endforeach; ?>
+                    <?php else: ?>
+                        <p class="no-reviews">Aucune évaluation disponible pour cette offre.</p>
+                    <?php endif; ?>
                 </div>
             </div>
         </div>
     </div>
 
     <footer>
-        <div class="pied">
-            <div class="footer-content">
-                <div class="footer-section">
-                    <h4>À propos</h4>
-                    <ul>
-                        <li><a href="QSN.php">Qui sommes-nous</a></li>
-                        <li><a href="MentionLegales.php">Mentions légales</a></li>
-                        <li><a href="CGU.php">CGU</a></li>
-                    </ul>
-                </div>
-                <div class="footer-section">
-                    <h4>Ressources</h4>
-                    <ul>
-                        <li><a href="FAQ.php">FAQ</a></li>
-                    </ul>
-                </div>
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3>À propos</h3>
+                <p>LeBonPlan est la plateforme de stages pour les étudiants de l'école.</p>
             </div>
-            <div class="footer-bottom">
-                <p>© 2024 - Tous droits réservés - Web4All</p>
+            <div class="footer-section">
+                <h3>Liens utiles</h3>
+                <ul>
+                    <li><a href="Main.php">Accueil</a></li>
+                    <li><a href="Contact.php">Contact</a></li>
+                </ul>
             </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2024 - Tous droits réservés - Web4All</p>
         </div>
     </footer>
 

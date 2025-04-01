@@ -33,6 +33,21 @@ if (!isset($_GET['id']) || empty($_GET['id'])) {
 // Récupérer l'ID de l'utilisateur
 $id_compte = intval($_GET['id']);
 
+
+// Gérer les actions de suppression
+if (isset($_GET['action']) && isset($_GET['id'])) {
+    if ($_GET['action'] == 'delete') {
+        $id = (int)$_GET['id'];
+        $sql_delete_offer = "DELETE FROM utilisateur WHERE id_compte = :id";
+        $stmt_delete_offer = $connexion->prepare($sql_delete_offer);
+        $stmt_delete_offer->bindParam(':id', $id, PDO::PARAM_INT);
+        $stmt_delete_offer->execute();
+        header("Location: VoirEleve.php");
+        exit();
+    }
+}
+
+
 try {
     // Détecter le type d'utilisateur (étudiant, admin ou pilote)
     $stmt = $connexion->prepare("SELECT 
@@ -152,6 +167,11 @@ try {
             <div class="logo">
                 <a href="Main.php"><h1>lebonplan</h1></a>
             </div>
+            <div class="user-info-left"> 
+                <a href="VoirEleve.php?id=<?php echo $_SESSION['user_id']; ?>" class="profile-link">
+                    👤 <?php echo $_SESSION['user_name']; ?>
+                </a>
+            </div>
             <div class="burger-menu">&#9776;</div>
             <ul class="main-nav" id="menu">
                 <li><a href="Main.php">Accueil</a></li>
@@ -191,13 +211,6 @@ try {
                             <span class="user-info-label">ID d'utilisateur :</span>
                             <span class="user-info-value"><?php echo $user['id_compte']; ?></span>
                         </div>
-
-                        <?php if ($_SESSION['user_type'] === 'admin' & $user_type != 'admin'): ?>
-                            <div class="user-info-row">
-                                <span class="user-info-label">Mot de passe :</span>
-                                <span class="user-info-value"><?php echo htmlspecialchars($user['mot_de_passe']); ?></span>
-                            </div>
-                        <?php endif; ?>
 
                         <div class="user-info-row">
                             <span class="user-info-label">Email :</span>
@@ -273,7 +286,7 @@ try {
                 <div class="user-action-buttons">
                     <button class="back-btn" onclick="window.location.href='Main.php';">Retour</button>
                     <?php if ($_SESSION['user_type'] === 'admin'): ?>
-                        <button class="delete-btn">Supprimer</button>
+                        <button class="delete-btn" onclick="window.location.href='VoirEleve.php?action=delete&id=<?php echo $user['id_compte']; ?>';">Supprimer</button>
                     <?php endif; ?>
                 </div>
             </div>

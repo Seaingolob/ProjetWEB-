@@ -35,6 +35,9 @@ function colorfield(input, message) {
 
 // Fonction pour vérifier un champ
 function checkfield(input, message) {
+    if (input.classList.contains('hidden') || input.closest('.hidden')) {
+        return false; // Ignorer les champs cachés
+    }
     if (input.value.trim() === "" || (input.files && input.files.length === 0)) {
         return true; // Champ vide
     } else if (input.files && input.files.length > 0) {
@@ -55,6 +58,7 @@ function checkfield(input, message) {
         return false; // Champ rempli
     }
 }
+
 
 
 // Fonction principale pour vérifier tous les champs d'un formulaire
@@ -161,5 +165,41 @@ function postuleroffre(){
     verifierChamps(document.getElementById("postulerForm") , [
         { input: document.getElementById("cv"), message: document.getElementById("cv_message")},
         { input: document.getElementById("lettre_motivation"), message: document.getElementById("lettre_motivation_message")}
+    ])
+}
+
+function creationoffre(){
+    verifierChamps(document.getElementById("form-offres") , [
+        { input: document.getElementById("titre"), message: document.getElementById("titre_offre_message")},
+        { input: document.getElementById("entreprise-select"), message: document.getElementById("entreprise_select_message")},
+        { input: document.getElementById("nouvelle-entreprise-nom"), message: document.getElementById("nouvelle_entreprise_nom")},
+        { input: document.getElementById("entreprise-description"), message: document.getElementById("entreprise_description_message")},
+        { input: document.getElementById("entreprise-site"), message: document.getElementById("entreprise_site_message")},
+        { input: document.getElementById("region"), message: document.getElementById("region_message")},
+        { input: document.getElementById("ville"), message: document.getElementById("ville_message")},
+        { input: document.getElementById("nouvelle-ville-nom"), message: document.getElementById("nouvelle_ville_nom_message")},
+        { input: document.getElementById("adresse"), message: document.getElementById("adresse_message")},
+        { input: document.getElementById("duree"), message: document.getElementById("duree_message")},
+        { input: document.getElementById("date-debut"), message: document.getElementById("date_debut_message")},
+        { input: document.getElementById("description"), message: document.getElementById("description_message")},
+        { input: document.getElementById("nouvelles-competences"), message: document.getElementById("nouvelles_competences_message")},
+    ])
+}
+
+function creationutilisateur(){
+    verifierChamps(document.getElementById("form-utilisateur") , [
+        { input: document.getElementById("nom"), message: document.getElementById("nom_message")},
+        { input: document.getElementById("prenom"), message: document.getElementById("prenom_message")},
+        { input: document.getElementById("mail"), message: document.getElementById("mail_message")},
+        { input: document.getElementById("mot_de_passe"), message: document.getElementById("mot_de_passe_message")},
+        { input: document.getElementById("telephone"), message: document.getElementById("telephone_message")},
+        { input: document.getElementById("campus-select"), message: document.getElementById("campus_select_message")},
+        { input: document.getElementById("ville"), message: document.getElementById("ville_message")},
+        { input: document.getElementById("nouvelle-ville-nom"), message: document.getElementById("nouvelle_ville_nom_message")},
+        { input: document.getElementById("adresse"), message: document.getElementById("adresse_message")},
+        { input: document.getElementById("promotion-select"), message: document.getElementById("promotion_select_message")},
+        { input: document.getElementById("nouvelle-promotion-nom"), message: document.getElementById("nouvelle_promotion_nom_message")},
+        { input: document.getElementById("region"), message: document.getElementById("region_message")},
+        { input: document.getElementById("nouveau-campus-nom"), message: document.getElementById("nouveau_campus_nom")},   
     ])
 }

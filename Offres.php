@@ -227,6 +227,11 @@ function getCompetencesForOffer($connexion, $idOffre) {
             <div class="logo">
                 <a href="Main.php"><h1>lebonplan</h1></a>
             </div>
+            <div class="user-info-left"> 
+                <a href="VoirEleve.php?id=<?php echo $_SESSION['user_id']; ?>" class="profile-link">
+                    👤 <?php echo $_SESSION['user_name']; ?>
+                </a>
+            </div>
             <div class="burger-menu">&#9776;</div>
             <ul class="main-nav" id="menu">
                 <li><a href="Main.php">Accueil</a></li>

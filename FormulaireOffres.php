@@ -63,37 +63,13 @@ $regions = $stmt->fetchAll(PDO::FETCH_ASSOC);
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Ajouter une Offre</title>
     <link rel="stylesheet" href="styles.css">
-    <style>
-        .hidden {
-            display: none;
-        }
-        .competences-container, .secteurs-container {
-            margin-bottom: 20px;
-            max-height: 200px;
-            overflow-y: auto;
-            border: 1px solid #ddd;
-            padding: 10px;
-        }
-        .competence-item, .secteur-item {
-            display: inline-block;
-            margin-right: 15px;
-            margin-bottom: 10px;
-        }
-        .entreprise-section {
-            margin-bottom: 20px;
-            padding: 15px;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-        }
-        .form-group {
-            margin-bottom: 15px;
-        }
-        .form-section {
-            border-top: 1px solid #eee;
-            padding-top: 15px;
-            margin-top: 15px;
-        }
-    </style>
+    <script src="script.js"></script>
+    <script>
+        window.onload = function() {
+            creationoffre();
+        };
+    </script>
+  
 </head>
 <body>
     <header>
@@ -123,30 +99,35 @@ $regions = $stmt->fetchAll(PDO::FETCH_ASSOC);
     </header>
     <div class="form-container">
         <h2>Ajouter une Offre</h2>
-        <form action="processFormulaireOffre.php" method="post">
+        <form action="processFormulaireOffre.php" method="post" id="form-offres">
             <div class="form-section">
-                <div class="form-title">Titre de l'offre :</div>
-                <input type="text" id="titre" name="titre" required>
+                <div class="message" id="titre_offre_message">
+                    Veuillez insérer le titre de votre offre
+                </div>
+                <div class="form-title">Titre de l'offre:</div>
+                <input type="text" id="titre" name="titre">
             </div>
             
             <div class="form-section">
                 <div class="form-title">Informations sur l'entreprise</div>
-                <div class="radio-group form-group">
-                    <div>
-                        <label for="entreprise-existante">Choisir une entreprise existante</label>
+                <div class="form-group">
+                    <div class="radio-group form-group">
                         <input type="radio" id="entreprise-existante" name="entreprise-choix" value="existante" checked>
+                        <label for="entreprise-existante">Choisir une entreprise existante</label>
                     </div>
-                </div>
-                <div class="radio-group form-group">
-                    <div>
+                    
+                    <div class="radio-group form-group">
+                        <input type="radio" id="nouvelle-entreprise" name="entreprise-choix" value="nouvelle">
                         <label for="nouvelle-entreprise">Ajouter une nouvelle entreprise</label>
-                        <input type="radio" id="nouvelle-entreprise" name="entreprise-choix" value="nouvelle">  
                     </div>
                 </div>
                 
                 <div id="section-entreprise-existante" class="form-group">
                     <label for="entreprise-select">Sélectionner une entreprise:</label>
-                    <select id="entreprise-select" name="entreprise-id" required>
+                    <div class="message" id="entreprise_select_message">
+                        Veuillez sélectionner une entreprise 
+                    </div>
+                    <select id="entreprise-select" name="entreprise-id">
                         <option value="">Choisir une entreprise</option>
                         <?php foreach ($entreprises as $entreprise): ?>
                             <option value="<?= $entreprise['id_entreprise'] ?>"><?= htmlspecialchars($entreprise['nom']) ?></option>
@@ -157,16 +138,25 @@ $regions = $stmt->fetchAll(PDO::FETCH_ASSOC);
                 <div id="section-nouvelle-entreprise" class="hidden">
                     <div class="form-group">
                         <label for="nouvelle-entreprise-nom">Nom de l'entreprise:</label>
+                        <div class="message" id="nouvelle_entreprise_nom">
+                            Veuillez insérer le nom de l'entreprise
+                        </div>
                         <input type="text" id="nouvelle-entreprise-nom" name="nouvelle-entreprise-nom">
                     </div>
                     
                     <div class="form-group">
                         <label for="entreprise-description">Description de l'entreprise:</label>
+                        <div class="message" id="entreprise_description_message">
+                            Veuillez insérer une description valide
+                        </div>
                         <textarea id="entreprise-description" name="entreprise-description" rows="3"></textarea>
                     </div>
                     
                     <div class="form-group">
                         <label for="entreprise-site">Site web:</label>
+                        <div class="message" id="entreprise_site_message">
+                            Veuillez insérer un site web valide
+                        </div>
                         <input type="url" id="entreprise-site" name="entreprise-site" placeholder="https://www.exemple.com">
                     </div>
                     
@@ -186,6 +176,9 @@ $regions = $stmt->fetchAll(PDO::FETCH_ASSOC);
                     </div>
                     
                     <div id="nouveau-secteur-section" class="hidden form-group">
+                        <div class="message" id="nouveaux_secteurs_message">
+                            Veuillez insérer un nouveau secteur valide
+                        </div>
                         <label for="nouveaux-secteurs">Nouveaux secteurs (séparés par des virgules):</label>
                         <input type="text" id="nouveaux-secteurs" name="nouveaux-secteurs" placeholder="Finance, Technologie, Santé...">
                     </div>
@@ -195,6 +188,9 @@ $regions = $stmt->fetchAll(PDO::FETCH_ASSOC);
                         
                         <div class="form-group">
                             <label for="region">Région:</label>
+                            <div class="message" id="region_message">
+                                Veuillez insérer une région valide
+                            </div>
                             <select id="region" name="region">
                                 <option value="">Choisir une région</option>
                                 <?php foreach ($regions as $region): ?>
@@ -217,11 +213,17 @@ $regions = $stmt->fetchAll(PDO::FETCH_ASSOC);
                         
                         <div id="section-nouvelle-region" class="hidden form-group">
                             <label for="nouvelle-region-nom">Nom de la région:</label>
+                            <div class="message" id="nouvelle_region_nom_message">
+                                Veuillez insérer  un nom de région valide
+                            </div>
                             <input type="text" id="nouvelle-region-nom" name="nouvelle-region-nom">
                         </div>
                         
                         <div class="form-group">
                             <label for="ville">Ville:</label>
+                            <div class="message" id="ville_message">
+                                Veuillez insérer une ville valide
+                            </div>
                             <select id="ville" name="ville">
                                 <option value="">Choisir une ville</option>
                                 <?php foreach ($villes as $ville): ?>
@@ -244,64 +246,83 @@ $regions = $stmt->fetchAll(PDO::FETCH_ASSOC);
                         
                         <div id="section-nouvelle-ville" class="hidden form-group">
                             <label for="nouvelle-ville-nom">Nom de la ville:</label>
+                            <div class="message" id="nouvelle_ville_nom_message">
+                                Veuillez insérer une nouvelle ville valide
+                            </div>
                             <input type="text" id="nouvelle-ville-nom" name="nouvelle-ville-nom">
                         </div>
                         
                         <div class="form-group">
                             <label for="adresse">Adresse complète:</label>
+                            <div class="message" id="adresse_message">
+                                Veuillez insérer une adresse valide
+                            </div>  
                             <input type="text" id="adresse" name="adresse" placeholder="Numéro, rue, code postal">
                         </div>
                     </div>
                 </div>
             </div>
             
-            <div class="form-section">
-                <div class="form-title">Détails de l'offre</div>
-                
-                <div class="form-group">
-                    <label for="duree">Durée (en mois):</label>
-                    <input type="number" id="duree" name="duree" min="1" required>
-                </div>
-                
-                <div class="form-group">
-                    <label for="date_publication">Date de publication:</label>
-                    <input type="date" id="date_publication" name="date_publication" value="<?= date('Y-m-d') ?>" required>
-                </div>
-                
-                <div class="form-group">
-                    <label for="date_debut">Date de début du stage:</label>
-                    <input type="date" id="date_debut" name="date_debut" required>
-                </div>
-                
-                <div class="form-group">
-                    <label for="description">Description détaillée du poste:</label>
-                    <textarea id="description" name="description" rows="5" required></textarea>
-                </div>
-                
-                <h4>Compétences requises</h4>
-                <div class="competences-container form-group">
-                    <?php foreach ($competences as $competence): ?>
-                    <div class="competence-item">
-                        <input type="checkbox" id="comp-<?= $competence['id_competence'] ?>" name="competences[]" value="<?= $competence['id_competence'] ?>">
-                        <label for="comp-<?= $competence['id_competence'] ?>"><?= htmlspecialchars($competence['nom']) ?></label>
+                <div class="form-section">
+                    <div class="form-title">Détails de l'offre</div>
+                    
+                    <div class="form-group">
+                        <label for="duree">Durée (en mois):</label>
+                        <div class="message" id="duree_message">
+                            Veuillez insérer une durée valide
+                        </div>
+                        <input type="number" id="duree" name="duree" min="1">
                     </div>
-                    <?php endforeach; ?>
+                    
+                    <div class="form-group">
+                        <label for="date_publication">Date de publication:</label>
+                        <input type="date" id="date_publication" name="date_publication" value="<?= date('Y-m-d') ?>">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="date_debut">Date de début du stage:</label>
+                        <div class="message" id="date_debut_message">
+                            Veuillez insérer une date valide 
+                        </div>
+                        <input type="date" id="date-debut" name="date_debut">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="description">Description détaillée du poste:</label>
+                        <div class="message" id="description_message">
+                            Veuillez insérer une description valide
+                        </div>
+                        <textarea id="description" name="description" rows="5"></textarea>
+                    </div>
+                    
+                    <h4>Compétences requises</h4>
+                    <div class="competences-container form-group">
+                        <?php foreach ($competences as $competence): ?>
+                        <div class="competence-item">
+                            <input type="checkbox" id="comp-<?= $competence['id_competence'] ?>" name="competences[]" value="<?= $competence['id_competence'] ?>">
+                            <label for="comp-<?= $competence['id_competence'] ?>"><?= htmlspecialchars($competence['nom']) ?></label>
+                        </div>
+                        <?php endforeach; ?>
+                    </div>
+                    
+                    <div class="radio-group form-group">
+                        <input type="checkbox" id="nouvelle-competence-check" name="nouvelle-competence-check">
+                        <label for="nouvelle-competence-check">Ajouter d'autres compétences</label>
+                    </div>
+                    
+                    <div id="nouvelle-competence-section" class="hidden form-group">
+                        <label for="nouvelles-competences">Nouvelles compétences (séparées par des virgules):</label>
+                        <div class="message" id="nouvelles_competences_message">
+                            Veuillez insérer une nouvelle competence valide
+                        </div>
+                        <input type="text" id="nouvelles-competences" name="nouvelles-competences" placeholder="PHP, JavaScript, SQL...">
+                    </div>
                 </div>
-                
-                <div class="radio-group form-group">
-                    <label for="nouvelle-competence-check">Ajouter d'autres compétences</label>
-                    <input type="checkbox" id="nouvelle-competence-check" name="nouvelle-competence-check">
+                <div class="btn-container">
+                    <button type="submit" class="btn-submit">Ajouter l'offre</button>
                 </div>
-                
-                <div id="nouvelle-competence-section" class="hidden form-group">
-                    <label for="nouvelles-competences">Nouvelles compétences (séparées par des virgules):</label>
-                    <input type="text" id="nouvelles-competences" name="nouvelles-competences" placeholder="PHP, JavaScript, SQL...">
-                </div>
-            </div>
-            
-            <button type="submit" class="btn-submit">Ajouter l'offre</button>
-        </form>
-    </div>
+            </form>
+        </div>
 
     <script>
         // Script pour gérer l'affichage/masquage des sections en fonction des choix

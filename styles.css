@@ -2093,3 +2093,87 @@ input:focus, select:focus, textarea:focus {
     white-space: nowrap;
     margin-top: 20px;
 }
+
+.btn-submit{
+    
+    background-color: #4CAF50;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    font-size: 1.2rem;
+    cursor: pointer;
+}
+
+.user-info-left{
+    position: left;
+    margin-top: 20px;
+    font-weight: bold;
+}
+
+.profile-link{
+    text-decoration: none;
+    color: #1d7faa;
+    font-size: 1.2rem;
+   
+}
+
+
+
+.competences-container, .secteurs-container {
+    margin-bottom: 20px;
+    max-height: 200px;
+    overflow-y: auto;
+    border: 1px solid #ddd;
+    padding: 10px;
+}
+.competence-item, .secteur-item {
+    display: inline-block;
+    margin-right: 15px;
+    margin-bottom: 10px;
+}
+.entreprise-section {
+    margin-bottom: 20px;
+    padding: 15px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+}
+.form-group {
+    margin-bottom: 15px;
+}
+.form-section {
+    border-top: 1px solid #eee;
+    padding-top: 15px;
+    margin-top: 15px;
+}
+
+
+.hidden {
+    display: none;
+}
+
+label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+}
+input[type="text"], 
+input[type="email"], 
+input[type="tel"], 
+input[type="password"],
+select {
+    width: 100%;
+    padding: 8px;
+    margin-bottom: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+.radio-group {
+    margin-bottom: 10px;
+}
+.radio-group label {
+    display: inline;
+    font-weight: normal;
+    margin-left: 5px;
+}
+    

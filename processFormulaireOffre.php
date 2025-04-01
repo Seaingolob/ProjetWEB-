@@ -132,7 +132,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $duree, 
             $date_publication, 
             $id_entreprise, 
-            $_SESSION['id_compte']
+            $_SESSION['user_id']
         ]);
         $id_offre = $connexion->lastInsertId();
         
@@ -193,4 +193,4 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     exit();
 }
 ?>
-    
+   

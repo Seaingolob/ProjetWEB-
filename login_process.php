@@ -3,11 +3,8 @@
 session_start();
 
 // Définir la durée de la session à 1 heure (en secondes)
-if (session_status() === PHP_SESSION_NONE) {
-    ini_set('session.use_only_cookies', 1);
-    session_set_cookie_params(['lifetime' => 86400, 'path' => '/', 'httponly' => true]);
-    session_start();
-}
+ini_set('session.gc_maxlifetime', 3600); // 60 minutes * 60 secondes = 3600 secondes
+session_set_cookie_params(3600);
 
 // Vérifier si la session existe déjà et si elle a expiré
 if (isset($_SESSION['last_activity']) && (time() - $_SESSION['last_activity'] > 3600)) {
@@ -31,7 +28,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $motdepasse = $_POST['motdepasse'];
     
     // Préparer la requête pour vérifier l'existence de l'utilisateur
-    $sql = "SELECT id_compte, mot_de_passe FROM Utilisateur WHERE id_compte = :identifiant";
+    $sql = "SELECT id_compte, mot_de_passe, nom, prenom FROM utilisateur WHERE id_compte = :identifiant";
     
     try {
         $stmt = $connexion->prepare($sql);
@@ -48,6 +45,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 $_SESSION['user_id'] = $user['id_compte'];
                 $_SESSION['logged_in'] = true;
                 $_SESSION['last_activity'] = time(); // Enregistrer le moment de la connexion
+                $_SESSION['user_name'] = $user['nom'] . " " . $user['prenom'];
                 
                 // Déterminer le type d'utilisateur de façon sécurisée
                 try {
