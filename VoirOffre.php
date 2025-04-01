@@ -200,7 +200,7 @@ try {
             <div class="offre-detail-grid">
                 <div class="offre-main-info">
                     <div class="info-section">
-                        <h3>Détails de l'offre</h3>
+                        <div class="form-title">Détails de l'offre</div>
                         <div class="info-row">
                             <span class="info-label">Date de publication:</span>
                             <span class="info-value"><?php echo date('d/m/Y', strtotime($offre['date_publication'])); ?></span>
@@ -221,13 +221,13 @@ try {
                         </div>
                     </div>
 
-                    <div class="description-section">
-                        <h3>Description</h3>
+                    <div class="info-section">
+                        <div class="form-title">Description</div>
                         <p><?php echo nl2br(htmlspecialchars($offre['description'])); ?></p>
                     </div>
 
-                    <div class="skills-section">
-                        <h3>Compétences requises</h3>
+                    <div class="info-section">
+                        <div class="form-title">Compétences requises</div>
                         <?php if (!empty($competences)): ?>
                             <div class="skill-tags">
                                 <?php foreach ($competences as $competence): ?>
@@ -241,9 +241,8 @@ try {
                 </div>
 
                 <div class="offre-side-info">
-                    <div class="company-section">
-                        <h3>Entreprise</h3>
-                        <div class="company-card">
+                    <div class="info-section">
+                            <div class="form-title">Entreprise</div>
                             <h4><?php echo htmlspecialchars($offre['entreprise_nom']); ?></h4>
                             <p><?php echo nl2br(htmlspecialchars($offre['entreprise_description'] ?? 'Aucune description disponible.')); ?></p>
                             <?php if (!empty($offre['entreprise_site'])): ?>
@@ -260,8 +259,8 @@ try {
                         </div>
                     </div>
 
-                    <div class="location-section">
-                        <h3>Localisation</h3>
+                    <div class="info-section">
+                        <div class="form-title">Localisation</div>
                         <div class="location-card">
                             <p><i class="fa fa-map-marker" aria-hidden="true"></i> <?php echo htmlspecialchars($offre['nom_adresse']); ?></p>
                             <p><?php echo htmlspecialchars($offre['nom_ville']); ?>, <?php echo htmlspecialchars($offre['nom_region']); ?></p>
@@ -310,8 +309,8 @@ try {
                         <button class="action-btn delete-btn" onclick="window.location.href='VoirOffre.php?action=delete&id=<?php echo $offre['id_offre']; ?>'">Supprimer</button>
                     <?php endif; ?>
                 </div>
-
-                <h3>Évaluations</h3>
+            <div class="info-section">            
+                <div class="form-title">Évaluations</div>
                 <?php if ($_SESSION['user_type'] === 'etudiant' && !$a_evalue): ?>
                     <div class="review-form-container">
                         <h4>Ajouter une évaluation</h4>

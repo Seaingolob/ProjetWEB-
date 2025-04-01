@@ -217,12 +217,12 @@ try {
                         </div>
                         
                         <div class="form-group">
-                            <div class="radio-group">
+                            <div class="radio-group form-group">
                                 <input type="radio" id="ville-existante" name="ville-choix" value="existante" checked>
                                 <label for="ville-existante">Choisir une ville existante</label>
                             </div>
                             
-                            <div class="radio-group">
+                            <div class="radio-group form-group">
                                 <input type="radio" id="nouvelle-ville" name="ville-choix" value="nouvelle">
                                 <label for="nouvelle-ville">Ajouter une nouvelle ville</label>
                             </div>

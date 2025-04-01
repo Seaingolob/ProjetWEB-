@@ -170,7 +170,7 @@ $regions = $stmt->fetchAll(PDO::FETCH_ASSOC);
                         <?php endforeach; ?>
                     </div>
                     
-                    <div class="form-group">
+                    <div class="radio-group form-group">
                         <input type="checkbox" id="nouveau-secteur-check" name="nouveau-secteur-check">
                         <label for="nouveau-secteur-check">Ajouter d'autres secteurs d'activité</label>
                     </div>
@@ -199,16 +199,13 @@ $regions = $stmt->fetchAll(PDO::FETCH_ASSOC);
                             </select>
                         </div>
                         
-                        <div class="form-group">
-                            <div>
+                        <div class="radio-group form-group">
                                 <input type="radio" id="region-existante" name="region-choix" value="existante" checked>
                                 <label for="region-existante">Choisir une région existante</label>
-                            </div>
-                            
-                            <div>
+                        </div>
+                        <div class="radio-group form-group">    
                                 <input type="radio" id="nouvelle-region" name="region-choix" value="nouvelle">
                                 <label for="nouvelle-region">Ajouter une nouvelle région</label>
-                            </div>
                         </div>
                         
                         <div id="section-nouvelle-region" class="hidden form-group">
@@ -232,16 +229,13 @@ $regions = $stmt->fetchAll(PDO::FETCH_ASSOC);
                             </select>
                         </div>
                         
-                        <div class="form-group">
-                            <div>
+                        <div class="radio-group form-group">
                                 <input type="radio" id="ville-existante" name="ville-choix" value="existante" checked>
                                 <label for="ville-existante">Choisir une ville existante</label>
-                            </div>
-                            
-                            <div>
+                        </div>
+                        <div class="radio-group form-group">
                                 <input type="radio" id="nouvelle-ville" name="ville-choix" value="nouvelle">
                                 <label for="nouvelle-ville">Ajouter une nouvelle ville</label>
-                            </div>
                         </div>
                         
                         <div id="section-nouvelle-ville" class="hidden form-group">
