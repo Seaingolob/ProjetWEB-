@@ -61,7 +61,7 @@ try {
     $stmt->execute();
     $user_type_result = $stmt->fetch(PDO::FETCH_ASSOC);
     $user_type = $user_type_result['user_type'];
-    
+
     // Récupérer les informations de base de l'utilisateur
     $stmt = $connexion->prepare("SELECT u.id_compte, u.nom, u.prenom, u.mail, u.mot_de_passe, u.telephone 
                                 FROM utilisateur u 
@@ -69,16 +69,16 @@ try {
     $stmt->bindParam(':id', $id_compte);
     $stmt->execute();
     $user = $stmt->fetch(PDO::FETCH_ASSOC);
-    
+
     if (!$user) {
         // L'utilisateur n'existe pas, rediriger
         header("Location: Main.php");
         exit();
     }
-    
+
     // Informations spécifiques selon le type d'utilisateur
     $specific_info = [];
-    
+
     if ($user_type === 'etudiant') {
         // Récupérer la wishlist de l'étudiant avec statut de postulation
         $stmt = $connexion->prepare("SELECT 
@@ -103,11 +103,12 @@ try {
         $stmt->bindParam(':id', $id_compte);
         $stmt->execute();
         $specific_info['wishlist'] = $stmt->fetchAll(PDO::FETCH_ASSOC);
-        
+
         // Récupérer les informations sur la promotion de l'étudiant
 
         $stmt = $connexion->prepare("SELECT 
-        p.nom as promotion_nom, 
+        p.nom as promotion_nom,
+        p.id_promotion,
         c.nom_campus, 
         a.debut, 
         a.fin
@@ -122,10 +123,9 @@ try {
         $stmt->bindParam(':id', $id_compte);
         $stmt->execute();
         $specific_info['promotion'] = $stmt->fetch(PDO::FETCH_ASSOC);
-    } 
-    elseif ($user_type === 'pilote') {
+    } elseif ($user_type === 'pilote') {
         // Récupérer les promotions pilotées
- 
+
         $stmt = $connexion->prepare("SELECT 
         p.id_promotion,
         p.nom as promotion_nom, 
@@ -141,12 +141,10 @@ try {
         $stmt->bindParam(':id', $id_compte);
         $stmt->execute();
         $specific_info['promotions_pilotees'] = $stmt->fetchAll(PDO::FETCH_ASSOC);
-    }
-    elseif ($user_type === 'admin') {
+    } elseif ($user_type === 'admin') {
         // Aucune information spécifique supplémentaire pour admin
     }
-    
-} catch(PDOException $e) {
+} catch (PDOException $e) {
     echo "Erreur : " . $e->getMessage();
     exit();
 }
@@ -154,6 +152,7 @@ try {
 
 <!DOCTYPE html>
 <html lang="fr">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -161,13 +160,16 @@ try {
     <link rel="stylesheet" href="styles.css">
     <script src="script.js"></script>
 </head>
+
 <body>
-<header class="header">
+    <header class="header">
         <nav>
             <div class="logo">
-                <a href="Main.php"><h1>lebonplan</h1></a>
+                <a href="Main.php">
+                    <h1>lebonplan</h1>
+                </a>
             </div>
-            <div class="user-info-left"> 
+            <div class="user-info-left">
                 <a href="VoirEleve.php?id=<?php echo $_SESSION['user_id']; ?>" class="profile-link">
                     👤 <?php echo $_SESSION['user_name']; ?>
                 </a>
@@ -216,30 +218,34 @@ try {
                             <span class="user-info-label">Email :</span>
                             <span class="user-info-value"><?php echo htmlspecialchars($user['mail']); ?></span>
                         </div>
-                        
+
                         <div class="user-info-row">
                             <span class="user-info-label">Téléphone :</span>
                             <span class="user-info-value"><?php echo htmlspecialchars($user['telephone']); ?></span>
                         </div>
-                        
+
                         <!-- Informations spécifiques selon le type d'utilisateur -->
                         <?php if ($user_type === 'etudiant'): ?>
                             <?php if (!empty($specific_info['promotion'])): ?>
                                 <div class="user-info-row">
-                                    <span class="user-info-label">Promotion Acctuelle:</span>
-
-                                    <span class="user-info-value"><?php echo htmlspecialchars($specific_info['promotion']['promotion_nom']); ?></span>
+                                    <span class="user-info-label">Promotion Actuelle:</span>
+                                    <span class="user-info-value">
+                                        <a href="VoirPromo.php?id_promotion=<?php echo urlencode($specific_info['promotion']['id_promotion']); ?>">
+                                            <?php echo htmlspecialchars($specific_info['promotion']['promotion_nom']); ?>
+                                        </a>
+                                    </span>
                                 </div>
                                 <div class="user-info-row">
                                     <span class="user-info-label">Campus :</span>
                                     <span class="user-info-value"><?php echo htmlspecialchars($specific_info['promotion']['nom_campus']); ?></span>
                                 </div>
                             <?php endif; ?>
-                            
+
+
                             <div class="user-info-row wishlist-section">
                                 <span class="user-info-label">Wishlist Détaillée :</span>
                             </div>
-                            
+
                             <?php if (!empty($specific_info['wishlist'])): ?>
                                 <?php foreach ($specific_info['wishlist'] as $offre): ?>
                                     <div class="wishlist-detail-card">
@@ -260,11 +266,15 @@ try {
                             <div class="user-info-row">
                                 <span class="user-info-label">Promotions pilotées :</span>
                             </div>
-                            
+
                             <?php if (!empty($specific_info['promotions_pilotees'])): ?>
                                 <?php foreach ($specific_info['promotions_pilotees'] as $promotion): ?>
                                     <div class="promotion-detail-card">
-                                        <div class="promotion-header">Promotion : <?php echo htmlspecialchars($promotion['promotion_nom']); ?></div>
+                                        <div class="promotion-header">
+                                            <a href="VoirPromo.php?id_promotion=<?php echo urlencode($promotion['id_promotion']); ?>">
+                                                Promotion : <?php echo htmlspecialchars($promotion['promotion_nom']); ?>
+                                            </a>
+                                        </div>
                                         <div class="promotion-content">
                                             <p><strong>Campus:</strong> <?php echo htmlspecialchars($promotion['nom_campus']); ?></p>
                                             <p><strong>Début:</strong> <?php echo htmlspecialchars($promotion['debut']); ?></p>
@@ -278,11 +288,12 @@ try {
                                 <?php endforeach; ?>
                             <?php else: ?>
                                 <p class="no-promotions">Aucune promotion pilotée.</p>
-                            <?php endif; ?>
-                        <?php endif; ?>
+                            <?php endif;
+                        endif; ?>
+                        
                     </div>
                 </div>
-                
+
                 <div class="user-action-buttons">
                     <button class="back-btn" onclick="window.location.href='Main.php';">Retour</button>
                     <?php if ($_SESSION['user_type'] === 'admin'): ?>
@@ -302,4 +313,5 @@ try {
     </footer>
 
 </body>
+
 </html>
