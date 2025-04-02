@@ -225,12 +225,6 @@
     transition: var(--transition-smooth);
 }
 
-.offer-header, .company-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 1rem;
-}
 
 .offer-details, .company-details {
     display: flex;
@@ -265,7 +259,7 @@
 
 
 /* Existing media queries remain the same, with added responsiveness */
-@media (max-width: 768px) {
+@media (max-width: 1000px) {
     .stats-container, .search-inputs {
         flex-direction: column;
     }
@@ -286,7 +280,7 @@
 }
 
 /* Existing media queries remain the same, with added responsiveness */
-@media (max-width: 768px) {
+@media (max-width: 1000px) {
     .stats-container, .search-inputs {
         flex-direction: column;
     }
@@ -315,21 +309,6 @@ body {
     background-color: var(--primary-white);
 }
 
-/* Header et Navigation */
-header {
-    background-color: rgba(255, 255, 255, 0.98);
-    backdrop-filter: blur(8px);
-    border-bottom: 1px solid var(--gray-200);
-    position: fixed;
-    width: 100%;
-    top: 0;
-    z-index: 1000;
-    transition: var(--transition-smooth);
-}
-
-header.scrolled {
-    box-shadow: var(--shadow);
-}
 
 .footer-content {
     display: flex;
@@ -346,14 +325,7 @@ header.scrolled {
 .footer-bottom {
     justify-content: center;
 }   
-nav {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 1rem;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
+
 
 .logo h1 {
     font-size: 1.8rem;
@@ -665,16 +637,12 @@ input:focus, select:focus, textarea:focus {
     cursor: pointer;
     padding: 10px;
     left: 80%;
-    position: absolute;
-    background: #1d7faa; 
+    background: #1d80aa; 
     color: rgb(0, 0, 0);
 }
 
 /* Masquer la navigation classique par défaut sur petits écrans */
-@media screen and (max-width: 768px) {
-    .burger-menu {
-        display: block;
-    }
+@media screen and (max-width: 1000px) {
 
     /* Cache le menu de base */
     .main-nav {
@@ -911,7 +879,7 @@ input:focus, select:focus, textarea:focus {
 }
 
 /* Responsive design pour mobile */
-@media (max-width: 768px) {
+@media (max-width: 1000px) {
     .users-grid {
         grid-template-columns: 1fr;
     }
@@ -1040,7 +1008,7 @@ input:focus, select:focus, textarea:focus {
 }
 
 /* Responsive design pour mobile */
-@media (max-width: 768px) {
+@media (max-width: 1000px) {
     .user-profile-grid {
         grid-template-columns: 1fr;
     }
@@ -1137,7 +1105,7 @@ input:focus, select:focus, textarea:focus {
 }
 
 /* Responsive */
-@media (max-width: 768px) {
+@media (max-width: 1000px) {
     .admin-table {
         font-size: 0.875rem;
     }
@@ -1155,19 +1123,10 @@ input:focus, select:focus, textarea:focus {
         border-left-color: var(--primary-black);
     }
     
-}/* ----------------------------------------------------------
-/* Styles spécifiques à l'espace administration */
-.admin-dashboard {
-    max-width: 1400px;
-    margin: 0 auto;
-    padding: 80px 20px 40px;
 }
 
-.admin-header {
-    text-align: center;
-    margin-bottom: 2rem;
-}
-/* Styles pour la grille d'utilisateurs */
+
+
 .users-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
@@ -1258,7 +1217,7 @@ input:focus, select:focus, textarea:focus {
 }
 
 /* Responsive design pour mobile */
-@media (max-width: 768px) {
+@media (max-width: 1000px) {
     .users-grid {
         grid-template-columns: 1fr;
     }
@@ -1387,7 +1346,7 @@ input:focus, select:focus, textarea:focus {
 }
 
 /* Responsive design pour mobile */
-@media (max-width: 768px) {
+@media (max-width: 1000px) {
     .user-profile-grid {
         grid-template-columns: 1fr;
     }
@@ -1484,7 +1443,7 @@ input:focus, select:focus, textarea:focus {
 }
 
 /* Responsive */
-@media (max-width: 768px) {
+@media (max-width: 1000px) {
     .admin-table {
         font-size: 0.875rem;
     }
@@ -1777,7 +1736,7 @@ input:focus, select:focus, textarea:focus {
     display: block;
 }
 
-/* Styles pour les offres d'emploi */
+
 
 .status-postulée {
     color: #2ecc71;
@@ -1797,7 +1756,7 @@ input:focus, select:focus, textarea:focus {
 }
 
 .promotion-header {
-    background-color: #d8d8d8;
+    background-color: #4a69bd;
     color: white;
     padding: 8px 12px;
     font-weight: bold;
@@ -2034,7 +1993,7 @@ input:focus, select:focus, textarea:focus {
 .info-section{
     background-color: var(--primary-white);
     border: 1px solid var(--gray-200);
-    border-radius: 12px;
+    border-radius: 12px;    
     padding: 1.5rem;
     margin-bottom: 2rem;
     box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3);
@@ -2047,14 +2006,8 @@ input:focus, select:focus, textarea:focus {
     border-color: var(--gray-300);
 }
 
-.user-info-left {
-    position: absolute;
-    top: 20px;
-    left: 20px;
-    font-weight: bold;
-}
 
-@media (max-width: 768px) {
+@media (max-width: 1000px) {
     .user-info-left {
         top: 15px;
         left: 15px;
@@ -2105,11 +2058,7 @@ input:focus, select:focus, textarea:focus {
     cursor: pointer;
 }
 
-.user-info-left{
-    position: left;
-    margin-top: 20px;
-    font-weight: bold;
-}
+
 
 .profile-link{
     text-decoration: none;
@@ -2177,7 +2126,7 @@ select {
     margin-left: 5px;
 }
 
-@media screen and (max-width: 768px) {
+@media screen and (max-width: 1000px) {
     .card {
         padding: 15px;
     }
@@ -2237,10 +2186,6 @@ select {
     font-weight: bold;
 }
 
-.user-info-left {
-    flex: 1; 
-    text-align: right;
-}
 
 /* Conteneur général */
 .info-section {
@@ -2256,10 +2201,6 @@ select {
     box-shadow: 10px 4px 10px rgba(0, 0, 0, 0.1);
     border-left: 5px solid #007bff; /* Bordure colorée pour du style */
     max-width: 600px;
-}
-
-.reviews-section{
-    margin-top: 20px;
 }
 
 
@@ -2300,9 +2241,151 @@ select {
 }
 
 
-@media (max-width: 768px) {
+@media (max-width: 1000px) {
     .review-card {
         max-width: 90%;
         margin: 10px auto;
     }
 }
+
+
+.corps {
+    font-family: Arial, sans-serif;
+    text-align: center;
+    padding: 50px;
+    background-color: #f8d7da;
+    color: #721c24;
+}
+.container {
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    display: inline-block;
+}
+.erreur-a {
+    display: inline-block;
+    margin-top: 20px;
+    padding: 10px 20px;
+    background-color: #91212c;
+    color: white;
+    text-decoration: none;
+    border-radius: 5px;
+}
+.erreur-a:hover {
+    background-color: #91212c;
+}
+
+
+
+.header nav {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    position: relative;
+    flex-wrap: wrap;
+  }
+  
+  /* Position user-info to the left of the logo */
+  .user-info-left {
+    order: 1;
+    margin-right: 20px;
+    font-weight: 600;
+  }
+  
+  /* Position logo at 40% from the left */
+  .logo {
+    order: 2;
+    position: absolute;
+    left: 35%;
+    transform: translateX(-50%);
+  }
+  
+  /* Main navigation and logout aligned to the right */
+  .main-nav {
+    order: 3;
+    display: flex;
+    align-items: center;
+    list-style: none;
+    margin: 0;
+    margin-left: auto; /* Pushes navigation to the right */
+    padding: 0;
+    font-weight: 600;
+  }
+  
+  .logout-container {
+    margin-left: 15px;
+  }
+  
+  /* Medium screens - prevent overlap */
+  @media (max-width: 1250px) {
+    .logo {
+      position: static; /* Remove absolute positioning */
+      transform: none;
+      margin-left: 20px;
+      margin-right: 20px;
+    }
+    
+    .main-nav {
+      margin-left: auto;
+    }
+  }
+  
+  /* Mobile layout */
+  @media (max-width: 1000px) {
+    .header nav {
+      padding: 10px;
+    }
+
+    .logo {
+      margin-right: auto;
+      order: 1;
+    }
+    
+    .user-info-left {
+      order: 2;
+    }
+    
+    .burger-menu {
+      display: block;
+      cursor: pointer;
+      order: 3;
+    }
+    
+    .main-nav {
+      display: none;
+      width: 100%;
+      flex-direction: column;
+      order: 4;
+    }
+    
+    #mobile-menu-toggle {
+      display: none;
+    }
+    
+    #mobile-menu-toggle:checked ~ .main-nav {
+      display: flex;
+    }
+    
+    .main-nav li {
+      margin: 8px 0;
+    }
+  }
+
+  @media (max-width: 1000px) {
+    
+    .user-info-left a {
+      display: block;
+      max-width: 120px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis; /* Ajouter "..." si le texte est trop long */
+      margin-left: auto;
+    }
+    
+    .user-info-left a.profile-link span {
+      display: none; 
+    }
+    
+
+  }
