@@ -20,8 +20,8 @@ if (!isset($_SESSION['logged_in']) || $_SESSION['logged_in'] !== true) {
     exit();
 }
 
-// vérifier si l'utilisateur est un administrateur
-if ($_SESSION['user_type'] !== 'admin') {
+// vérifier si l'utilisateur est un étudiant
+if ($_SESSION['user_type'] == 'etudiant') {
     // Rediriger vers la page principale si ce n'est pas un administrateur
     header("Location: Main.php");
     exit();
