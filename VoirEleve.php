@@ -40,7 +40,7 @@ if (isset($_GET['action']) && isset($_GET['id'])) {
         $id = (int)$_GET['id'];
         $sql_delete_offer = "DELETE FROM utilisateur WHERE id_compte = :id";
         $stmt_delete_offer = $connexion->prepare($sql_delete_offer);
-        $stmt_delete_offer->bindParam(':id', $id, PDO::PARAM_INT);
+        $stmt_delete_offer->bindParam(':id', $id, PDO::PARAM_STR);
         $stmt_delete_offer->execute();
         header("Location: VoirEleve.php");
         exit();

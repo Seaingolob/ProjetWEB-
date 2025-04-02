@@ -36,7 +36,7 @@ if (isset($_GET['action']) && isset($_GET['id'])) {
         // Supprimer l'utilisateur
         $sql_delete_user = "DELETE FROM utilisateur WHERE id_compte = :id";
         $stmt_delete_user = $connexion->prepare($sql_delete_user);
-        $stmt_delete_user->bindParam(':id', $id, PDO::PARAM_INT);
+        $stmt_delete_user->bindParam(':id', $id, PDO::PARAM_STR);
         $stmt_delete_user->execute();
     } elseif ($_GET['action'] === 'delete_offer') {
         // Supprimer l'offre

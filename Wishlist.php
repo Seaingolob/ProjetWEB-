@@ -49,7 +49,7 @@ $sql = "SELECT o.*, e.nom AS nom_entreprise, v.nom_ville
 
 try {
     $stmt = $connexion->prepare($sql);
-    $stmt->bindValue(':user_id', $userId, PDO::PARAM_INT);
+    $stmt->bindValue(':user_id', $userId, PDO::PARAM_STR);
     $stmt->execute();
     $offres = $stmt->fetchAll(PDO::FETCH_ASSOC);
 } catch (PDOException $e) {

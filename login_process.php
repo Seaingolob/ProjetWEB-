@@ -32,7 +32,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     
     try {
         $stmt = $connexion->prepare($sql);
-        $stmt->bindParam(':identifiant', $identifiant, PDO::PARAM_INT);
+        $stmt->bindParam(':identifiant', $identifiant, PDO::PARAM_STR);
         $stmt->execute();
         
         // Vérifier si un utilisateur a été trouvé
@@ -94,7 +94,7 @@ function determinerTypeUtilisateur($connexion, $id_compte) {
 
         try {
             $stmt = $connexion->prepare($sql);
-            $stmt->bindParam(':id_compte', $id_compte, PDO::PARAM_INT);
+            $stmt->bindParam(':id_compte', $id_compte, PDO::PARAM_STR);
             $stmt->execute();
 
             if ($stmt->rowCount() === 1) { // Si l'utilisateur est trouvé
