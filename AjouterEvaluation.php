@@ -55,7 +55,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             
             // Vérifier si l'utilisateur a déjà évalué cette offre
             $stmt = $connexion->prepare("SELECT 1 FROM evaluation WHERE id_compte = :id_compte AND id_offre = :id_offre");
-            $stmt->bindParam(':id_compte', $id_compte);
+            $stmt->bindParam(':id_compte', $id_compte,PDO::PARAM_STR);
             $stmt->bindParam(':id_offre', $id_offre);
             $stmt->execute();
             
@@ -76,7 +76,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             
             // Ajouter l'évaluation
             $stmt = $connexion->prepare("INSERT INTO evaluation (id_compte, id_offre, note, avis) VALUES (:id_compte, :id_offre, :note, :avis)");
-            $stmt->bindParam(':id_compte', $id_compte);
+            $stmt->bindParam(':id_compte', $id_compte,PDO::PARAM_STR);
             $stmt->bindParam(':id_offre', $id_offre);
             $stmt->bindParam(':note', $note);
             $stmt->bindParam(':avis', $avis);

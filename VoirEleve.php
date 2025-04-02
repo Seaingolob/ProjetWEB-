@@ -57,7 +57,7 @@ try {
                                         WHEN EXISTS (SELECT 1 FROM pilote WHERE id_compte = :id) THEN 'pilote'
                                         ELSE 'inconnu'
                                     END AS user_type");
-    $stmt->bindParam(':id', $id_compte);
+    $stmt->bindParam(':id', $id_compte, PDO::PARAM_STR);
     $stmt->execute();
     $user_type_result = $stmt->fetch(PDO::FETCH_ASSOC);
     $user_type = $user_type_result['user_type'];
@@ -66,7 +66,7 @@ try {
     $stmt = $connexion->prepare("SELECT u.id_compte, u.nom, u.prenom, u.mail, u.mot_de_passe, u.telephone 
                                 FROM utilisateur u 
                                 WHERE u.id_compte = :id");
-    $stmt->bindParam(':id', $id_compte);
+    $stmt->bindParam(':id', $id_compte, PDO::PARAM_STR);
     $stmt->execute();
     $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
@@ -100,7 +100,7 @@ try {
                                     LEFT JOIN competence c ON co.id_competence = c.id_competence 
                                     WHERE s.id_compte = :id 
                                     GROUP BY o.id_offre");
-        $stmt->bindParam(':id', $id_compte);
+        $stmt->bindParam(':id', $id_compte, PDO::PARAM_STR);
         $stmt->execute();
         $specific_info['wishlist'] = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
@@ -120,7 +120,7 @@ try {
         ORDER BY a.debut DESC
         LIMIT 1");
 
-        $stmt->bindParam(':id', $id_compte);
+        $stmt->bindParam(':id', $id_compte, PDO::PARAM_STR);
         $stmt->execute();
         $specific_info['promotion'] = $stmt->fetch(PDO::FETCH_ASSOC);
     } elseif ($user_type === 'pilote') {
@@ -138,7 +138,7 @@ try {
         WHERE pi.id_compte = :id
         AND (pi.debut <= CURRENT_DATE() AND (pi.fin >= CURRENT_DATE() OR pi.fin IS NULL))
         ORDER BY pi.debut DESC");
-        $stmt->bindParam(':id', $id_compte);
+        $stmt->bindParam(':id', $id_compte, PDO::PARAM_STR);
         $stmt->execute();
         $specific_info['promotions_pilotees'] = $stmt->fetchAll(PDO::FETCH_ASSOC);
     } elseif ($user_type === 'admin') {

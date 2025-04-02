@@ -106,7 +106,7 @@ try {
     $stmt = $connexion->prepare("SELECT COUNT(*) AS postule
                                 FROM postuler
                                 WHERE id_compte = :id_compte AND id_offre = :id_offre");
-    $stmt->bindParam(':id_compte', $_SESSION['user_id']);
+    $stmt->bindParam(':id_compte', $_SESSION['user_id'], PDO::PARAM_STR);
     $stmt->bindParam(':id_offre', $id_offre);
     $stmt->execute();
     $postule = $stmt->fetch(PDO::FETCH_ASSOC)['postule'] > 0;
@@ -115,7 +115,7 @@ try {
     $stmt = $connexion->prepare("SELECT COUNT(*) AS wishlist
                                 FROM souhaiter
                                 WHERE id_compte = :id_compte AND id_offre = :id_offre");
-    $stmt->bindParam(':id_compte', $_SESSION['user_id']);
+    $stmt->bindParam(':id_compte', $_SESSION['user_id'], PDO::PARAM_STR);
     $stmt->bindParam(':id_offre', $id_offre);
     $stmt->execute();
     $wishlist = $stmt->fetch(PDO::FETCH_ASSOC)['wishlist'] > 0;
@@ -138,7 +138,7 @@ try {
     $stmt = $connexion->prepare("SELECT COUNT(*) AS evalue
                                 FROM evaluation
                                 WHERE id_compte = :id_compte AND id_offre = :id_offre");
-    $stmt->bindParam(':id_compte', $_SESSION['user_id']);
+    $stmt->bindParam(':id_compte', $_SESSION['user_id'], PDO::PARAM_STR);
     $stmt->bindParam(':id_offre', $id_offre);
     $stmt->execute();
     $a_evalue = $stmt->fetch(PDO::FETCH_ASSOC)['evalue'] > 0;

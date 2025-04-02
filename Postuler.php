@@ -46,7 +46,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     try {
         // Vérifier si l'offre existe
         $stmt = $connexion->prepare("SELECT COUNT(*) FROM offre WHERE id_offre = :id");
-        $stmt->bindParam(':id', $id_offre);
+        $stmt->bindParam(':id', $id_offre, PDO::PARAM_INT);
         $stmt->execute();
         
         if ($stmt->fetchColumn() == 0) {
@@ -57,7 +57,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         
         // Vérifier si l'étudiant a déjà postulé à cette offre
         $stmt = $connexion->prepare("SELECT COUNT(*) FROM postuler WHERE id_compte = :id_compte AND id_offre = :id_offre");
-        $stmt->bindParam(':id_compte', $id_compte);
+        $stmt->bindParam(':id_compte', $id_compte, PDO::PARAM_STR);
         $stmt->bindParam(':id_offre', $id_offre);
         $stmt->execute();
         
@@ -137,7 +137,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         
         // Insérer la candidature avec les noms des fichiers
         $stmt = $connexion->prepare("INSERT INTO postuler (id_compte, id_offre, cv_path, lettre_motivation_path, date_candidature) VALUES (:id_compte, :id_offre, :cv_path, :lettre_path, NOW())");
-        $stmt->bindParam(':id_compte', $id_compte);
+        $stmt->bindParam(':id_compte', $id_compte, PDO::PARAM_STR);
         $stmt->bindParam(':id_offre', $id_offre);
         $stmt->bindParam(':cv_path', $cv_filename);
         $stmt->bindParam(':lettre_path', $lettre_filename);
