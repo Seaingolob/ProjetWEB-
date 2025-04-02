@@ -22,6 +22,7 @@ jobs:
           ssh-keyscan -H ${{ secrets.SSH_HOST }} >> ~/.ssh/known_hosts
 
           
-      - name: Deploy to server
+      - name: Deploy to Server
         run: |
-          ssh ${{ secrets.SSH_USER }}@${{ secrets.SERVER_IP }} "cd ${{ secrets.PROJECT_PATH }} && git pull origin main"
+          ssh ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "cd ${{ secrets.SSH_TARGET_DIR }} && git pull origin main"
+
