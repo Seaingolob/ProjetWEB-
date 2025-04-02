@@ -31,7 +31,7 @@ if (!isset($_GET['id']) || empty($_GET['id'])) {
 }
 
 // Récupérer l'ID de l'utilisateur
-$id_compte = intval($_GET['id']);
+$id_compte = $_GET['id'];
 
 
 // Gérer les actions de suppression
