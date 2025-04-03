@@ -70,11 +70,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         // Gestion des fichiers téléchargés
         $cv_filename = null;
         $lettre_filename = null;
-        $upload_dir = "uploads/candidatures/";
+        $upload_dir = __DIR__ . "/uploads/candidatures/";
         
         // Créer le dossier s'il n'existe pas
         if (!is_dir($upload_dir)) {
             mkdir($upload_dir, 0755, true);
+        }
+
+        if (!is_writable($upload_dir)) {
+            error_log("Le répertoire d'upload n'est pas accessible en écriture: " . $upload_dir);
+            header("Location: VoirOffre.php?id=" . $id_offre . "&error=dir_not_writable");
+            exit();
         }
         
         // Traitement du CV
