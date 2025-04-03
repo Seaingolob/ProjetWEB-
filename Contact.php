@@ -8,9 +8,22 @@ if (!isset($_SESSION['logged_in']) || $_SESSION['logged_in'] !== true) {
     header("Location: connexion.php");
     exit();
 }
+
+
+// Vérifier si la session existe et si elle a expiré
+if (isset($_SESSION['last_activity']) && (time() - $_SESSION['last_activity'] > 3600)) {
+    // La session a expiré, déconnecter l'utilisateur
+    session_unset();
+    session_destroy();
+    header("Location: connexion.php?expired=1");
+    exit();
+}
+
+// Mettre à jour le timestamp de dernière activité
+$_SESSION['last_activity'] = time();
+
+
 ?>
-
-
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -94,7 +107,7 @@ if (!isset($_SESSION['logged_in']) || $_SESSION['logged_in'] !== true) {
             </div>
         </section>
         <br>            
-        <section class="contact-form">
+        <form id="contact-form" action="processContact.php" method="POST">
             <h3>Formulaire de contact</h3>
             <form id="contact-form">
                     <div id="sujet_message" class="message">
