@@ -1,7 +1,7 @@
 <?php
 // Vérifier si la requête est de type POST
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-    header('Location: contact.php?error=method_not_allowed');
+    header('Location: Contact.php?error=method_not_allowed');
     exit();
 }
 
@@ -39,11 +39,11 @@ $success = file_put_contents($filepath, $content);
 // Vérifier si l'enregistrement a réussi
 if ($success === false) {
     error_log("Erreur d'enregistrement du contact: $filepath");
-    header('Location: contact.php?error=save_error');
+    header('Location: Contact.php?error=save_error');
     exit();
 }
 
 // Rediriger avec un message de succès
-header('Location: contact.php?success=1');
+header('Location: Contact.php?success=1');
 exit();
 ?>
