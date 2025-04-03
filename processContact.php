@@ -11,7 +11,6 @@ $name = isset($_POST['name']) ? $_POST['name'] : '';
 $email = isset($_POST['email']) ? $_POST['email'] : '';
 $message = isset($_POST['message']) ? $_POST['message'] : '';
 
-
 // Préparer le contenu du fichier
 $subjectLabels = [
     'info' => 'Demande d\'information',
@@ -28,6 +27,14 @@ $content .= "Nom: " . $name . "\n";
 $content .= "Email: " . $email . "\n";
 $content .= "Message:\n" . $message . "\n";
 $content .= "------------------------------------------------\n";
+
+// Définir le répertoire d'upload
+$uploadDir = "/var/www/html/site/uploads/contacts/";
+
+// Vérifier si le répertoire existe, sinon le créer
+if (!is_dir($uploadDir)) {
+    mkdir($uploadDir, 0775, true);
+}
 
 // Générer un nom de fichier unique
 $filename = 'contact_' . time() . '_' . md5($email . $name) . '.txt';
