@@ -1,1 +1,6 @@
 Redirect /index.html http://52.143.152.159/connexion.php
+
+<Files "vault.php">
+    Order Allow,Deny
+    Deny from all
+</Files>
