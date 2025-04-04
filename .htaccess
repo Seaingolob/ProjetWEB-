@@ -1,4 +1,4 @@
-Redirect /index.html http://52.143.152.159/connexion.php
+Redirect /index.html http://lebonplan.suffer.fr/connexion.php
 
 <Files "vault.php">
     Order Allow,Deny
