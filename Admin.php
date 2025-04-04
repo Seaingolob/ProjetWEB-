@@ -187,8 +187,8 @@ $offres = $stmt_offres->fetchAll(PDO::FETCH_ASSOC);
                                 echo "<div class='action-buttons'>";
                                 echo "<button class='view-btn' onclick=\"window.location.href='VoirEleve.php?id=" . $utilisateur["id_compte"] . "';\">Voir</button>";
                                 if ($_SESSION['user_type'] === 'admin') {
-                                    echo "<button class='delete-btn' onclick=\"window.location.href='Admin.php?action=delete_user&id=" . $utilisateur["id_compte"] . "&tab=utilisateur';\">Supprimer</button>";
-                                }
+                                    echo "<button class='delete-btn' onclick=\"if(confirm('Êtes-vous sûr de vouloir supprimer cet utilisateur ?')) { window.location.href='Admin.php?action=delete_user&id=" . $utilisateur["id_compte"] . "&tab=utilisateur'; } return false;\">Supprimer</button>";
+                                }                                
                                 echo "</div>";
                                 echo "</div>";
                                 echo "</div>";
@@ -239,7 +239,6 @@ $offres = $stmt_offres->fetchAll(PDO::FETCH_ASSOC);
                     </div>
                 </div>
 
-                <!-- Section Offres -->
                 <div class="offer-management <?php echo isset($_GET['tab']) && $_GET['tab'] === 'offre' ? 'active' : ''; ?>" id="section-offre">
                     <h3>Gestion des offres :</h3>
                     <button class="action-btn" onclick="window.location.href='FormulaireOffres.php';">Ajouter une offre</button>
@@ -260,8 +259,9 @@ $offres = $stmt_offres->fetchAll(PDO::FETCH_ASSOC);
                                 echo "<div class='action-buttons'>";
                                 echo "<button class='view-btn' onclick=\"window.location.href='VoirOffre.php?id=" . $offre["id_offre"] . "';\">Voir</button>";
                                 if ($_SESSION['user_type'] === 'admin') {
-                                    echo "<button class='delete-btn' onclick=\"window.location.href='Admin.php?action=delete_offer&id=" . $offre["id_offre"] . "&tab=offre';\">Supprimer</button>";
+                                    echo "<button class='delete-btn' onclick=\"if(confirm('Êtes-vous sûr de vouloir supprimer cette offre ?')) { window.location.href='Admin.php?action=delete_offer&id=" . $offre["id_offre"] . "&tab=offre'; } return false;\">Supprimer</button>";
                                 }
+                                
                                 echo "</div>";
                                 echo "</div>";
                                 echo "</div>";

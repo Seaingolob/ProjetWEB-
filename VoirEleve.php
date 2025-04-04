@@ -297,7 +297,7 @@ try {
                 <div class="user-action-buttons">
                     <button class="back-btn" onclick="window.location.href='Main.php';">Retour</button>
                     <?php if ($_SESSION['user_type'] === 'admin'): ?>
-                        <button class="delete-btn" onclick="window.location.href='VoirEleve.php?action=delete&id=<?php echo $user['id_compte']; ?>';">Supprimer</button>
+                        <button class="delete-btn" onclick="if(confirm('Êtes-vous sûr de vouloir supprimer cet élève ?')) { window.location.href='VoirEleve.php?action=delete&id=<?php echo $user['id_compte']; ?>'; } return false;">Supprimer</button>
                     <?php endif; ?>
                 </div>
             </div>

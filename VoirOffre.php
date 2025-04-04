@@ -306,8 +306,9 @@ try {
                     <?php endif; ?>
 
                     <?php if ($_SESSION['user_type'] === 'admin'): ?>
-                        <button class="action-btn delete-btn" onclick="window.location.href='VoirOffre.php?action=delete&id=<?php echo $offre['id_offre']; ?>'">Supprimer</button>
+                        <button class="action-btn delete-btn" onclick="if(confirm('Êtes-vous sûr de vouloir supprimer cette offre ?')) { window.location.href='VoirOffre.php?action=delete&id=<?php echo $offre['id_offre']; ?>'; } return false;">Supprimer</button>
                     <?php endif; ?>
+
                 </div>
             <div class="info-section">            
                 <div class="form-title">Évaluations</div>
