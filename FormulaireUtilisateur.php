@@ -155,16 +155,17 @@ try {
                         <input type="radio" id="type-etudiant" name="type_utilisateur" value="etudiant" checked>
                         <label for="type-etudiant">Étudiant</label>
                     </div>
+                    <?php if ($_SESSION['user_type'] == 'admin'): ?>
+                        <div class="radio-group form-group">
+                            <input type="radio" id="type-pilote" name="type_utilisateur" value="pilote">
+                            <label for="type-pilote">Pilote</label>
+                        </div>
 
-                    <div class="radio-group form-group">
-                        <input type="radio" id="type-pilote" name="type_utilisateur" value="pilote">
-                        <label for="type-pilote">Pilote</label>
-                    </div>
-
-                    <div class="radio-group form-group">
-                        <input type="radio" id="type-admin" name="type_utilisateur" value="admin">
-                        <label for="type-admin">Administrateur</label>
-                    </div>
+                        <div class="radio-group form-group">
+                            <input type="radio" id="type-admin" name="type_utilisateur" value="admin">
+                            <label for="type-admin">Administrateur</label>
+                        </div>
+                    <?php endif; ?>
                 </div>
             </div>
 
