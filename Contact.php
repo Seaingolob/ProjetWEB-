@@ -6,7 +6,7 @@ session_start();
 if (!isset($_SESSION['logged_in']) || $_SESSION['logged_in'] !== true) {
     // Rediriger vers la page de connexion
     header("Location: connexion.php");
-    exit();
+    exit(); 
 }
 
 
@@ -107,9 +107,8 @@ $_SESSION['last_activity'] = time();
             </div>
         </section>
         <br>            
-        <form id="contact-form" action="processContact.php" method="POST">
             <h3>Formulaire de contact</h3>
-            <form id="contact-form">
+                <form id="contact-form" action="processContact.php" method="POST">
                     <div id="sujet_message" class="message">
                     Veuillez choisir un sujet    
                     </div>
