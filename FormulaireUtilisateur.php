@@ -74,7 +74,7 @@ try {
 </head>
 
 <body>
-    <header>
+    <header class="header">
         <nav>
             <div class="logo">
                 <a href="Main.php">
@@ -100,7 +100,7 @@ try {
                 </div>
             </ul>
         </nav>
-    </header class="header">
+    </header>
     <div class="form-container">
         <h2>Ajouter un Utilisateur</h2>
         <form action="processFormulaireUtilisateur.php" method="post" id="form-utilisateur">
