@@ -106,7 +106,7 @@ try {
     $stmt = $connexion->prepare("SELECT COUNT(*) AS postule
                                 FROM postuler
                                 WHERE id_compte = :id_compte AND id_offre = :id_offre");
-    $stmt->bindParam(':id_compte', $_SESSION['user_id'], PDO::PARAM_STR);
+    $stmt->bindParam(':id_compte', $_SESSION['user_id']);
     $stmt->bindParam(':id_offre', $id_offre);
     $stmt->execute();
     $postule = $stmt->fetch(PDO::FETCH_ASSOC)['postule'] > 0;
@@ -115,7 +115,7 @@ try {
     $stmt = $connexion->prepare("SELECT COUNT(*) AS wishlist
                                 FROM souhaiter
                                 WHERE id_compte = :id_compte AND id_offre = :id_offre");
-    $stmt->bindParam(':id_compte', $_SESSION['user_id'], PDO::PARAM_STR);
+    $stmt->bindParam(':id_compte', $_SESSION['user_id']);
     $stmt->bindParam(':id_offre', $id_offre);
     $stmt->execute();
     $wishlist = $stmt->fetch(PDO::FETCH_ASSOC)['wishlist'] > 0;
@@ -138,7 +138,7 @@ try {
     $stmt = $connexion->prepare("SELECT COUNT(*) AS evalue
                                 FROM evaluation
                                 WHERE id_compte = :id_compte AND id_offre = :id_offre");
-    $stmt->bindParam(':id_compte', $_SESSION['user_id'], PDO::PARAM_STR);
+    $stmt->bindParam(':id_compte', $_SESSION['user_id']);
     $stmt->bindParam(':id_offre', $id_offre);
     $stmt->execute();
     $a_evalue = $stmt->fetch(PDO::FETCH_ASSOC)['evalue'] > 0;
@@ -157,6 +157,11 @@ try {
     <title>LeBonPlan - Détail Offre</title>
     <link rel="stylesheet" href="styles.css">
     <script src="script.js" defer></script>
+    <script>
+        window.onload = function() {
+            postuleroffre();
+        };
+    </script>
 </head>
 
 <body>
@@ -306,9 +311,8 @@ try {
                     <?php endif; ?>
 
                     <?php if ($_SESSION['user_type'] === 'admin'): ?>
-                        <button class="action-btn delete-btn" onclick="if(confirm('Êtes-vous sûr de vouloir supprimer cette offre ?')) { window.location.href='VoirOffre.php?action=delete&id=<?php echo $offre['id_offre']; ?>'; } return false;">Supprimer</button>
+                        <button class="action-btn delete-btn" onclick="window.location.href='VoirOffre.php?action=delete&id=<?php echo $offre['id_offre']; ?>'">Supprimer</button>
                     <?php endif; ?>
-
                 </div>
             <div class="info-section">            
                 <div class="form-title">Évaluations</div>
