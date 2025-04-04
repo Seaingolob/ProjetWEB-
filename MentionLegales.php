@@ -79,7 +79,7 @@ if (!isset($_SESSION['logged_in']) || $_SESSION['logged_in'] !== true) {
             <article style="margin-bottom: 2rem;">
                 <h2 style="color: var(--gray-800); margin-bottom: 1rem;">2. Hébergement</h2>
                 <p>Ce site est hébergé par :<br>
-                OVH SAS<br>
+                Azure <br>
                 2 rue Kellermann<br>
                 59100 Roubaix<br>
                 France</p>
