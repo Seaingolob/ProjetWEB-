@@ -36,17 +36,17 @@ class UserViewController {
     public function viewUser() {
         // Vérifier si l'ID de l'utilisateur est fourni
         if (!isset($_GET['id']) || empty($_GET['id'])) {
-            echo "Paramètre ID manquant!";
+            header("Location: /main");
             exit();
-            // header("Location: /main");
-            // exit();
         }
         
+        // DÉFINIR L'ID AVANT DE L'UTILISER !
         $id_compte = $_GET['id'];
-        echo "ID recherché: " . $id_compte . "<br>";
         
-        // Récupérer les informations de l'utilisateur
+        // Récupérer les informations de l'utilisateur (UNE SEULE FOIS)
         $userData = $this->userModel->getUserInfo($id_compte);
+        
+        // Pour le débogage
         echo "<pre>"; 
         print_r($userData); 
         echo "</pre>";
@@ -57,17 +57,6 @@ class UserViewController {
             exit();
             // header("Location: /main");
             // exit();
-        }
-        
-        $id_compte = $_GET['id'];
-        
-        // Récupérer les informations de l'utilisateur
-        $userData = $this->userModel->getUserInfo($id_compte);
-        
-        // Vérifier si l'utilisateur existe
-        if (!$userData['user']) {
-            header("Location: /main");
-            exit();
         }
         
         // Préparer les données pour la vue
