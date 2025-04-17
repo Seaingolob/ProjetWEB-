@@ -66,8 +66,18 @@ class UserModel {
             $user = $stmt->fetch(PDO::FETCH_ASSOC);
             
             // TROISIÈME ÉTAPE : Déterminer le type d'utilisateur
-            // On isole cette partie pour faciliter le débogage
-            $user_type = $this->get_user_type($id_compte);
+            // On garde ta méthode originale pour déterminer le type d'utilisateur
+            $stmt = $this->connexion->prepare("SELECT 
+                                CASE 
+                                    WHEN EXISTS (SELECT 1 FROM etudiant WHERE id_compte = :id) THEN 'etudiant'
+                                    WHEN EXISTS (SELECT 1 FROM admin WHERE id_compte = :id) THEN 'admin'
+                                    WHEN EXISTS (SELECT 1 FROM pilote WHERE id_compte = :id) THEN 'pilote'
+                                    ELSE 'inconnu'
+                                END AS user_type");
+            $stmt->bindParam(':id', $id_compte, PDO::PARAM_STR);
+            $stmt->execute();
+            $user_type_result = $stmt->fetch(PDO::FETCH_ASSOC);
+            $user_type = $user_type_result['user_type'];
             
             // QUATRIÈME ÉTAPE : Informations spécifiques selon le type d'utilisateur
             $specific_info = [];
@@ -141,12 +151,11 @@ class UserModel {
             
         } catch (PDOException $e) {
             // Log plus détaillé de l'erreur pour aider au débogage
-            error_log("ERREUR CRITIQUE dans getUserInfo(): " . $e->getMessage() . " - requête SQL: " . $e->getTraceAsString());
+            error_log("ERREUR CRITIQUE dans getUserInfo(): " . $e->getMessage());
             return [
                 'user' => null,
                 'user_type' => null,
-                'specific_info' => [],
-                'error' => $e->getMessage() // Pour le débogage uniquement, à retirer en production
+                'specific_info' => []
             ];
         }
     }
