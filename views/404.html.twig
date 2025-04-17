@@ -1,0 +1,16 @@
+{% extends 'layout/base_minimal.html.twig' %}
+
+{% block title %}LeBonPlan - Erreur 404{% endblock %}
+
+{% block content %}
+<div class="error-container">
+    <div class="error-box">
+        <h1>Erreur 404</h1>
+        <h2>Page non trouvée</h2>
+        <p>{{ message }}</p>
+        <div class="btn-container">
+            <a href="/" class="btn">Retour à l'accueil</a>
+        </div>
+    </div>
+</div>
+{% endblock %}
