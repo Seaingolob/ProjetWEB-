@@ -34,7 +34,7 @@ class AuthController {
     public function loginProcess() {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $identifiant = isset($_POST['identifiant']) ? $_POST['identifiant'] : '';
-            $mot_de_passe = isset($_POST['mot_de_passe']) ? $_POST['mot_de_passe'] : '';
+            $mot_de_passe = isset($_POST['motdepasse']) ? $_POST['motdepasse'] : '';
             
             // Validation des entrées
             if (empty($identifiant) || empty($mot_de_passe)) {
