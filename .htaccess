@@ -1,6 +1,0 @@
-Redirect /index.html http://lebonplan.suffer.fr/connexion.php
-
-<Files "vault.php">
-    Order Allow,Deny
-    Deny from all
-</Files>
