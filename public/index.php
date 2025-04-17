@@ -1,23 +1,53 @@
 <?php
 // public/index.php
 
-// Inclure l'autoloader de Composer
-require_once '../vendor/autoload.php';
+// Activer l'affichage des erreurs
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
+
+// Vérifier si le fichier autoload.php existe
+$autoloadPath = '../vendor/autoload.php';
+if (file_exists($autoloadPath)) {
+    require_once $autoloadPath;
+} else {
+    // Si Composer n'est pas configuré, utilise uniquement l'autoloader manuel
+    echo "Note: Composer autoload non trouvé. Utilisation de l'autoloader manuel uniquement.<br>";
+}
 
 // Charger nos propres classes
 spl_autoload_register(function($class) {
     // Convertir les noms de classe en chemins de fichiers
     if (strpos($class, 'Controller') !== false) {
-        include '../controllers/' . $class . '.php';
+        $file = '../controllers/' . $class . '.php';
+        if (file_exists($file)) {
+            include $file;
+            return;
+        }
     } elseif (strpos($class, 'Model') !== false) {
-        include '../models/' . $class . '.php';
+        $file = '../models/' . $class . '.php';
+        if (file_exists($file)) {
+            include $file;
+            return;
+        }
     } else {
-        include '../core/' . $class . '.php';
+        $file = '../core/' . $class . '.php';
+        if (file_exists($file)) {
+            include $file;
+            return;
+        }
     }
+    
+    echo "Impossible de charger la classe: $class<br>";
 });
 
 // Démarrer la session
 session_start();
+
+// Vérifier si la classe Router existe
+if (!class_exists('Router')) {
+    die("Erreur: La classe Router n'existe pas ou n'est pas correctement chargée.");
+}
 
 // Initialiser le routeur
 $router = new Router();
