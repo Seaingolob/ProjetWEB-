@@ -5,7 +5,7 @@ class UserModel {
     
     public function __construct() {
         // Inclure config et se connecter à la BD
-        require_once 'config/config.php';
+        require_once __DIR__ . '/../config/config.php';
         $this->connexion = $connexion; // Supposant que $connexion vient de config.php
     }
     
