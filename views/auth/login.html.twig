@@ -1,0 +1,37 @@
+{% extends 'layout/base_minimal.html.twig' %}
+
+{% block title %}LeBonPlan - Se connecter{% endblock %}
+
+{% block content %}
+<div class="login-container">
+    <div class="login-box">
+        <h2>Connexion</h2>
+        
+        {% if error_message %}
+            <div class="err_message" style="color: red; margin-top: 10px;">{{ error_message }}</div>
+        {% endif %}
+        
+        <form id="login-form" action="{{ url('login-process') }}" method="post">
+            <label for="identifiant">Identifiant</label>
+            <input type="text" id="identifiant" name="identifiant">
+            <div id="utilisateur-message" class="message">Veuillez entrer votre identifiant</div>
+            
+            <label for="motdepasse">Mot de passe</label>
+            <input type="password" id="motdepasse" name="motdepasse">
+            <div id="mdp-message" class="message">Veuillez entrer votre mot de passe</div>
+            
+            <div class="btn-container">
+                <button type="submit">Se connecter</button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
+
+{% block javascripts %}
+<script>
+    window.onload = function() {
+        connexion();
+    };
+</script>
+{% endblock %}

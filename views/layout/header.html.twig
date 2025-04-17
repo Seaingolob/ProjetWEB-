@@ -1,0 +1,30 @@
+<header class="header">
+    <nav>
+        <div class="logo">
+            <a href="{{ url('main') }}"><h1>lebonplan</h1></a>
+        </div>
+        <div class="user-info-left"> 
+            <a href="{{ url('voir-eleve') }}?id={{ session.user_id }}" class="profile-link">
+                👤 {{ session.user_name }}
+            </a>
+        </div>
+        <div class="burger-menu">☰</div>
+        <ul class="main-nav" id="menu">
+            <li><a href="{{ url('main') }}">Accueil</a></li>
+            <li><a href="{{ url('offres') }}">Offres</a></li>
+            {% if session.user_type == 'etudiant' %}
+                <li><a href="{{ url('wishlist') }}">Wishlist</a></li>
+            {% endif %}
+            {% if session.user_type == 'admin' %}
+                <li><a href="{{ url('admin') }}" class="active">Espace-administration</a></li>
+            {% endif %}
+            {% if session.user_type == 'pilote' %}
+                <li><a href="{{ url('admin') }}" class="active">Espace-pilote</a></li>
+            {% endif %}
+            <li><a href="{{ url('contact') }}">Contact</a></li>
+            <div class="logout-container">
+                <button id="logout-btn" onclick="window.location.href='{{ url('logout') }}';">Déconnexion</button>
+            </div>
+        </ul>
+    </nav>
+</header>

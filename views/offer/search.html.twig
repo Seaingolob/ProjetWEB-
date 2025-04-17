@@ -1,0 +1,246 @@
+{% extends 'layout/base.html.twig' %}
+
+{% block title %}LeBonPlan - Offres de Stage{% endblock %}
+
+{% block content %}
+<main>
+    <br><br>
+    <section class="search-section">
+        <h2>Rechercher une offre</h2>
+        <form class="advanced-search" method="GET" action="{{ url('offres') }}">
+            <div class="search-filters">
+                <label for="company-name">Nom de l'entreprise</label>
+                <select id="company-name" name="company-name">
+                    <option value="">Sélectionner une entreprise</option>
+                    {% for company in companies %}
+                        <option value="{{ company }}" {% if searchCompany == company %}selected{% endif %}>
+                            {{ company }}
+                        </option>
+                    {% endfor %}
+                </select>
+
+                <label for="location">Localisation</label>
+                <select id="location" name="location">
+                    <option value="">Sélectionner une ville</option>
+                    {% for city in cities %}
+                        <option value="{{ city }}" {% if searchLocation == city %}selected{% endif %}>
+                            {{ city }}
+                        </option>
+                    {% endfor %}
+                </select>
+
+                <label for="competence">Compétences</label>
+                <div id="competences-container">
+                    {% if searchCompetences is empty %}
+                        <!-- Si aucune compétence n'est sélectionnée, afficher une seule ligne -->
+                        <div class="competence-row">
+                            <select name="competences[]" class="competence-select">
+                                <option value="">Sélectionner une compétence</option>
+                                {% for competence in allCompetences %}
+                                    <option value="{{ competence }}">
+                                        {{ competence }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                            <button type="button" class="add-competence-btn">+</button>
+                            <button type="button" class="remove-competence-btn" style="display: none;">-</button>
+                        </div>
+                    {% else %}
+                        <!-- Pour chaque compétence sélectionnée, afficher une ligne -->
+                        {% for selectedCompetence in searchCompetences %}
+                            <div class="competence-row">
+                                <select name="competences[]" class="competence-select">
+                                    <option value="">Sélectionner une compétence</option>
+                                    {% for competence in allCompetences %}
+                                        <option value="{{ competence }}" {% if selectedCompetence == competence %}selected{% endif %}>
+                                            {{ competence }}
+                                        </option>
+                                    {% endfor %}
+                                </select>
+                                <button type="button" class="add-competence-btn">+</button>
+                                <button type="button" class="remove-competence-btn" 
+                                    style="{{ loop.index0 == 0 and searchCompetences|length == 1 ? 'display: none;' : '' }}">-</button>
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+                </div>
+                <div><br></div>
+                <button type="submit">Rechercher</button>
+            </div>
+        </form>
+    </section>
+    <br>
+    <section class="offers-list">
+        <div class="offers-header">
+            <h2>Offres de stage ({{ totalOffres }} résultats)</h2>
+        </div>
+        {% if offres is empty %}
+            <p class="no-results">Aucune offre ne correspond à votre recherche.</p>
+        {% else %}
+            {% for offre in offres %}
+                <article class="offer-card">
+                    <div class="offre-titre">
+                        <p>{{ offre.titre }}</p>
+                    </div>
+                    <div class="offre-texte">
+                        <div class="left">
+                            <p>Nom : {{ offre.nom_entreprise }}</p>
+                            <p>Lieu : {{ offre.nom_ville ? offre.nom_ville : 'Non spécifié' }}</p>
+                        </div>
+                        <div class="right">
+                            <p>Durée : {{ offre.duree_mois }} mois</p>
+                            <p>Publié le {{ offre.date_publication|date('d/m/Y') }}</p>
+                        </div>
+                    </div>
+                    <div class="comp">
+                        {% if offre.competences is not empty %}
+                            <div class="skills">
+                                {% for competence in offre.competences %}
+                                    <span class="skill-tag">{{ competence }}</span>
+                                {% endfor %}
+                            </div>
+                        {% else %}
+                            <p class="no-skills">Aucune compétence spécifiée</p>
+                        {% endif %}
+                        <a href="{{ url('voir-offre') }}?id={{ offre.id_offre }}" class="view-details">Voir l'offre</a>
+                    </div>
+
+                    {% if userType == 'etudiant' %}
+                        <div class="heart" data-id="{{ offre.id_offre }}" onclick="toggleHeart(event)">
+                            {% if offre.id_offre in likedOffers %}
+                                ❤️
+                            {% else %}
+                                🤍
+                            {% endif %}
+                        </div>
+                    {% endif %}
+                </article>
+            {% endfor %}
+        {% endif %}
+    </section>
+
+    <div class="pagination">
+        {% if page > 1 %}
+            <a href="{{ url('offres') }}?{{ buildPaginationParams(page - 1, searchCompany, searchLocation, searchCompetences) }}"
+                class="prev-page">« Précédent</a>
+        {% else %}
+            <span class="disabled">« Précédent</span>
+        {% endif %}
+
+        <div class="page-numbers">
+            {% set maxPagesToShow = 5 %}
+            {% set startPage = max(1, min(page - (maxPagesToShow / 2)|round(0, 'floor'), totalPages - maxPagesToShow + 1)) %}
+            {% set startPage = max(startPage, 1) %}
+            {% set endPage = min(startPage + maxPagesToShow - 1, totalPages) %}
+
+            {% if startPage > 1 %}
+                <a href="{{ url('offres') }}?{{ buildPaginationParams(1, searchCompany, searchLocation, searchCompetences) }}">1</a>
+                {% if startPage > 2 %}
+                    <span class="ellipsis">...</span>
+                {% endif %}
+            {% endif %}
+
+            {% for i in startPage..endPage %}
+                <a href="{{ url('offres') }}?{{ buildPaginationParams(i, searchCompany, searchLocation, searchCompetences) }}"
+                    class="{{ i == page ? 'active' : '' }}">{{ i }}</a>
+            {% endfor %}
+
+            {% if endPage < totalPages %}
+                {% if endPage < totalPages - 1 %}
+                    <span class="ellipsis">...</span>
+                {% endif %}
+                <a href="{{ url('offres') }}?{{ buildPaginationParams(totalPages, searchCompany, searchLocation, searchCompetences) }}">{{ totalPages }}</a>
+            {% endif %}
+        </div>
+
+        {% if page < totalPages %}
+            <a href="{{ url('offres') }}?{{ buildPaginationParams(page + 1, searchCompany, searchLocation, searchCompetences) }}"
+                class="next-page">Suivant »</a>
+        {% else %}
+            <span class="disabled">Suivant »</span>
+        {% endif %}
+    </div>
+</main>
+{% endblock %}
+
+{% block javascripts %}
+<script>
+    window.onload = function() {
+        // Initialisation des gestionnaires pour les compétences
+        competences();
+    };
+
+    function competences() {
+        // Gestion des boutons "+" pour ajouter des compétences
+        const addButtons = document.querySelectorAll('.add-competence-btn');
+        addButtons.forEach(button => {
+            button.addEventListener('click', addCompetenceRow);
+        });
+
+        // Gestion des boutons "-" pour supprimer des compétences
+        const removeButtons = document.querySelectorAll('.remove-competence-btn');
+        removeButtons.forEach(button => {
+            button.addEventListener('click', removeCompetenceRow);
+        });
+    }
+
+    function addCompetenceRow(e) {
+        const container = document.getElementById('competences-container');
+        const rows = container.querySelectorAll('.competence-row');
+        
+        // Cloner la première ligne
+        const newRow = rows[0].cloneNode(true);
+        const select = newRow.querySelector('select');
+        select.value = ''; // Réinitialiser la sélection
+        
+        // Afficher le bouton de suppression pour toutes les lignes
+        newRow.querySelector('.remove-competence-btn').style.display = 'inline';
+        rows.forEach(row => {
+            row.querySelector('.remove-competence-btn').style.display = 'inline';
+        });
+        
+        // Ajouter les gestionnaires d'événements pour les nouveaux boutons
+        newRow.querySelector('.add-competence-btn').addEventListener('click', addCompetenceRow);
+        newRow.querySelector('.remove-competence-btn').addEventListener('click', removeCompetenceRow);
+        
+        // Ajouter la nouvelle ligne
+        container.appendChild(newRow);
+    }
+
+    function removeCompetenceRow(e) {
+        const row = e.target.closest('.competence-row');
+        const container = document.getElementById('competences-container');
+        const rows = container.querySelectorAll('.competence-row');
+        
+        // Ne pas supprimer la dernière ligne
+        if (rows.length > 1) {
+            row.remove();
+        }
+        
+        // S'il ne reste qu'une ligne, masquer son bouton de suppression
+        if (rows.length === 2) {
+            rows[0].querySelector('.remove-competence-btn').style.display = 'none';
+        }
+    }
+
+    function toggleHeart(event) {
+        const heartElement = event.target;
+        const offerId = heartElement.getAttribute('data-id');
+        
+        // Requête AJAX pour mettre à jour la wishlist
+        const xhr = new XMLHttpRequest();
+        xhr.open('POST', '{{ url("toggle-like") }}', true);
+        xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+        xhr.onload = function() {
+            if (xhr.status === 200) {
+                const response = JSON.parse(xhr.responseText);
+                if (response.success) {
+                    // Mettre à jour l'affichage du cœur
+                    heartElement.textContent = response.liked ? '❤️' : '🤍';
+                }
+            }
+        };
+        xhr.send('offerId=' + offerId);
+    }
+</script>
+{% endblock %}

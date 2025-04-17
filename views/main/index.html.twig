@@ -1,0 +1,127 @@
+{% extends 'layout/base.html.twig' %}
+
+{% block title %}LeBonPlan - Recherche de stages{% endblock %}
+
+{% block content %}
+<div class="slogan">
+    <h1>Lebonplan</h1>
+    <p>Trouvez le stage de vos rêves en quelques clics !</p>
+</div>
+
+<main>
+    <section class="offers-list">
+        {% if offres is empty %}
+            <p class="no-results">Aucune offre ne correspond à votre recherche.</p>
+        {% else %}
+            <div class="contact-form">
+                <h2>Offres de stage en vedettes</h2>
+                <br>
+                {% for offre in offres %}
+                    <article class="offer-card">
+                        <div class="offre-titre">
+                            <p>{{ offre.titre }}</p>
+                        </div>
+                        <div class="offre-texte">
+                            <div class="left">
+                                <p>Nom : {{ offre.nom_entreprise }}</p>
+                                <p>Lieu : {{ offre.nom_ville ? offre.nom_ville : 'Non spécifié' }}</p>
+                            </div>
+                            <div class="right">
+                                <p>Durée : {{ offre.duree_mois }} mois</p>
+                                <p>Publié le {{ offre.date_publication|date('d/m/Y') }}</p>
+                            </div>
+                        </div>
+                        <div class="comp">
+                            {% if offre.competences is not empty %}
+                                <div class="skills">
+                                    {% for competence in offre.competences %}
+                                        <span class="skill-tag">{{ competence }}</span>
+                                    {% endfor %}
+                                </div>
+                            {% else %}
+                                <p class="no-skills">Aucune competence spécifiée</p>
+                            {% endif %}
+                            <a href="{{ url('voir-offre') }}?id={{ offre.id_offre }}" class="view-details">Voir l'offre</a>
+                        </div>
+
+                        {% if userType == 'etudiant' %}
+                            <div class="heart" data-id="{{ offre.id_offre }}" onclick="toggleHeart(event)">
+                                {% if offre.id_offre in likedOffers %}
+                                    ❤️
+                                {% else %}
+                                    🤍
+                                {% endif %}
+                            </div>
+                        {% endif %}
+                    </article>  
+                {% endfor %}
+            </div>
+        {% endif %}
+    </section>
+
+    <section class="statistics">
+        <h2>Nos chiffres clés</h2>
+        <br>
+        
+        <div class="stats-container">
+            <div class="stat-item">
+                <p class="stat-number">500+</p>
+                <p class="stat-label">Entreprises partenaires</p>
+            </div>
+            <div class="stat-item">
+                <p class="stat-number">1000+</p>
+                <p class="stat-label">Offres de stage</p>
+            </div>
+            <div class="stat-item">
+                <p class="stat-number">5000+</p>
+                <p class="stat-label">Étudiants inscrits</p>
+            </div>
+        </div>
+    </section>
+</main>
+
+<div class="cookie-banner" id="cookie-banner">
+    <p>Nous utilisons des cookies pour améliorer votre expérience sur notre site...</p>
+    <button id="accept-cookies">Accepter</button>
+</div>
+{% endblock %}
+
+{% block javascripts %}
+<script>
+    function toggleHeart(event) {
+        const heartElement = event.target;
+        const offerId = heartElement.getAttribute('data-id');
+        
+        // Requête AJAX pour mettre à jour la wishlist
+        const xhr = new XMLHttpRequest();
+        xhr.open('POST', '{{ url("toggle-like") }}', true);
+        xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+        xhr.onload = function() {
+            if (xhr.status === 200) {
+                const response = JSON.parse(xhr.responseText);
+                if (response.success) {
+                    // Mettre à jour l'affichage du cœur
+                    heartElement.textContent = response.liked ? '❤️' : '🤍';
+                }
+            }
+        };
+        xhr.send('offerId=' + offerId);
+    }
+
+    // Gestion des cookies
+    document.addEventListener('DOMContentLoaded', function() {
+        const cookieBanner = document.getElementById('cookie-banner');
+        const acceptCookies = document.getElementById('accept-cookies');
+
+        // Vérifier si l'utilisateur a déjà accepté les cookies
+        if (!localStorage.getItem('cookiesAccepted')) {
+            cookieBanner.style.display = 'flex';
+        }
+
+        acceptCookies.addEventListener('click', function() {
+            localStorage.setItem('cookiesAccepted', 'true');
+            cookieBanner.style.display = 'none';
+        });
+    });
+</script>
+{% endblock %}

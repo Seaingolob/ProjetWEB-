@@ -1,0 +1,79 @@
+{% extends 'layout/base.html.twig' %}
+
+{% block title %}LeBonPlan - Ma Wishlist{% endblock %}
+
+{% block content %}
+<main>
+    <section class="offers-list">
+        <br><br>
+        <h2>Mes offres favorites ({{ count }})</h2>
+        
+        {% if offres is empty %}
+            <div class="empty-wishlist">
+                <p>Votre wishlist est vide.</p>
+            </div>
+        {% else %}
+            {% for offre in offres %}
+                <article class="offer-card">
+                    <div class="offre-titre">
+                        <p>{{ offre.titre }}</p>
+                    </div>
+                    <div class="offre-texte">
+                        <div class="left">
+                            <p>Nom : {{ offre.nom_entreprise }}</p>
+                            <p>Lieu : {{ offre.nom_ville ? offre.nom_ville : 'Non spécifié' }}</p>
+                        </div>
+                        <div class="right">
+                            <p>Durée : {{ offre.duree_mois }} mois</p>
+                            <p>Publié le {{ offre.date_publication|date('d/m/Y') }}</p>
+                        </div>
+                    </div>
+                    <div class="comp">
+                        {% if offre.competences is not empty %}
+                            <div class="skills">
+                                {% for competence in offre.competences %}
+                                    <span class="skill-tag">{{ competence }}</span>
+                                {% endfor %}
+                            </div>
+                        {% else %}
+                            <p class="no-skills">Aucune compétence spécifiée</p>
+                        {% endif %}
+                        <a href="{{ url('voir-offre') }}?id={{ offre.id_offre }}" class="view-details">Voir l'offre</a>
+                    </div>
+                    
+                    <div class="heart liked" data-id="{{ offre.id_offre }}" onclick="toggleHeart(event)">❤️</div>
+                </article>
+            {% endfor %}
+        {% endif %}
+    </section>
+</main>
+{% endblock %}
+
+{% block javascripts %}
+<script>
+    function toggleHeart(event) {
+        const heartElement = event.target;
+        const offerId = heartElement.getAttribute('data-id');
+        
+        // Requête AJAX pour mettre à jour la wishlist
+        const xhr = new XMLHttpRequest();
+        xhr.open('POST', '{{ url("toggle-like") }}', true);
+        xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+        xhr.onload = function() {
+            if (xhr.status === 200) {
+                const response = JSON.parse(xhr.responseText);
+                if (response.success) {
+                    // Si l'offre a été retirée de la wishlist
+                    if (!response.liked) {
+                        // On peut soit recharger la page pour mettre à jour la liste
+                        window.location.reload();
+                        // Ou bien masquer l'élément parent (la carte de l'offre)
+                        // heartElement.closest('.offer-card').style.display = 'none';
+                    }
+                }
+            }
+        };
+        xhr.send('offerId=' + offerId);
+    }
+</script>
+{% endblock %}

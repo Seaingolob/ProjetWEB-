@@ -1,0 +1,43 @@
+{% extends 'layout/base.html.twig' %}
+
+{% block title %}LeBonPlan - Espace Administration{% endblock %}
+
+{% block content %}
+<div class="admin-dashboard">
+    <div class="admin-header">
+        <h2>Tableau de bord Administration</h2>
+        <p>Bienvenue dans votre espace administrateur, gérez les utilisateurs et les offres.</p>
+    </div>
+    <div class="admin-sections">
+        <div class="admin-nav">
+            <button class="admin-tab {{ tab == 'utilisateur' ? 'active' : '' }}" id="btn-utilisateur" 
+                    onclick="window.location.href='{{ url('admin') }}?tab=utilisateur';">Utilisateur</button>
+            <button class="admin-tab {{ tab == 'offre' ? 'active' : '' }}" id="btn-offre" 
+                    onclick="window.location.href='{{ url('admin') }}?tab=offre';">Offre</button>
+        </div>
+        <div class="search-bar">
+            <input type="text" id="search-input" name="search" placeholder="Recherchez par nom..." value="{{ search }}">
+            <button id="search-btn" onclick="search()">Rechercher</button>
+        </div>
+        <div class="admin-content">
+            
+            {% if tab == 'utilisateur' %}
+                {% include 'admin/users.html.twig' %}
+            {% else %}
+                {% include 'admin/offers.html.twig' %}
+            {% endif %}
+            
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block javascripts %}
+<script>
+    function search() {
+        const searchInput = document.getElementById('search-input').value;
+        const activeTab = '{{ tab }}';
+        window.location.href = `{{ url('admin') }}?tab=${activeTab}&search=${searchInput}`;
+    }
+</script>
+{% endblock %}

@@ -1,0 +1,191 @@
+{% extends 'layout/base.html.twig' %}
+
+{% block title %}LeBonPlan - Détail Offre{% endblock %}
+
+{% block content %}
+<br><br>
+<div class="offre-detail-container">
+    <div class="offre-header">
+        <h2>{{ offre.titre }} - ID {{ offre.id_offre }}</h2>
+    </div>
+
+    <div class="offre-content">
+        <div class="offre-detail-grid">
+            <div class="offre-main-info">
+                <div class="info-section">
+                    <div class="form-title">Détails de l'offre</div>
+                    <div class="info-row">
+                        <span class="info-label">Date de publication:</span>
+                        <span class="info-value">{{ offre.date_publication|date('d/m/Y') }}</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">Durée:</span>
+                        <span class="info-value">{{ offre.duree_mois }} mois</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">Créé par:</span>
+                        <span class="info-value">
+                            {% if userType == 'admin' or userType == 'pilote' %}
+                                <a href="{{ url('voir-eleve') }}?id={{ offre.createur_id }}">{{ offre.createur_prenom }} {{ offre.createur_nom }}</a>
+                            {% else %}
+                                {{ offre.createur_prenom }} {{ offre.createur_nom }}
+                            {% endif %}
+                        </span>
+                    </div>
+                </div>
+
+                <div class="info-section">
+                    <div class="form-title">Description</div>
+                    <p>{{ offre.description|nl2br }}</p>
+                </div>
+
+                <div class="info-section">
+                    <div class="form-title">Compétences requises</div>
+                    {% if competences is not empty %}
+                        <div class="skill-tags">
+                            {% for competence in competences %}
+                                <span class="skill-tag">{{ competence.nom }}</span>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <p>Aucune compétence spécifique requise.</p>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="offre-side-info">
+                <div class="info-section">
+                    <div class="form-title">Entreprise</div>
+                    <h4>{{ offre.entreprise_nom }}</h4>
+                    <p>{{ (offre.entreprise_description ?? 'Aucune description disponible.')|nl2br }}</p>
+                    {% if offre.entreprise_site is not empty %}
+                        <a href="{{ offre.entreprise_site }}" target="_blank" class="company-site">Site web</a>
+                    {% endif %}
+
+                    {% if secteurs is not empty %}
+                        <div class="sector-tags">
+                            {% for secteur in secteurs %}
+                                <span class="sector-tag">{{ secteur.nom }}</span>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="info-section">
+                <div class="form-title">Localisation</div>
+                <div class="location-card">
+                    <p><i class="fa fa-map-marker" aria-hidden="true"></i> {{ offre.nom_adresse }}</p>
+                    <p>{{ offre.nom_ville }}, {{ offre.nom_region }}</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="reviews-section">
+            <div class="offre-actions">
+                {% if userType == 'etudiant' %}
+                    {% if not postule %}
+                        <form id="postulerForm" action="{{ url('postuler') }}" method="post" enctype="multipart/form-data">
+                            <input type="hidden" name="id" value="{{ offre.id_offre }}">
+
+                            <div class="file-upload-container">
+                                <label class="file-upload-label" for="cv">CV</label>
+                                <div class="file-input-container">
+                                    <div class="message" id="cv_message" style="display: none;">
+                                        Veuillez insérer votre CV
+                                    </div>
+                                    <input type="file" id="cv" name="cv" class="file-input" accept=".pdf">
+                                    <span class="input-note">Format accepté: PDF uniquement</span>
+                                </div>
+                            </div>
+
+                            <div class="file-upload-container">
+                                <label class="file-upload-label" for="lettre_motivation">Lettre de motivation</label>
+                                <div class="file-input-container">
+                                    <div class="message" id="lettre_motivation_message" style="display: none;">
+                                        Veuillez insérer votre lettre de motivation
+                                    </div>
+                                    <input type="file" id="lettre_motivation" name="lettre_motivation" class="file-input" accept=".pdf">
+                                    <span class="input-note">Format accepté: PDF uniquement</span>
+                                </div>
+                            </div>
+
+                            <button type="submit" class="action-btn apply-btn">Postuler</button>
+                        </form>
+                    {% else %}
+                        <button class="action-btn applied-btn" disabled>Déjà postulé</button>
+                    {% endif %}
+                {% endif %}
+
+                {% if userType == 'admin' %}
+                    <button class="action-btn delete-btn" onclick="if(confirm('Êtes-vous sûr de vouloir supprimer cette offre ?')) { window.location.href='{{ url('delete-offer') }}?id={{ offre.id_offre }}'; }">Supprimer</button>
+                {% endif %}
+            </div>
+            <div class="info-section">            
+                <div class="form-title">Évaluations</div>
+                {% if userType == 'etudiant' and not a_evalue %}
+                    <div class="review-form-container">
+                        <h4>Ajouter une évaluation</h4>
+                        <form action="{{ url('ajouter-evaluation') }}" method="post">
+                            <input type="hidden" name="id_offre" value="{{ offre.id_offre }}">
+                            <div class="form-group">
+                                <label for="note">Note:</label>
+                                <select name="note" id="note" required>
+                                    <option value="Excellent">Excellent</option>
+                                    <option value="Très bien">Très bien</option>
+                                    <option value="Bien">Bien</option>
+                                    <option value="Moyen">Moyen</option>
+                                    <option value="À éviter">À éviter</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="avis">Avis (facultatif):</label>
+                                <textarea name="avis" id="avis" rows="4"></textarea>
+                            </div>
+                            <button type="submit" class="submit-btn">Envoyer</button>
+                        </form>
+                    </div>
+                {% endif %}
+
+                <div class="reviews-list">
+                    {% if evaluations is not empty %}
+                        {% for evaluation in evaluations %}
+                            <div class="review-card">
+                                <div class="review-header">
+                                    <span class="reviewer-name">
+                                        <a href="{{ url('voir-eleve') }}?id={{ evaluation.id_compte }}">{{ evaluation.prenom }} {{ evaluation.nom }}</a>
+                                    </span>
+                                    <span class="review-rating {{ evaluation.note|lower|replace({' ': '-'}) }}">{{ evaluation.note }}</span>
+                                </div>
+                                {% if evaluation.avis is not empty %}
+                                    <div class="review-content">
+                                        <p>{{ evaluation.avis|nl2br }}</p>
+                                    </div>
+                                {% endif %}
+                            </div>
+                        {% endfor %}
+                    {% else %}
+                        <p class="no-reviews">Aucune évaluation disponible pour cette offre.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block javascripts %}
+<script>
+    window.onload = function() {
+        postuleroffre();
+    };
+
+    function postuleroffre() {
+        // Cette fonction doit être définie dans ton fichier script.js
+        // et sera chargée depuis la balise script du layout de base
+        if (typeof window.postuleroffre !== 'undefined') {
+            window.postuleroffre();
+        }
+    }
+</script>
+{% endblock %}
