@@ -34,24 +34,28 @@ class AuthController {
     public function loginProcess() {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $identifiant = isset($_POST['identifiant']) ? $_POST['identifiant'] : '';
-            $motdepasse = isset($_POST['motdepasse']) ? $_POST['motdepasse'] : '';
+            $mot_de_passe = isset($_POST['mot_de_passe']) ? $_POST['mot_de_passe'] : '';
             
             // Validation des entrées
-            if (empty($identifiant) || empty($motdepasse)) {
+            if (empty($identifiant) || empty($mot_de_passe)) {
                 $_SESSION['error_message'] = "Tous les champs sont obligatoires.";
                 header("Location: /connexion");
                 exit();
             }
             
             // Tentative de connexion
-            $user = $this->authModel->verifyUser($identifiant, $motdepasse);
+            $user = $this->authModel->verifyUser($identifiant, $mot_de_passe);
             
             if ($user) {
                 // Connexion réussie
                 $_SESSION['logged_in'] = true;
                 $_SESSION['user_id'] = $user['id_compte'];
                 $_SESSION['user_name'] = $user['prenom'] . ' ' . $user['nom'];
+                
+                // Utiliser le type de compte fourni par AuthModel::get_user_type
                 $_SESSION['user_type'] = $user['type_compte'];
+                
+                
                 $_SESSION['last_activity'] = time();
                 
                 header("Location: /main");
