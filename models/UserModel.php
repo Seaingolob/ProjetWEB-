@@ -41,6 +41,29 @@ class UserModel {
     
     public function getUserInfo($id_compte) {
         try {
+            // DEBUG: Afficher l'ID reçu
+            echo "ID reçu par getUserInfo(): '" . $id_compte . "'<br>";
+            
+            // ÉTAPE 1: On récupère l'utilisateur
+            $sql = "SELECT id_compte, nom, prenom, mail, telephone FROM utilisateur WHERE id_compte = :id";
+            $stmt = $this->connexion->prepare($sql);
+            $stmt->bindParam(':id', $id_compte, PDO::PARAM_STR);
+            
+            // DEBUG: Afficher la requête SQL et les paramètres
+            echo "Requête préparée: " . $sql . "<br>";
+            echo "Valeur du paramètre :id = '" . $id_compte . "'<br>";
+            
+            $stmt->execute();
+            
+            // DEBUG: Vérifier combien de lignes ont été retournées
+            echo "Nombre de lignes retournées: " . $stmt->rowCount() . "<br>";
+            
+            $user = $stmt->fetch(PDO::FETCH_ASSOC);
+            
+            // DEBUG: Afficher ce qui a été récupéré
+            echo "Résultat de fetch(): ";
+            var_dump($user);
+            echo "<br>";
             // ÉTAPE 1: On récupère l'utilisateur
             $stmt = $this->connexion->prepare("SELECT id_compte, nom, prenom, mail, telephone 
                              FROM utilisateur 
