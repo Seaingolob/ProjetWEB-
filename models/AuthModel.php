@@ -14,7 +14,7 @@ class AuthModel {
         // Rechercher l'utilisateur par identifiant
         $sql = "SELECT id_compte, nom, prenom, mail, mot_de_passe  
                 FROM utilisateur 
-                WHERE mail = :identifiant OR id_compte = :identifiant";
+                WHERE id_compte = :identifiant";
         $stmt = $this->connexion->prepare($sql);
         $stmt->bindParam(':identifiant', $identifiant, PDO::PARAM_STR);
         $stmt->execute();
