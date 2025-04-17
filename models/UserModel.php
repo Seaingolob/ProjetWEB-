@@ -41,24 +41,28 @@ class UserModel {
     
     public function getUserInfo($id_compte) {
         try {
-            // IMPORTANT: On vérifie l'utilisateur correctement
-            echo "ID de l'utilisateur : " . $id_compte . "<br>";  // Débogage temporaire
+            // ÉTAPE DE DÉBOGAGE COMPLET
+            echo "ID de l'utilisateur : " . $id_compte . "<br>";
+            
+            // 1. Vérifier l'existence
             $verify = $this->connexion->prepare("SELECT COUNT(*) FROM utilisateur WHERE id_compte = :id");
             $verify->bindParam(':id', $id_compte, PDO::PARAM_STR);
             $verify->execute();
-            $count = (int)$verify->fetchColumn();  // CRUCIAL: on convertit explicitement en int
+            $count = (int)$verify->fetchColumn();
+            echo "Nombre d'utilisateurs trouvés : " . $count . "<br>";
             
-            echo "Nombre d'utilisateurs trouvés : " . $count . "<br>";  // Débogage temporaire
+            // 2. NOUVEAU: Afficher l'utilisateur COMPLET en SQL brut
+            $debug_stmt = $this->connexion->prepare("SELECT * FROM utilisateur WHERE id_compte = :id");
+            $debug_stmt->bindParam(':id', $id_compte, PDO::PARAM_STR);
+            $debug_stmt->execute();
+            $debug_user = $debug_stmt->fetch(PDO::FETCH_ASSOC);
             
-            if ($count === 0) {  // On compare avec === pour être sûr
-                return [
-                    'user' => null,
-                    'user_type' => null,
-                    'specific_info' => []
-                ];
-            }
+            echo "<h3>Utilisateur brut de la base:</h3>";
+            echo "<pre>";
+            var_dump($debug_user);  // utilise var_dump au lieu de print_r pour voir les valeurs NULL
+            echo "</pre>";
             
-            // Le reste est exactement comme avant
+            // 3. Récupérer les champs spécifiques comme avant
             $stmt = $this->connexion->prepare("SELECT id_compte, nom, prenom, mail, telephone 
                                  FROM utilisateur 
                                  WHERE id_compte = :id");
@@ -66,7 +70,12 @@ class UserModel {
             $stmt->execute();
             $user = $stmt->fetch(PDO::FETCH_ASSOC);
             
-            // Détermination du type d'utilisateur
+            echo "<h3>Utilisateur avec champs spécifiques:</h3>";
+            echo "<pre>";
+            var_dump($user);  // utilise var_dump au lieu de print_r
+            echo "</pre>";
+            
+            // 4. Détermination du type d'utilisateur
             $stmt = $this->connexion->prepare("SELECT 
                                 CASE 
                                     WHEN EXISTS (SELECT 1 FROM etudiant WHERE id_compte = :id) THEN 'etudiant'
@@ -78,6 +87,9 @@ class UserModel {
             $stmt->execute();
             $user_type_result = $stmt->fetch(PDO::FETCH_ASSOC);
             $user_type = $user_type_result['user_type'];
+            
+            echo "<h3>Type d'utilisateur:</h3>";
+            echo "user_type: " . $user_type . "<br>";
             
             $specific_info = [];
         
