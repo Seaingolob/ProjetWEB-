@@ -79,8 +79,69 @@ class UserModel {
             $user_type_result = $stmt->fetch(PDO::FETCH_ASSOC);
             $user_type = $user_type_result['user_type'];
             
-            // La suite de ton code...
-            // ... (tout le reste est inchangé)
+            $specific_info = [];
+        
+        if ($user_type === 'etudiant') {
+            // Récupérer la wishlist de l'étudiant avec statut de postulation
+            $stmt = $this->connexion->prepare("SELECT 
+                                            o.id_offre, 
+                                            o.titre, 
+                                            e.nom as entreprise_nom, 
+                                            GROUP_CONCAT(DISTINCT c.nom SEPARATOR ', ') as competences, 
+                                            v.nom_ville,
+                                            CASE 
+                                                WHEN EXISTS (SELECT 1 FROM postuler p WHERE p.id_compte = :id AND p.id_offre = o.id_offre) THEN 'Postulée'
+                                                ELSE 'Non-postulée'
+                                            END AS statut_postulation
+                                        FROM souhaiter s 
+                                        JOIN offre o ON s.id_offre = o.id_offre 
+                                        JOIN entreprise e ON o.id_entreprise = e.id_entreprise 
+                                        JOIN adresse a ON e.id_adresse = a.id_adresse 
+                                        JOIN ville v ON a.id_ville = v.id_ville 
+                                        LEFT JOIN contenir co ON o.id_offre = co.id_offre 
+                                        LEFT JOIN competence c ON co.id_competence = c.id_competence 
+                                        WHERE s.id_compte = :id 
+                                        GROUP BY o.id_offre");
+            $stmt->bindParam(':id', $id_compte, PDO::PARAM_STR);
+            $stmt->execute();
+            $specific_info['wishlist'] = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+            // Récupérer les informations sur la promotion de l'étudiant
+            $stmt = $this->connexion->prepare("SELECT 
+                p.nom as promotion_nom,
+                p.id_promotion,
+                c.nom_campus, 
+                a.debut, 
+                a.fin
+                FROM appartenir a
+                JOIN promotion p ON a.id_promotion = p.id_promotion
+                JOIN campus c ON p.id_campus = c.id_campus
+                WHERE a.id_compte = :id
+                AND (a.debut <= CURRENT_DATE() AND (a.fin >= CURRENT_DATE() OR a.fin IS NULL))
+                ORDER BY a.debut DESC
+                LIMIT 1");
+            $stmt->bindParam(':id', $id_compte, PDO::PARAM_STR);
+            $stmt->execute();
+            $specific_info['promotion'] = $stmt->fetch(PDO::FETCH_ASSOC);
+        } elseif ($user_type === 'pilote') {
+            // Récupérer les promotions pilotées
+            $stmt = $this->connexion->prepare("SELECT 
+                p.id_promotion,
+                p.nom as promotion_nom, 
+                c.nom_campus,
+                pi.debut,
+                pi.fin
+                FROM piloter pi
+                JOIN promotion p ON pi.id_promotion = p.id_promotion
+                JOIN campus c ON p.id_campus = c.id_campus
+                WHERE pi.id_compte = :id
+                AND (pi.debut <= CURRENT_DATE() AND (pi.fin >= CURRENT_DATE() OR pi.fin IS NULL))
+                ORDER BY pi.debut DESC");
+            $stmt->bindParam(':id', $id_compte, PDO::PARAM_STR);
+            $stmt->execute();
+            $specific_info['promotions_pilotees'] = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        }
+
             
             return [
                 'user' => $user,
