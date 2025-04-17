@@ -10,9 +10,9 @@ class AuthModel {
         $this->connexion = $connexion; // Supposant que $connexion vient de config.php
     }
     
-    public function verifyUser($identifiant, $motdepasse) {
+    public function verifyUser($identifiant, $motdepasse) {  // Le paramètre s'appelle motdepasse ici
         // Rechercher l'utilisateur par identifiant
-        $sql = "SELECT id_compte, nom, prenom, mail, mot_de_passe
+        $sql = "SELECT id_compte, nom, prenom, mail, mot_de_passe  
                 FROM utilisateur 
                 WHERE mail = :identifiant OR id_compte = :identifiant";
         $stmt = $this->connexion->prepare($sql);
@@ -22,13 +22,13 @@ class AuthModel {
         $user = $stmt->fetch(PDO::FETCH_ASSOC);
         
         // Vérifier si l'utilisateur existe et si le mot de passe correspond
+        // Note: dans la BDD, c'est 'mot_de_passe', mais la variable PHP s'appelle 'motdepasse'
         if ($user && password_verify($motdepasse, $user['mot_de_passe'])) {
             // Ajouter le type d'utilisateur aux informations
             $user['type_compte'] = $this->get_user_type($user['id_compte']);
             return $user;
         } elseif ($user && $motdepasse === $user['mot_de_passe']) {
             // Si le mot de passe n'est pas hashé dans la base de données
-            // (à remplacer par password_verify une fois les mots de passe hashés)
             // Ajouter le type d'utilisateur aux informations
             $user['type_compte'] = $this->get_user_type($user['id_compte']);
             return $user;
