@@ -41,39 +41,18 @@ class UserModel {
     
     public function getUserInfo($id_compte) {
         try {
-            // DEBUG: Afficher l'ID reçu
-            echo "ID reçu par getUserInfo(): '" . $id_compte . "'<br>";
-            
             // ÉTAPE 1: On récupère l'utilisateur
-            $sql = "SELECT id_compte, nom, prenom, mail, telephone FROM utilisateur WHERE id_compte = :id";
-            $stmt = $this->connexion->prepare($sql);
-            $stmt->bindParam(':id', $id_compte, PDO::PARAM_STR);
-            
-            // DEBUG: Afficher la requête SQL et les paramètres
-            echo "Requête préparée: " . $sql . "<br>";
-            echo "Valeur du paramètre :id = '" . $id_compte . "'<br>";
-            
-            $stmt->execute();
-            
-            // DEBUG: Vérifier combien de lignes ont été retournées
-            echo "Nombre de lignes retournées: " . $stmt->rowCount() . "<br>";
-            
-            $user = $stmt->fetch(PDO::FETCH_ASSOC);
-            
-            // DEBUG: Afficher ce qui a été récupéré
-            echo "Résultat de fetch(): ";
-            var_dump($user);
-            echo "<br>";
-            // ÉTAPE 1: On récupère l'utilisateur
-            $stmt = $this->connexion->prepare("SELECT id_compte, nom, prenom, mail, telephone 
+            // J'ai renommé la variable $stmt en $stmt_user pour plus de clarté
+            $stmt_user = $this->connexion->prepare("SELECT id_compte, nom, prenom, mail, telephone 
                              FROM utilisateur 
                              WHERE id_compte = :id");
-            $stmt->bindParam(':id', $id_compte, PDO::PARAM_STR);
-            $stmt->execute();
-            $user = $stmt->fetch(PDO::FETCH_ASSOC);
+            $stmt_user->bindParam(':id', $id_compte, PDO::PARAM_STR);
+            $stmt_user->execute();
+            // J'utilise directement $userData comme variable principale
+            $userData = $stmt_user->fetch(PDO::FETCH_ASSOC);
             
             // Si l'utilisateur n'existe pas, on retourne null tout de suite
-            if (!$user) {
+            if (!$userData) {
                 return [
                     'user' => null,
                     'user_type' => null,
@@ -81,20 +60,21 @@ class UserModel {
                 ];
             }
             
-            // IMPORTANT: On sauvegarde $user pour ne pas l'écraser accidentellement
-            $userData = $user; // Copie de sécurité
+            // SUPPRESSION de la copie $userData = $user qui créait la confusion
+            // On utilise directement $userData comme la variable principale
             
             // ÉTAPE 2: On détermine le type d'utilisateur
-            $stmt = $this->connexion->prepare("SELECT 
+            // J'ai renommé la variable $stmt en $stmt_type pour éviter les conflits
+            $stmt_type = $this->connexion->prepare("SELECT 
                             CASE 
                                 WHEN EXISTS (SELECT 1 FROM etudiant WHERE id_compte = :id) THEN 'etudiant'
                                 WHEN EXISTS (SELECT 1 FROM admin WHERE id_compte = :id) THEN 'admin'
                                 WHEN EXISTS (SELECT 1 FROM pilote WHERE id_compte = :id) THEN 'pilote'
                                 ELSE 'inconnu'
                             END AS user_type");
-            $stmt->bindParam(':id', $id_compte, PDO::PARAM_STR);
-            $stmt->execute();
-            $user_type_result = $stmt->fetch(PDO::FETCH_ASSOC);
+            $stmt_type->bindParam(':id', $id_compte, PDO::PARAM_STR);
+            $stmt_type->execute();
+            $user_type_result = $stmt_type->fetch(PDO::FETCH_ASSOC);
             $user_type = $user_type_result['user_type'];
             
             // ÉTAPE 3: On récupère les infos spécifiques
@@ -102,7 +82,8 @@ class UserModel {
         
             if ($user_type === 'etudiant') {
                 // Récupérer la wishlist de l'étudiant avec statut de postulation
-                $stmt = $this->connexion->prepare("SELECT 
+                // Autre variable $stmt pour cette requête
+                $stmt_wishlist = $this->connexion->prepare("SELECT 
                                                 o.id_offre, 
                                                 o.titre, 
                                                 e.nom as entreprise_nom, 
@@ -121,12 +102,13 @@ class UserModel {
                                             LEFT JOIN competence c ON co.id_competence = c.id_competence 
                                             WHERE s.id_compte = :id 
                                             GROUP BY o.id_offre");
-                $stmt->bindParam(':id', $id_compte, PDO::PARAM_STR);
-                $stmt->execute();
-                $specific_info['wishlist'] = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
+                $stmt_wishlist->bindParam(':id', $id_compte, PDO::PARAM_STR);
+                $stmt_wishlist->execute();
+                $specific_info['wishlist'] = $stmt_wishlist->fetchAll(PDO::FETCH_ASSOC);
+    
                 // Récupérer les informations sur la promotion de l'étudiant
-                $stmt = $this->connexion->prepare("SELECT 
+                // Autre variable $stmt pour cette requête
+                $stmt_promo = $this->connexion->prepare("SELECT 
                     p.nom as promotion_nom,
                     p.id_promotion,
                     c.nom_campus, 
@@ -139,12 +121,13 @@ class UserModel {
                     AND (a.debut <= CURRENT_DATE() AND (a.fin >= CURRENT_DATE() OR a.fin IS NULL))
                     ORDER BY a.debut DESC
                     LIMIT 1");
-                $stmt->bindParam(':id', $id_compte, PDO::PARAM_STR);
-                $stmt->execute();
-                $specific_info['promotion'] = $stmt->fetch(PDO::FETCH_ASSOC);
+                $stmt_promo->bindParam(':id', $id_compte, PDO::PARAM_STR);
+                $stmt_promo->execute();
+                $specific_info['promotion'] = $stmt_promo->fetch(PDO::FETCH_ASSOC);
             } elseif ($user_type === 'pilote') {
                 // Récupérer les promotions pilotées
-                $stmt = $this->connexion->prepare("SELECT 
+                // Autre variable $stmt pour cette requête
+                $stmt_pilote = $this->connexion->prepare("SELECT 
                     p.id_promotion,
                     p.nom as promotion_nom, 
                     c.nom_campus,
@@ -156,14 +139,14 @@ class UserModel {
                     WHERE pi.id_compte = :id
                     AND (pi.debut <= CURRENT_DATE() AND (pi.fin >= CURRENT_DATE() OR pi.fin IS NULL))
                     ORDER BY pi.debut DESC");
-                $stmt->bindParam(':id', $id_compte, PDO::PARAM_STR);
-                $stmt->execute();
-                $specific_info['promotions_pilotees'] = $stmt->fetchAll(PDO::FETCH_ASSOC);
+                $stmt_pilote->bindParam(':id', $id_compte, PDO::PARAM_STR);
+                $stmt_pilote->execute();
+                $specific_info['promotions_pilotees'] = $stmt_pilote->fetchAll(PDO::FETCH_ASSOC);
             }
-
-            
+    
+            // On s'assure d'utiliser $userData pour retourner les infos de l'utilisateur
             return [
-                'user' => $userData, // On utilise la copie, pas $user qui a pu être modifié
+                'user' => $userData,  // C'est ici qu'on utilise $userData, pas $user
                 'user_type' => $user_type,
                 'specific_info' => $specific_info
             ];
