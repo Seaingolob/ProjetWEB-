@@ -41,38 +41,37 @@ class UserModel {
     
     public function getUserInfo($id_compte) {
         try {
-            // Détecter le type d'utilisateur (étudiant, admin ou pilote)
-            $stmt = $this->connexion->prepare("SELECT 
-                                CASE 
-                                    WHEN EXISTS (SELECT 1 FROM etudiant WHERE id_compte = :id) THEN 'etudiant'
-                                    WHEN EXISTS (SELECT 1 FROM admin WHERE id_compte = :id) THEN 'admin'
-                                    WHEN EXISTS (SELECT 1 FROM pilote WHERE id_compte = :id) THEN 'pilote'
-                                    ELSE 'inconnu'
-                                END AS user_type");
-            $stmt->bindParam(':id', $id_compte, PDO::PARAM_STR);
-            $stmt->execute();
-            $user_type_result = $stmt->fetch(PDO::FETCH_ASSOC);
-            $user_type = $user_type_result['user_type'];
-
-            // Récupérer les informations de base de l'utilisateur
-            $stmt = $this->connexion->prepare("SELECT u.id_compte, u.nom, u.prenom, u.mail, u.telephone 
-                                FROM utilisateur u 
-                                WHERE u.id_compte = :id");
-            $stmt->bindParam(':id', $id_compte, PDO::PARAM_STR);
-            $stmt->execute();
-            $user = $stmt->fetch(PDO::FETCH_ASSOC);
-
-            if (!$user) {
+            // PREMIÈRE ÉTAPE : Vérifier si l'utilisateur existe avant tout
+            $verify = $this->connexion->prepare("SELECT COUNT(*) FROM utilisateur WHERE id_compte = :id");
+            $verify->bindParam(':id', $id_compte, PDO::PARAM_STR);
+            $verify->execute();
+            
+            if ($verify->fetchColumn() == 0) {
+                // L'utilisateur n'existe pas du tout dans la base
+                error_log("Utilisateur non trouvé: " . $id_compte);
                 return [
                     'user' => null,
                     'user_type' => null,
                     'specific_info' => []
                 ];
             }
-
-            // Informations spécifiques selon le type d'utilisateur
+            
+            // DEUXIÈME ÉTAPE : Récupérer les informations de base de l'utilisateur
+            // On simplifie la requête, sans alias, exactement comme dans AuthModel
+            $stmt = $this->connexion->prepare("SELECT id_compte, nom, prenom, mail, telephone 
+                                 FROM utilisateur 
+                                 WHERE id_compte = :id");
+            $stmt->bindParam(':id', $id_compte, PDO::PARAM_STR);
+            $stmt->execute();
+            $user = $stmt->fetch(PDO::FETCH_ASSOC);
+            
+            // TROISIÈME ÉTAPE : Déterminer le type d'utilisateur
+            // On isole cette partie pour faciliter le débogage
+            $user_type = $this->get_user_type($id_compte);
+            
+            // QUATRIÈME ÉTAPE : Informations spécifiques selon le type d'utilisateur
             $specific_info = [];
-
+            
             if ($user_type === 'etudiant') {
                 // Récupérer la wishlist de l'étudiant avec statut de postulation
                 $stmt = $this->connexion->prepare("SELECT 
@@ -97,7 +96,7 @@ class UserModel {
                 $stmt->bindParam(':id', $id_compte, PDO::PARAM_STR);
                 $stmt->execute();
                 $specific_info['wishlist'] = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
+    
                 // Récupérer les informations sur la promotion de l'étudiant
                 $stmt = $this->connexion->prepare("SELECT 
                     p.nom as promotion_nom,
@@ -112,7 +111,6 @@ class UserModel {
                     AND (a.debut <= CURRENT_DATE() AND (a.fin >= CURRENT_DATE() OR a.fin IS NULL))
                     ORDER BY a.debut DESC
                     LIMIT 1");
-
                 $stmt->bindParam(':id', $id_compte, PDO::PARAM_STR);
                 $stmt->execute();
                 $specific_info['promotion'] = $stmt->fetch(PDO::FETCH_ASSOC);
@@ -134,7 +132,7 @@ class UserModel {
                 $stmt->execute();
                 $specific_info['promotions_pilotees'] = $stmt->fetchAll(PDO::FETCH_ASSOC);
             }
-
+    
             return [
                 'user' => $user,
                 'user_type' => $user_type,
@@ -142,11 +140,13 @@ class UserModel {
             ];
             
         } catch (PDOException $e) {
-            error_log("Erreur lors de la récupération des informations utilisateur: " . $e->getMessage());
+            // Log plus détaillé de l'erreur pour aider au débogage
+            error_log("ERREUR CRITIQUE dans getUserInfo(): " . $e->getMessage() . " - requête SQL: " . $e->getTraceAsString());
             return [
                 'user' => null,
                 'user_type' => null,
-                'specific_info' => []
+                'specific_info' => [],
+                'error' => $e->getMessage() // Pour le débogage uniquement, à retirer en production
             ];
         }
     }
