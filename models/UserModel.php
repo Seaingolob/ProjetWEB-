@@ -4,12 +4,14 @@ class UserModel {
     private $connexion;
 
     public function __construct() {
+        // Ici, on récupère directement l'instance PDO retournée par config.php
         $this->connexion = require __DIR__ . '/../config/config.php';
     }
 
     public function getUsers($search, $page, $itemsPerPage) {
         $offset = ($page - 1) * $itemsPerPage;
 
+        // Nombre total d'utilisateurs
         $sql_count = "SELECT COUNT(id_compte) FROM utilisateur WHERE nom LIKE :search OR prenom LIKE :search";
         $stmt_count = $this->connexion->prepare($sql_count);
         $stmt_count->bindValue(':search', '%' . $search . '%', PDO::PARAM_STR);
@@ -17,14 +19,18 @@ class UserModel {
         $totalItems = $stmt_count->fetchColumn();
         $totalPages = ceil($totalItems / $itemsPerPage);
 
+        // Récupérer les utilisateurs
         $sql = "SELECT id_compte, nom, prenom, mail, telephone 
                 FROM utilisateur 
                 WHERE nom LIKE :search OR prenom LIKE :search 
-                LIMIT " . intval($itemsPerPage) . " OFFSET " . intval($offset);
+                LIMIT :limit OFFSET :offset";
         $stmt = $this->connexion->prepare($sql);
         $stmt->bindValue(':search', '%' . $search . '%', PDO::PARAM_STR);
+        $stmt->bindValue(':limit', (int)$itemsPerPage, PDO::PARAM_INT);
+        $stmt->bindValue(':offset', (int)$offset, PDO::PARAM_INT);
         $stmt->execute();
         $utilisateurs = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
         return [
             'users' => $utilisateurs,
             'totalItems' => $totalItems,
