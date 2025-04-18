@@ -9,36 +9,6 @@ class UserModel {
         $this->connexion = $connexion; // Supposant que $connexion vient de config.php
     }
     
-    public function getUsers($search, $page, $itemsPerPage) {
-        $offset = ($page - 1) * $itemsPerPage;
-        
-        // Compter le nombre total d'utilisateurs
-        $sql_count = "SELECT COUNT(id_compte) FROM utilisateur WHERE nom LIKE :search OR prenom LIKE :search";
-        $stmt_count = $this->connexion->prepare($sql_count);
-        $stmt_count->bindValue(':search', '%' . $search . '%', PDO::PARAM_STR);
-        $stmt_count->execute();
-        $totalItems = $stmt_count->fetchColumn();
-        $totalPages = ceil($totalItems / $itemsPerPage);
-        
-        // Récupérer les utilisateurs
-        $sql = "SELECT id_compte, nom, prenom, mail, telephone 
-                FROM utilisateur 
-                WHERE nom LIKE :search OR prenom LIKE :search 
-                LIMIT :limit OFFSET :offset";
-        $stmt = $this->connexion->prepare($sql);
-        $stmt->bindValue(':search', '%' . $search . '%', PDO::PARAM_STR);
-        $stmt->bindParam(':limit', $itemsPerPage, PDO::PARAM_INT);
-        $stmt->bindParam(':offset', $offset, PDO::PARAM_INT);
-        $stmt->execute();
-        $utilisateurs = $stmt->fetchAll(PDO::FETCH_ASSOC);
-        
-        return [
-            'users' => $utilisateurs,
-            'totalItems' => $totalItems,
-            'totalPages' => $totalPages
-        ];
-    }
-    
     public function getUserInfo($id_compte) {
         try {
             // 1. On récupère l'utilisateur (infos de base)
@@ -52,7 +22,6 @@ class UserModel {
             $user = $stmt->fetch(PDO::FETCH_ASSOC);
     
             if (!$user) {
-                // Aucun utilisateur trouvé, on renvoie tout à null
                 return [
                     'user' => null,
                     'user_type' => null,
@@ -60,15 +29,11 @@ class UserModel {
                 ];
             }
     
-            // 2. On récupère le type d'utilisateur depuis la session (fiable d'après ce que tu dis)
             $user_type = isset($_SESSION['user_type']) ? $_SESSION['user_type'] : null;
-    
-            // 3. On prépare un tableau pour les infos spécifiques
             $specific_info = [];
     
-            // 4. Infos spécifiques selon le type d'utilisateur
             if ($user_type === 'etudiant') {
-                // Wishlist de l'étudiant, statut de postulation
+                // On utilise des alias de paramètres pour la requête complexe
                 $stmt = $this->connexion->prepare(
                     "SELECT 
                         o.id_offre, 
@@ -79,7 +44,7 @@ class UserModel {
                         CASE 
                             WHEN EXISTS (
                                 SELECT 1 FROM postuler p 
-                                WHERE p.id_compte = :id AND p.id_offre = o.id_offre
+                                WHERE p.id_compte = :id_postulant AND p.id_offre = o.id_offre
                             ) THEN 'Postulée'
                             ELSE 'Non-postulée'
                         END AS statut_postulation
@@ -90,10 +55,11 @@ class UserModel {
                     JOIN ville v ON a.id_ville = v.id_ville
                     LEFT JOIN contenir co ON o.id_offre = co.id_offre
                     LEFT JOIN competence c ON co.id_competence = c.id_competence
-                    WHERE s.id_compte = :id
+                    WHERE s.id_compte = :id_souhait
                     GROUP BY o.id_offre"
                 );
-                $stmt->bindParam(':id', $id_compte, PDO::PARAM_STR);
+                $stmt->bindParam(':id_postulant', $id_compte, PDO::PARAM_STR);
+                $stmt->bindParam(':id_souhait', $id_compte, PDO::PARAM_STR);
                 $stmt->execute();
                 $specific_info['wishlist'] = $stmt->fetchAll(PDO::FETCH_ASSOC);
     
@@ -118,7 +84,6 @@ class UserModel {
                 $specific_info['promotion'] = $stmt->fetch(PDO::FETCH_ASSOC);
     
             } elseif ($user_type === 'pilote') {
-                // Promotions pilotées
                 $stmt = $this->connexion->prepare(
                     "SELECT 
                         p.id_promotion,
@@ -138,7 +103,6 @@ class UserModel {
                 $specific_info['promotions_pilotees'] = $stmt->fetchAll(PDO::FETCH_ASSOC);
             }
     
-            // 5. On retourne tout proprement
             return [
                 'user' => $user,
                 'user_type' => $user_type,
@@ -146,7 +110,6 @@ class UserModel {
             ];
     
         } catch (PDOException $e) {
-            // Log l'erreur pour debug (optionnel: affiche le message aussi dans le retour)
             error_log("ERREUR CRITIQUE dans getUserInfo(): " . $e->getMessage());
             return [
                 'user' => "erreur",
