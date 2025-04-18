@@ -106,7 +106,7 @@ class UserModel {
                     JOIN promotion p ON a.id_promotion = p.id_promotion
                     JOIN campus c ON p.id_campus = c.id_campus
                     WHERE a.id_compte = :id
-                    AND (a.debut <= CURRENT_DATE() AND (a.fin >= CURRENT_DATE() OR a.fin IS NULL))
+                    
                     ORDER BY a.debut DESC
                     LIMIT 1");
                 $stmt_promo->bindParam(':id', $id_compte, PDO::PARAM_STR);
