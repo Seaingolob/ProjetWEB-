@@ -1,0 +1,58 @@
+<div class="offer-management active" id="section-offre">
+    <h3>Gestion des offres :</h3>
+    <button class="action-btn" onclick="window.location.href='{{ url('formulaire-offres') }}';">Ajouter une offre</button>
+    <div class="offers-container">
+        {% if offres|length > 0 %}
+            {% for offre in offres %}
+                <div class="offer-card">
+                    <div class="offer-header">ID : {{ offre.id_offre }}<br>{{ offre.titre }}</div>
+                    <div class="offer-details">
+                        <p><strong>Description:</strong> {{ offre.description }}</p>
+                        <p><strong>Durée:</strong> {{ offre.duree_mois }} mois</p>
+                        <p><strong>Date de publication:</strong> {{ offre.date_publication|date('d/m/Y') }}</p>
+                    </div>
+                    <div class="offer-actions">
+                        <span>Actions possibles</span>
+                        <div class="action-buttons">
+                            <button class="view-btn" onclick="window.location.href='{{ url('voir-offre') }}?id={{ offre.id_offre }}';">Voir</button>
+                            {% if userType == 'admin' %}
+                                <button class="delete-btn" onclick="if(confirm('Êtes-vous sûr de vouloir supprimer cette offre ?')) { window.location.href='{{ url('admin') }}?action=delete_offer&id={{ offre.id_offre }}&tab=offre'; } return false;">Supprimer</button>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        {% else %}
+            <p>Aucune offre trouvée.</p>
+        {% endif %}
+    </div>
+    <div class="pagination">
+        {% if page < 1 %}{% set page = 1 %}{% endif %}
+        {% if pageOffres > 1 %}
+            <a href="{{ url('admin') }}?pageOffres={{ pageOffres - 1 }}&tab=offre&search={{ search|url_encode }}" class="prev-page">« Précédent</a>
+        {% else %}
+            <span class="disabled">« Précédent</span>
+        {% endif %}
+        <div class="page-numbers">
+            {% set maxPagesToShow = 5 %}
+            {% set startPage = max(1, min(pageOffres - (maxPagesToShow // 2), totalPagesOffres - maxPagesToShow + 1)) %}
+            {% set endPage = min(startPage + maxPagesToShow - 1, totalPagesOffres) %}
+            {% if startPage > 1 %}
+                <a href="{{ url('admin') }}?pageOffres=1&tab=offre&search={{ search|url_encode }}">1</a>
+                {% if startPage > 2 %}<span class="ellipsis">...</span>{% endif %}
+            {% endif %}
+            {% for i in startPage..endPage %}
+                <a href="{{ url('admin') }}?pageOffres={{ i }}&tab=offre&search={{ search|url_encode }}" class="{{ i == pageOffres ? 'active' : '' }}">{{ i }}</a>
+            {% endfor %}
+            {% if endPage < totalPagesOffres %}
+                {% if endPage < totalPagesOffres - 1 %}<span class="ellipsis">...</span>{% endif %}
+                <a href="{{ url('admin') }}?pageOffres={{ totalPagesOffres }}&tab=offre&search={{ search|url_encode }}">{{ totalPagesOffres }}</a>
+            {% endif %}
+        </div>
+        {% if pageOffres < totalPagesOffres %}
+            <a href="{{ url('admin') }}?pageOffres={{ pageOffres + 1 }}&tab=offre&search={{ search|url_encode }}" class="next-page">Suivant »</a>
+        {% else %}
+            <span class="disabled">Suivant »</span>
+        {% endif %}
+    </div>
+</div>

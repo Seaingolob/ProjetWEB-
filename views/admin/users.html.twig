@@ -1,0 +1,57 @@
+<div class="user-management active" id="section-utilisateur">
+    <h3>Gestion des utilisateurs :</h3>
+    <button class="action-btn" onclick="window.location.href='{{ url('formulaire-utilisateur') }}';">Ajouter un utilisateur</button>
+    <div class="users-grid">
+        {% if utilisateurs|length > 0 %}
+            {% for utilisateur in utilisateurs %}
+                <div class="user-card">
+                    <div class="user-header">ID : {{ utilisateur.id_compte }}</div>
+                    <div class="user-details">
+                        <p><strong>Nom:</strong> {{ utilisateur.nom }} {{ utilisateur.prenom }}</p>
+                        <p><strong>Email:</strong> {{ utilisateur.mail }}</p>
+                        <p><strong>Téléphone:</strong> {{ utilisateur.telephone }}</p>
+                    </div>
+                    <div class="user-actions">
+                        <span>Actions possibles</span>
+                        <div class="action-buttons">
+                            <button class="view-btn" onclick="window.location.href='{{ url('voir-eleve') }}?id={{ utilisateur.id_compte }}';">Voir</button>
+                            {% if userType == 'admin' %}
+                                <button class="delete-btn" onclick="if(confirm('Êtes-vous sûr de vouloir supprimer cet utilisateur ?')) { window.location.href='{{ url('admin') }}?action=delete_user&id={{ utilisateur.id_compte }}&tab=utilisateur'; } return false;">Supprimer</button>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        {% else %}
+            <p>Aucun utilisateur trouvé.</p>
+        {% endif %}
+    </div>
+    <div class="pagination">
+        {% if page > 1 %}
+            <a href="{{ url('admin') }}?page={{ page - 1 }}&tab=utilisateur&search={{ search|url_encode }}" class="prev-page">« Précédent</a>
+        {% else %}
+            <span class="disabled">« Précédent</span>
+        {% endif %}
+        <div class="page-numbers">
+            {% set maxPagesToShow = 5 %}
+            {% set startPage = max(1, min(page - (maxPagesToShow // 2), totalPages - maxPagesToShow + 1)) %}
+            {% set endPage = min(startPage + maxPagesToShow - 1, totalPages) %}
+            {% if startPage > 1 %}
+                <a href="{{ url('admin') }}?page=1&tab=utilisateur&search={{ search|url_encode }}">1</a>
+                {% if startPage > 2 %}<span class="ellipsis">...</span>{% endif %}
+            {% endif %}
+            {% for i in startPage..endPage %}
+                <a href="{{ url('admin') }}?page={{ i }}&tab=utilisateur&search={{ search|url_encode }}" class="{{ i == page ? 'active' : '' }}">{{ i }}</a>
+            {% endfor %}
+            {% if endPage < totalPages %}
+                {% if endPage < totalPages - 1 %}<span class="ellipsis">...</span>{% endif %}
+                <a href="{{ url('admin') }}?page={{ totalPages }}&tab=utilisateur&search={{ search|url_encode }}">{{ totalPages }}</a>
+            {% endif %}
+        </div>
+        {% if page < totalPages %}
+            <a href="{{ url('admin') }}?page={{ page + 1 }}&tab=utilisateur&search={{ search|url_encode }}" class="next-page">Suivant »</a>
+        {% else %}
+            <span class="disabled">Suivant »</span>
+        {% endif %}
+    </div>
+</div>
