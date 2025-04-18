@@ -5,8 +5,7 @@ class OfferModel {
     
     public function __construct() {
         // Inclure config et se connecter à la BD
-        require_once __DIR__ . '/../config/config.php';
-        $this->connexion = $connexion; // 
+        $this->connexion = require __DIR__ . '/../config/config.php';
     }
     
     public function getOffers($search, $page, $itemsPerPage) {
