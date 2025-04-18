@@ -60,7 +60,9 @@ class UserModel {
                 ];
             }
     
-            $user_type = isset($_SESSION['user_type']) ? $_SESSION['user_type'] : null;
+            $authModel = new AuthModel();
+            $user_type = $authModel->get_user_type($id_compte);
+
             $specific_info = [];
     
             if ($user_type === 'etudiant') {
