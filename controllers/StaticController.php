@@ -8,7 +8,7 @@ class StaticController {
     }
 
     public function mentionsLegales() {
-        $this->view->render('static/mentions_legales');
+        $this->view->render('static/mentions-legales');
     }
 
     public function cgu() {
