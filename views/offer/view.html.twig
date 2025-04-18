@@ -160,3 +160,12 @@
     </div>
 </div>
 {% endblock %}
+
+{% block javascripts %}
+<script src="/js/script.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        postuleroffre();
+    });
+</script>
+{% endblock %}
