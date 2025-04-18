@@ -10,27 +10,29 @@ class UserModel {
 
     public function getUsers($search, $page, $itemsPerPage) {
         $offset = ($page - 1) * $itemsPerPage;
-
-        // Nombre total d'utilisateurs
-        $sql_count = "SELECT COUNT(id_compte) FROM utilisateur WHERE nom LIKE :search OR prenom LIKE :search";
+    
+        // Compter le nombre total d'utilisateurs
+        $sql_count = "SELECT COUNT(id_compte) FROM utilisateur WHERE nom LIKE :search_nom OR prenom LIKE :search_prenom";
         $stmt_count = $this->connexion->prepare($sql_count);
-        $stmt_count->bindValue(':search', '%' . $search . '%', PDO::PARAM_STR);
+        $stmt_count->bindValue(':search_nom', '%' . $search . '%', PDO::PARAM_STR);
+        $stmt_count->bindValue(':search_prenom', '%' . $search . '%', PDO::PARAM_STR);
         $stmt_count->execute();
         $totalItems = $stmt_count->fetchColumn();
         $totalPages = ceil($totalItems / $itemsPerPage);
-
+    
         // Récupérer les utilisateurs
         $sql = "SELECT id_compte, nom, prenom, mail, telephone 
                 FROM utilisateur 
-                WHERE nom LIKE :search OR prenom LIKE :search 
+                WHERE nom LIKE :search_nom OR prenom LIKE :search_prenom 
                 LIMIT :limit OFFSET :offset";
         $stmt = $this->connexion->prepare($sql);
-        $stmt->bindValue(':search', '%' . $search . '%', PDO::PARAM_STR);
+        $stmt->bindValue(':search_nom', '%' . $search . '%', PDO::PARAM_STR);
+        $stmt->bindValue(':search_prenom', '%' . $search . '%', PDO::PARAM_STR);
         $stmt->bindValue(':limit', (int)$itemsPerPage, PDO::PARAM_INT);
         $stmt->bindValue(':offset', (int)$offset, PDO::PARAM_INT);
         $stmt->execute();
         $utilisateurs = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
+    
         return [
             'users' => $utilisateurs,
             'totalItems' => $totalItems,
