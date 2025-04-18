@@ -1,0 +1,15 @@
+{% extends 'layout/base.html.twig' %}
+
+{% block title %}LeBonPlan - Message envoyé{% endblock %}
+
+{% block content %}
+<main>
+    <br><br><br>
+    <section class="contact-form">
+        <h2>Message envoyé avec succès !</h2>
+        <p>Merci de nous avoir contacté. Notre équipe vous répondra dans les plus brefs délais.</p>
+        <br>
+        <a href="{{ url('main') }}" class="btn-primary">Retour à l'accueil</a>
+    </section>
+</main>
+{% endblock %}

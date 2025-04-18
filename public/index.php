@@ -71,6 +71,9 @@ $router->add('voir-offre', 'OfferViewController', 'viewOffer');
 $router->add('delete-offer', 'OfferViewController', 'deleteOffer');
 $router->add('postuler', 'ApplyController', 'apply');
 $router->add('ajouter-evaluation', 'EvaluationController', 'addEvaluation');
+$router->add('contact', 'ContactController', 'index');
+$router->add('process-contact', 'ContactController', 'processForm');
+$router->add('contact-success', 'ContactController', 'showSuccess');
 // ... autres routes
 
 // Dispatcher la requête

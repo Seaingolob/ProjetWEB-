@@ -1,0 +1,106 @@
+{% extends 'layout/base.html.twig' %}
+
+{% block title %}LeBonPlan - Contact{% endblock %}
+
+{% block content %}
+<main>
+    <br><br><br>
+    <section class="contact-form">
+        <h2>Contactez-nous</h2>
+        <p>Notre équipe est à votre disposition pour répondre à toutes vos questions</p>
+    </section>
+    <br>            
+    <section class="contact-info">
+        <div class="contact-form">
+            <h3>Siège social</h3>
+            <address>
+                <p>Web4All</p>
+                <p>93 Boulevard de la Seine</p>
+                <p>92000 Nanterre</p>
+                <p>France</p>
+            </address>
+        </div>
+        <br>
+        <div class="contact-form">
+            <h3>Coordonnées</h3>
+            <ul>
+                <li>
+                    <span>Email:</span>
+                    <a href="mailto:contact@web4all.fr">contact@web4all.fr</a>
+                </li>
+                <li>
+                    <span>Téléphone:</span>
+                    <a href="tel:+33123456789">01 23 45 67 89</a>
+                </li>
+                <li>
+                    <span>Horaires:</span>
+                    <p>Du lundi au vendredi, de 9h à 18h</p>
+                </li>
+            </ul>
+        </div>
+    </section>
+    <br>            
+    <h3>Formulaire de contact</h3>
+    <form id="contact-form" action="{{ url('process-contact') }}" method="POST">
+        <div id="sujet_message" class="message">
+            Veuillez choisir un sujet    
+        </div>
+        <label for="subject">Sujet *</label>
+        <div id="subject_message" class="message {{ errors.subject is defined ? 'visible' : '' }}">
+            {{ errors.subject is defined ? errors.subject : 'Veuillez sélectionner un sujet' }}
+        </div>
+        <select id="subject" name="subject">
+            <option value="">Choisissez un sujet</option>
+            <option value="info" {{ formData.subject is defined and formData.subject == 'info' ? 'selected' : '' }}>Demande d'information</option>
+            <option value="problem" {{ formData.subject is defined and formData.subject == 'problem' ? 'selected' : '' }}>Signaler un problème</option>
+            <option value="partnership" {{ formData.subject is defined and formData.subject == 'partnership' ? 'selected' : '' }}>Proposition de partenariat</option>
+            <option value="other" {{ formData.subject is defined and formData.subject == 'other' ? 'selected' : '' }}>Autre</option>
+        </select>            
+        <label for="name">Nom complet *</label>
+        <div id="nom_message" class="message {{ errors.name is defined ? 'visible' : '' }}">
+            {{ errors.name is defined ? errors.name : 'Veuillez entrer votre nom' }}    
+        </div>    
+        <input type="text" id="name" name="name" value="{{ formData.name is defined ? formData.name : '' }}">
+        <label for="email">Email *</label>
+        <div id="email_message" class="message {{ errors.email is defined ? 'visible' : '' }}">
+            {{ errors.email is defined ? errors.email : 'Veuillez entrer votre email' }}    
+        </div>
+        <input type="email" id="email" name="email" value="{{ formData.email is defined ? formData.email : '' }}">
+        <label for="message">Message *</label>
+        <div id="commentaire_message" class ="message {{ errors.message is defined ? 'visible' : '' }}">
+            {{ errors.message is defined ? errors.message : 'Veuillez entrer un message' }}
+        </div>
+        <textarea id="message" name="message" rows="5" maxlength="300">{{ formData.message is defined ? formData.message : '' }}</textarea>
+        <div id="compteur">0/300</div>
+        <label class="checkbox-label">
+            En envoyant le formulaire, vous consentez à ce que vous données soient traitées conformément à la politique de confidentialité
+        </label>
+        <br>    
+        <button type="submit">Envoyer</button>
+    </form>
+</main>
+{% endblock %}
+
+{% block javascripts %}
+<script>
+    window.onload = function() {
+        compteurmessage();
+    };
+
+    function compteurmessage() {
+        const messageTextarea = document.getElementById('message');
+        const compteurElement = document.getElementById('compteur');
+        
+        // Mettre à jour le compteur au chargement
+        updateCounter();
+        
+        // Mettre à jour le compteur lors de la saisie
+        messageTextarea.addEventListener('input', updateCounter);
+        
+        function updateCounter() {
+            const length = messageTextarea.value.length;
+            compteurElement.textContent = `${length}/300`;
+        }
+    }
+</script>
+{% endblock %}
