@@ -39,38 +39,6 @@ class UserModel {
             'totalPages' => $totalPages
         ];
     }
-
-    public function get_user_type($userId) {
-        // Vérifier si l'utilisateur est un étudiant
-        $sql = "SELECT id_compte FROM etudiant WHERE id_compte = :userId LIMIT 1";
-        $stmt = $this->connexion->prepare($sql);
-        $stmt->bindParam(':userId', $userId, PDO::PARAM_INT);
-        $stmt->execute();
-        if ($stmt->rowCount() > 0) {
-            return 'etudiant';
-        }
-        
-        // Vérifier si l'utilisateur est un pilote
-        $sql = "SELECT id_compte FROM pilote WHERE id_compte = :userId LIMIT 1";
-        $stmt = $this->connexion->prepare($sql);
-        $stmt->bindParam(':userId', $userId, PDO::PARAM_INT);
-        $stmt->execute();
-        if ($stmt->rowCount() > 0) {
-            return 'pilote';
-        }
-        
-        // Vérifier si l'utilisateur est un admin
-        $sql = "SELECT id_compte FROM admin WHERE id_compte = :userId LIMIT 1";
-        $stmt = $this->connexion->prepare($sql);
-        $stmt->bindParam(':userId', $userId, PDO::PARAM_INT);
-        $stmt->execute();
-        if ($stmt->rowCount() > 0) {
-            return 'admin';
-        }
-        
-        // Si aucun type n'est trouvé
-        return 'inconnu';
-    }
     
     public function getUserInfo($id_compte) {
         try {
@@ -91,15 +59,8 @@ class UserModel {
                     'specific_info' => []
                 ];
             }
-            // 2. On détermine le type d'utilisateur
-            $user_type = get_user_type($id_compte);
-            if ($user_type === 'inconnu') {
-                return [
-                    'user' => null,
-                    'user_type' => null,
-                    'specific_info' => []
-                ];
-            }
+    
+            $user_type = isset($_SESSION['user_type']) ? $_SESSION['user_type'] : null;
             $specific_info = [];
     
             if ($user_type === 'etudiant') {

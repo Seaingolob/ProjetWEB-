@@ -44,23 +44,24 @@ class UserViewController {
         
         // DÉFINIR L'ID CORRECTEMENT
         $id_compte = $_GET['id'];
+
         
-        // Récupérer les informations de l'utilisateur
         $userData = $this->userModel->getUserInfo($id_compte);
+
+        // Récupérer le type de l'utilisateur affiché
+        $authModel = new AuthModel();
+        $displayedUserType = $authModel->get_user_type($id_compte);
         
-        // Préparer les données pour la vue
         $viewData = [
             'user' => $userData['user'],
-            'user_type' => $userData['user_type'],
+            'user_type' => $displayedUserType, // <-- on met le type ici
             'specific_info' => $userData['specific_info'],
             'currentUser' => [
                 'id' => $_SESSION['user_id'],
                 'name' => $_SESSION['user_name'],
-                'type' => $_SESSION['user_type']
+                'type' => $_SESSION['user_type']  // type de l'utilisateur connecté
             ]
         ];
-        
-        // Rendre la vue
         $this->view->render('user/view', $viewData);
     }
     
