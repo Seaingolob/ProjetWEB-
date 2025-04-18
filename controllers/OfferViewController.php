@@ -10,7 +10,6 @@ class OfferViewController {
     }
 
     private function checkAuthentication() {
-        session_start();
 
         if (isset($_SESSION['last_activity']) && (time() - $_SESSION['last_activity'] > 3600)) {
             session_unset();
