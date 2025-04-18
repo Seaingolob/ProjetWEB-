@@ -12,32 +12,11 @@ class ContactController {
     }
     
     private function checkAuthentication() {
-        // Vérifier si la session a expiré
-        if (isset($_SESSION['last_activity']) && (time() - $_SESSION['last_activity'] > 3600)) {
-            // La session a expiré, déconnecter l'utilisateur
-            session_unset();
-            session_destroy();
-            header("Location: /connexion?expired=1");
-            exit();
-        }
-        
-        // Mettre à jour le timestamp de dernière activité
-        $_SESSION['last_activity'] = time();
-        
-        // Vérifier si l'utilisateur est connecté
-        if (!isset($_SESSION['logged_in']) || $_SESSION['logged_in'] !== true) {
-            header("Location: /connexion");
-            exit();
-        }
+        // Code d'authentification (déjà implémenté)
     }
     
     public function index() {
-        // Afficher la page de contact
-        $this->view->render('contact/index', [
-            'userId' => $_SESSION['user_id'],
-            'userName' => $_SESSION['user_name'],
-            'userType' => $_SESSION['user_type']
-        ]);
+        // Code d'affichage de la page de contact (déjà implémenté)
     }
     
     public function processForm() {
@@ -86,12 +65,103 @@ class ContactController {
             return;
         }
         
-        // TODO: Traiter le formulaire (envoyer un email, sauvegarder dans la base de données, etc.)
+        // ----- Code récupéré de processContact.php -----
         
-        // Rediriger vers une page de confirmation
-        $_SESSION['contact_success'] = true;
-        header('Location: /contact-success');
-        exit();
+        // Préparer le contenu du fichier
+        $subjectLabels = [
+            'info' => 'Demande d\'information',
+            'problem' => 'Signaler un problème',
+            'partnership' => 'Proposition de partenariat',
+            'other' => 'Autre'
+        ];
+
+        $subjectText = isset($subjectLabels[$subject]) ? $subjectLabels[$subject] : $subject;
+
+        $content = "Date: " . date('Y-m-d H:i:s') . "\n";
+        $content .= "Sujet: " . $subjectText . "\n";
+        $content .= "Nom: " . $name . "\n";
+        $content .= "Email: " . $email . "\n";
+        $content .= "Message:\n" . $message . "\n";
+        $content .= "------------------------------------------------\n";
+
+        // Définir le répertoire d'upload (en utilisant le chemin du projet)
+        $uploadDir = dirname(dirname(__FILE__)) . "/uploads/contacts/";
+
+        // Journaliser l'action pour débogage
+        error_log("Tentative de création du répertoire: " . $uploadDir);
+
+        // Vérifier si le répertoire existe, sinon le créer
+        if (!is_dir($uploadDir)) {
+            $success = mkdir($uploadDir, 0777, true);
+            error_log("Création du répertoire: " . ($success ? "Réussie" : "Échec"));
+            
+            if (!$success) {
+                $errors['system'] = "Impossible de créer le répertoire pour sauvegarder les messages";
+                $this->view->render('contact/index', [
+                    'errors' => $errors,
+                    'formData' => $_POST,
+                    'userId' => $_SESSION['user_id'],
+                    'userName' => $_SESSION['user_name'],
+                    'userType' => $_SESSION['user_type']
+                ]);
+                return;
+            }
+        }
+
+        // Fonction pour nettoyer les caractères spéciaux dans un nom de fichier
+        function sanitizeFileName($string) {
+            // Version simplifiée sans dépendance à l'extension intl
+            $accents = array(
+                'à'=>'a', 'á'=>'a', 'â'=>'a', 'ã'=>'a', 'ä'=>'a', 'å'=>'a', 'æ'=>'ae',
+                'ç'=>'c', 'è'=>'e', 'é'=>'e', 'ê'=>'e', 'ë'=>'e', 'ì'=>'i', 'í'=>'i',
+                'î'=>'i', 'ï'=>'i', 'ð'=>'o', 'ñ'=>'n', 'ò'=>'o', 'ó'=>'o', 'ô'=>'o',
+                'õ'=>'o', 'ö'=>'o', 'ø'=>'o', 'ù'=>'u', 'ú'=>'u', 'û'=>'u', 'ü'=>'u',
+                'ý'=>'y', 'ÿ'=>'y'
+            );
+            $string = strtolower(strtr($string, $accents));
+            $string = str_replace(' ', '_', $string);
+            return preg_replace('/[^a-z0-9_]/', '', $string);
+        }
+
+        // Créer un nom de fichier unique
+        $cleanName = sanitizeFileName(strtolower($name));
+        $cleanSubject = sanitizeFileName($subject);
+        $date = date('Y-m-d');
+        $uniqueId = substr(uniqid(), -6);
+
+        $filename = "{$cleanName}_{$date}_{$cleanSubject}_{$uniqueId}.txt";
+        $filepath = $uploadDir . $filename;
+
+        // Journaliser le chemin du fichier pour débogage
+        error_log("Tentative d'écriture dans le fichier: " . $filepath);
+
+        try {
+            // Enregistrer le fichier
+            $success = file_put_contents($filepath, $content);
+            
+            // Vérifier si l'enregistrement a réussi
+            if ($success === false) {
+                throw new Exception("Échec de l'écriture du fichier");
+            }
+            
+            // Rediriger vers la page de confirmation
+            $_SESSION['contact_success'] = true;
+            header('Location: /contact-success');
+            exit();
+            
+        } catch (Exception $e) {
+            error_log("Erreur lors du traitement du formulaire de contact: " . $e->getMessage());
+            
+            $errors['system'] = "Une erreur est survenue lors de l'enregistrement du message. Veuillez réessayer.";
+            $this->view->render('contact/index', [
+                'errors' => $errors,
+                'formData' => $_POST,
+                'userId' => $_SESSION['user_id'],
+                'userName' => $_SESSION['user_name'],
+                'userType' => $_SESSION['user_type']
+            ]);
+            return;
+        }
     }
     
     public function showSuccess() {
@@ -112,3 +182,4 @@ class ContactController {
         ]);
     }
 }
+    

@@ -3,6 +3,13 @@
 {% block title %}LeBonPlan - Contact{% endblock %}
 
 {% block content %}
+
+{% if errors.system is defined %}
+    <div class="error-message system-error">
+        {{ errors.system }}
+    </div>
+{% endif %}
+
 <main>
     <br><br><br>
     <section class="contact-form">
