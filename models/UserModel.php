@@ -1,19 +1,14 @@
 <?php
- 
-// models/UserModel.php
- 
+
 class UserModel {
     private $connexion;
- 
-    public function __construct() {
-        // Inclure config et se connecter à la BD
-        require_once __DIR__ . '/../config/config.php';
-        $this->connexion = $connexion; // Supposant que $connexion vient de config.php
-    }
-    public function getUsers($search, $page, $itemsPerPage) {
 
+    public function __construct() {
+        $this->connexion = require __DIR__ . '/../config/config.php';
+    }
+
+    public function getUsers($search, $page, $itemsPerPage) {
         $offset = ($page - 1) * $itemsPerPage;
-        // Compter le nombre total d'utilisateurs
 
         $sql_count = "SELECT COUNT(id_compte) FROM utilisateur WHERE nom LIKE :search OR prenom LIKE :search";
         $stmt_count = $this->connexion->prepare($sql_count);
@@ -21,16 +16,13 @@ class UserModel {
         $stmt_count->execute();
         $totalItems = $stmt_count->fetchColumn();
         $totalPages = ceil($totalItems / $itemsPerPage);
- 
-        // Récupérer les utilisateurs
+
         $sql = "SELECT id_compte, nom, prenom, mail, telephone 
                 FROM utilisateur 
                 WHERE nom LIKE :search OR prenom LIKE :search 
-                LIMIT :limit OFFSET :offset";
+                LIMIT " . intval($itemsPerPage) . " OFFSET " . intval($offset);
         $stmt = $this->connexion->prepare($sql);
         $stmt->bindValue(':search', '%' . $search . '%', PDO::PARAM_STR);
-        $stmt->bindParam(':limit', $itemsPerPage, PDO::PARAM_INT);
-        $stmt->bindParam(':offset', $offset, PDO::PARAM_INT);
         $stmt->execute();
         $utilisateurs = $stmt->fetchAll(PDO::FETCH_ASSOC);
         return [
