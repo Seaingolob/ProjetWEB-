@@ -62,20 +62,8 @@ class UserModel {
             
             // SUPPRESSION de la copie $userData = $user qui créait la confusion
             // On utilise directement $userData comme la variable principale
-            
-            // ÉTAPE 2: On détermine le type d'utilisateur
-            // J'ai renommé la variable $stmt en $stmt_type pour éviter les conflits
-            $stmt_type = $this->connexion->prepare("SELECT 
-                            CASE 
-                                WHEN EXISTS (SELECT 1 FROM etudiant WHERE id_compte = :id) THEN 'etudiant'
-                                WHEN EXISTS (SELECT 1 FROM admin WHERE id_compte = :id) THEN 'admin'
-                                WHEN EXISTS (SELECT 1 FROM pilote WHERE id_compte = :id) THEN 'pilote'
-                                ELSE 'inconnu'
-                            END AS user_type");
-            $stmt_type->bindParam(':id', $id_compte, PDO::PARAM_STR);
-            $stmt_type->execute();
-            $user_type_result = $stmt_type->fetch(PDO::FETCH_ASSOC);
-            $user_type = $user_type_result['user_type'];
+            // ÉTAPE 2: On récupère le type d'utilisateur
+            $user_type = $_SESSION['user_type'];
             
             // ÉTAPE 3: On récupère les infos spécifiques
             $specific_info = [];
@@ -154,9 +142,9 @@ class UserModel {
         } catch (PDOException $e) {
             error_log("ERREUR CRITIQUE dans getUserInfo(): " . $e->getMessage());
             return [
-                'user' => null,
-                'user_type' => null,
-                'specific_info' => []
+                'user' => "erreur",
+                'user_type' => "erreur",
+                'specific_info' => [ ]
             ];
         }
     }
