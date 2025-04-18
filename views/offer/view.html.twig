@@ -5,6 +5,14 @@
 {% block content %}
 <br><br>
 <div class="offre-detail-container">
+    {% if app.session.get('error_message') %}
+    <div class="alert alert-danger">{{ app.session.get('error_message') }}</div>
+    {% set _ = app.session.remove('error_message') %}
+{% endif %}
+{% if app.session.get('success_message') %}
+    <div class="alert alert-success">{{ app.session.get('success_message') }}</div>
+    {% set _ = app.session.remove('success_message') %}
+{% endif %}
     <div class="offre-header">
         <h2>{{ offre.titre }} - ID {{ offre.id_offre }}</h2>
     </div>
@@ -172,20 +180,4 @@
         </div>
     </div>
 </div>
-{% endblock %}
-
-{% block javascripts %}
-<script>
-    window.onload = function() {
-        postuleroffre();
-    };
-
-    function postuleroffre() {
-        // Cette fonction doit être définie dans ton fichier script.js
-        // et sera chargée depuis la balise script du layout de base
-        if (typeof window.postuleroffre !== 'undefined') {
-            window.postuleroffre();
-        }
-    }
-</script>
 {% endblock %}
