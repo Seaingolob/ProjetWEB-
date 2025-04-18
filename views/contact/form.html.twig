@@ -1,0 +1,95 @@
+{% extends 'layout/base.html.twig' %}
+
+{% block title %}LeBonPlan - Contact{% endblock %}
+
+{% block content %}
+<main>
+    <br><br><br>
+    <section class="contact-form">
+        <h2>Contactez-nous</h2>
+        <p>Notre équipe est à votre disposition pour répondre à toutes vos questions</p>
+        {% if success %}
+            <div class="success-message">Message envoyé avec succès !</div>
+        {% elseif error %}
+            <div class="error-message">
+                {% if error == 'empty_fields' %}
+                    Merci de remplir tous les champs obligatoires.
+                {% elseif error == 'directory_creation_failed' %}
+                    Erreur serveur : impossible de créer le répertoire de stockage.
+                {% elseif error == 'save_error' %}
+                    Erreur lors de l'enregistrement de votre message.
+                {% else %}
+                    Une erreur est survenue.
+                {% endif %}
+            </div>
+        {% endif %}
+    </section>
+    <br>
+    <section class="contact-info">
+        <div class="contact-form">
+            <h3>Siège social</h3>
+            <address>
+                <p>Web4All</p>
+                <p>93 Boulevard de la Seine</p>
+                <p>92000 Nanterre</p>
+                <p>France</p>
+            </address>
+        </div>
+        <br>
+        <div class="contact-form">
+            <h3>Coordonnées</h3>
+            <ul>
+                <li>
+                    <span>Email:</span>
+                    <a href="mailto:contact@web4all.fr">contact@web4all.fr</a>
+                </li>
+                <li>
+                    <span>Téléphone:</span>
+                    <a href="tel:+33123456789">01 23 45 67 89</a>
+                </li>
+                <li>
+                    <span>Horaires:</span>
+                    <p>Du lundi au vendredi, de 9h à 18h</p>
+                </li>
+            </ul>
+        </div>
+    </section>
+    <br>
+    <h3>Formulaire de contact</h3>
+    <form id="contact-form" action="{{ url('contact-process') }}" method="POST">
+        <div id="sujet_message" class="message">Veuillez choisir un sujet</div>
+        <label for="subject">Sujet *</label>
+        <div id="subject_message" class="message">Veuillez sélectionner un sujet</div>
+        <select id="subject" name="subject">
+            <option value="">Choisissez un sujet</option>
+            <option value="info">Demande d'information</option>
+            <option value="problem">Signaler un problème</option>
+            <option value="partnership">Proposition de partenariat</option>
+            <option value="other">Autre</option>
+        </select>
+        <label for="name">Nom complet *</label>
+        <div id="nom_message" class="message">Veuillez entrer votre nom</div>    
+        <input type="text" id="name" name="name">
+        <label for="email">Email *</label>
+        <div id="email_message" class="message">Veuillez entrer votre email</div>
+        <input type="email" id="email" name="email">
+        <label for="message">Message *</label>
+        <div id="commentaire_message" class ="message">Veuillez entrer un message</div>
+        <textarea id="message" name="message" rows="5" maxlength="300"></textarea>
+        <div id="compteur">0/300</div>
+        <label class="checkbox-label">
+            En envoyant le formulaire, vous consentez à ce que vos données soient traitées conformément à la politique de confidentialité
+        </label>
+        <br>    
+        <button type="submit" onclick="contact()">Envoyer</button>
+    </form>
+</main>
+{% endblock %}
+
+{% block javascripts %}
+<script>
+    window.onload = function() {
+        compteurmessage();
+    };
+</script>
+{% endblock %}
