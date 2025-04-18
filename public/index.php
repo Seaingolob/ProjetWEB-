@@ -69,8 +69,9 @@ $router->add('voir-eleve', 'UserViewController', 'viewUser');
 $router->add('delete-user', 'UserViewController', 'deleteUser');
 $router->add('voir-offre', 'OfferViewController', 'viewOffer');
 $router->add('delete-offer', 'OfferViewController', 'deleteOffer');
-$router->add('postuler', 'ApplyController', 'apply');
-$router->add('ajouter-evaluation', 'EvaluationController', 'addEvaluation');
+$router->add('voir-offre', 'OfferViewController', 'voir');
+$router->add('postuler-offre', 'OfferViewController', 'postuler'); // Méthode POST
+$router->add('ajouter-evaluation', 'OfferViewController', 'ajouterEvaluation'); // Méthode POST
 $router->add('contact', 'ContactController', 'form');
 $router->add('contact-process', 'ContactController', 'process');
 $router->add('voir-promo', 'PromoController', 'voir');

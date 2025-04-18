@@ -3,20 +3,16 @@
 {% block title %}LeBonPlan - Détail Offre{% endblock %}
 
 {% block content %}
-<br><br>
 <div class="offre-detail-container">
-    {% if app.session.get('error_message') %}
-    <div class="alert alert-danger">{{ app.session.get('error_message') }}</div>
-    {% set _ = app.session.remove('error_message') %}
-{% endif %}
-{% if app.session.get('success_message') %}
-    <div class="alert alert-success">{{ app.session.get('success_message') }}</div>
-    {% set _ = app.session.remove('success_message') %}
-{% endif %}
+    {% if success %}
+        <div class="success-message">{{ success }}</div>
+    {% endif %}
+    {% if error %}
+        <div class="error-message">{{ error }}</div>
+    {% endif %}
     <div class="offre-header">
         <h2>{{ offre.titre }} - ID {{ offre.id_offre }}</h2>
     </div>
-
     <div class="offre-content">
         <div class="offre-detail-grid">
             <div class="offre-main-info">
@@ -33,26 +29,24 @@
                     <div class="info-row">
                         <span class="info-label">Créé par:</span>
                         <span class="info-value">
-                            {% if userType == 'admin' or userType == 'pilote' %}
-                                <a href="{{ url('voir-eleve') }}?id={{ offre.createur_id }}">{{ offre.createur_prenom }} {{ offre.createur_nom }}</a>
-                            {% else %}
-                                {{ offre.createur_prenom }} {{ offre.createur_nom }}
-                            {% endif %}
+                        {% if userType in ['admin','pilote'] %}
+                            <a href="{{ url('voir-eleve') }}?id={{ offre.createur_id }}">{{ offre.createur_prenom }} {{ offre.createur_nom }}</a>
+                        {% else %}
+                            {{ offre.createur_prenom }} {{ offre.createur_nom }}
+                        {% endif %}
                         </span>
                     </div>
                 </div>
-
                 <div class="info-section">
                     <div class="form-title">Description</div>
                     <p>{{ offre.description|nl2br }}</p>
                 </div>
-
                 <div class="info-section">
                     <div class="form-title">Compétences requises</div>
-                    {% if competences is not empty %}
+                    {% if competences %}
                         <div class="skill-tags">
-                            {% for competence in competences %}
-                                <span class="skill-tag">{{ competence.nom }}</span>
+                            {% for comp in competences %}
+                                <span class="skill-tag">{{ comp.nom }}</span>
                             {% endfor %}
                         </div>
                     {% else %}
@@ -60,17 +54,15 @@
                     {% endif %}
                 </div>
             </div>
-
             <div class="offre-side-info">
                 <div class="info-section">
                     <div class="form-title">Entreprise</div>
                     <h4>{{ offre.entreprise_nom }}</h4>
-                    <p>{{ (offre.entreprise_description ?? 'Aucune description disponible.')|nl2br }}</p>
-                    {% if offre.entreprise_site is not empty %}
+                    <p>{{ offre.entreprise_description|default('Aucune description disponible.')|nl2br }}</p>
+                    {% if offre.entreprise_site %}
                         <a href="{{ offre.entreprise_site }}" target="_blank" class="company-site">Site web</a>
                     {% endif %}
-
-                    {% if secteurs is not empty %}
+                    {% if secteurs %}
                         <div class="sector-tags">
                             {% for secteur in secteurs %}
                                 <span class="sector-tag">{{ secteur.nom }}</span>
@@ -78,58 +70,46 @@
                         </div>
                     {% endif %}
                 </div>
-            </div>
-
-            <div class="info-section">
-                <div class="form-title">Localisation</div>
-                <div class="location-card">
-                    <p><i class="fa fa-map-marker" aria-hidden="true"></i> {{ offre.nom_adresse }}</p>
-                    <p>{{ offre.nom_ville }}, {{ offre.nom_region }}</p>
+                <div class="info-section">
+                    <div class="form-title">Localisation</div>
+                    <div class="location-card">
+                        <p>{{ offre.nom_adresse }}</p>
+                        <p>{{ offre.nom_ville }}, {{ offre.nom_region }}</p>
+                    </div>
                 </div>
             </div>
         </div>
-
         <div class="reviews-section">
             <div class="offre-actions">
                 {% if userType == 'etudiant' %}
                     {% if not postule %}
-                        <form id="postulerForm" action="{{ url('postuler') }}" method="post" enctype="multipart/form-data">
+                        <form id="postulerForm" action="{{ url('postuler-offre') }}" method="post" enctype="multipart/form-data">
                             <input type="hidden" name="id" value="{{ offre.id_offre }}">
-
                             <div class="file-upload-container">
                                 <label class="file-upload-label" for="cv">CV</label>
                                 <div class="file-input-container">
-                                    <div class="message" id="cv_message" style="display: none;">
-                                        Veuillez insérer votre CV
-                                    </div>
-                                    <input type="file" id="cv" name="cv" class="file-input" accept=".pdf">
+                                    <input type="file" id="cv" name="cv" class="file-input" accept=".pdf" required>
                                     <span class="input-note">Format accepté: PDF uniquement</span>
                                 </div>
                             </div>
-
                             <div class="file-upload-container">
                                 <label class="file-upload-label" for="lettre_motivation">Lettre de motivation</label>
                                 <div class="file-input-container">
-                                    <div class="message" id="lettre_motivation_message" style="display: none;">
-                                        Veuillez insérer votre lettre de motivation
-                                    </div>
-                                    <input type="file" id="lettre_motivation" name="lettre_motivation" class="file-input" accept=".pdf">
+                                    <input type="file" id="lettre_motivation" name="lettre_motivation" class="file-input" accept=".pdf" required>
                                     <span class="input-note">Format accepté: PDF uniquement</span>
                                 </div>
                             </div>
-
                             <button type="submit" class="action-btn apply-btn">Postuler</button>
                         </form>
                     {% else %}
                         <button class="action-btn applied-btn" disabled>Déjà postulé</button>
                     {% endif %}
                 {% endif %}
-
                 {% if userType == 'admin' %}
-                    <button class="action-btn delete-btn" onclick="if(confirm('Êtes-vous sûr de vouloir supprimer cette offre ?')) { window.location.href='{{ url('delete-offer') }}?id={{ offre.id_offre }}'; }">Supprimer</button>
+                    <button class="action-btn delete-btn" onclick="window.location.href='{{ url('supprimer-offre') }}?id={{ offre.id_offre }}'">Supprimer</button>
                 {% endif %}
             </div>
-            <div class="info-section">            
+            <div class="info-section">
                 <div class="form-title">Évaluations</div>
                 {% if userType == 'etudiant' and not a_evalue %}
                     <div class="review-form-container">
@@ -154,9 +134,8 @@
                         </form>
                     </div>
                 {% endif %}
-
                 <div class="reviews-list">
-                    {% if evaluations is not empty %}
+                    {% if evaluations %}
                         {% for evaluation in evaluations %}
                             <div class="review-card">
                                 <div class="review-header">
@@ -165,7 +144,7 @@
                                     </span>
                                     <span class="review-rating {{ evaluation.note|lower|replace({' ': '-'}) }}">{{ evaluation.note }}</span>
                                 </div>
-                                {% if evaluation.avis is not empty %}
+                                {% if evaluation.avis %}
                                     <div class="review-content">
                                         <p>{{ evaluation.avis|nl2br }}</p>
                                     </div>

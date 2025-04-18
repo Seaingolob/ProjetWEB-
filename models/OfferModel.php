@@ -37,7 +37,7 @@ class OfferModel {
             'totalPages' => $totalPages
         ];
     }
-    
+
     public function getPDO() {
         return $this->connexion;
     }
@@ -165,129 +165,84 @@ class OfferModel {
     }
 
     public function getOfferDetails($id_offre, $user_id) {
-        try {
-            // Récupérer les détails de l'offre
-            $stmt = $this->connexion->prepare("SELECT 
-                                            o.id_offre,
-                                            o.titre,
-                                            o.description,
-                                            o.duree_mois,
-                                            o.date_publication,
-                                            e.nom AS entreprise_nom,
-                                            e.description AS entreprise_description,
-                                            e.site AS entreprise_site,
-                                            a.nom_adresse,
-                                            v.nom_ville,
-                                            r.nom_region,
-                                            u.nom AS createur_nom,
-                                            u.prenom AS createur_prenom,
-                                            u.id_compte AS createur_id
-                                            FROM offre o
-                                            JOIN entreprise e ON o.id_entreprise = e.id_entreprise
-                                            JOIN adresse a ON e.id_adresse = a.id_adresse
-                                            JOIN ville v ON a.id_ville = v.id_ville
-                                            JOIN region r ON v.id_region = r.id_region
-                                            JOIN utilisateur u ON o.id_compte = u.id_compte
-                                            WHERE o.id_offre = :id");
-            $stmt->bindParam(':id', $id_offre);
-            $stmt->execute();
-            $offre = $stmt->fetch(PDO::FETCH_ASSOC);
-    
-            if (!$offre) {
-                return [
-                    'offre' => null,
-                    'competences' => [],
-                    'secteurs' => [],
-                    'postule' => false,
-                    'wishlist' => false,
-                    'evaluations' => [],
-                    'a_evalue' => false
-                ];
-            }
-    
-            // Récupérer les compétences associées à l'offre
-            $stmt = $this->connexion->prepare("SELECT c.id_competence, c.nom
-                                            FROM contenir co
-                                            JOIN competence c ON co.id_competence = c.id_competence
-                                            WHERE co.id_offre = :id");
-            $stmt->bindParam(':id', $id_offre);
-            $stmt->execute();
-            $competences = $stmt->fetchAll(PDO::FETCH_ASSOC);
-    
-            // Récupérer les secteurs d'activité de l'entreprise
-            $stmt = $this->connexion->prepare("SELECT sa.id_secteur_activite, sa.nom
-                                            FROM travailler t
-                                            JOIN secteur_activite sa ON t.id_secteur_activite = sa.id_secteur_activite
-                                            JOIN entreprise e ON t.id_entreprise = e.id_entreprise
-                                            JOIN offre o ON o.id_entreprise = e.id_entreprise
-                                            WHERE o.id_offre = :id");
-            $stmt->bindParam(':id', $id_offre);
-            $stmt->execute();
-            $secteurs = $stmt->fetchAll(PDO::FETCH_ASSOC);
-    
-            // Vérifier si l'utilisateur actuel a déjà postulé à cette offre
-            $stmt = $this->connexion->prepare("SELECT COUNT(*) AS postule
-                                            FROM postuler
-                                            WHERE id_compte = :id_compte AND id_offre = :id_offre");
-            $stmt->bindParam(':id_compte', $user_id);
-            $stmt->bindParam(':id_offre', $id_offre);
-            $stmt->execute();
-            $postule = $stmt->fetch(PDO::FETCH_ASSOC)['postule'] > 0;
-    
-            // Vérifier si l'utilisateur a ajouté l'offre à sa wishlist
-            $stmt = $this->connexion->prepare("SELECT COUNT(*) AS wishlist
-                                            FROM souhaiter
-                                            WHERE id_compte = :id_compte AND id_offre = :id_offre");
-            $stmt->bindParam(':id_compte', $user_id);
-            $stmt->bindParam(':id_offre', $id_offre);
-            $stmt->execute();
-            $wishlist = $stmt->fetch(PDO::FETCH_ASSOC)['wishlist'] > 0;
-    
-            // Récupérer les évaluations de l'offre
-            $stmt = $this->connexion->prepare("SELECT 
-                                            e.note, 
-                                            e.avis, 
-                                            u.nom, 
-                                            u.prenom,
-                                            u.id_compte
-                                            FROM evaluation e
-                                            JOIN utilisateur u ON e.id_compte = u.id_compte
-                                            WHERE e.id_offre = :id");
-            $stmt->bindParam(':id', $id_offre);
-            $stmt->execute();
-            $evaluations = $stmt->fetchAll(PDO::FETCH_ASSOC);
-    
-            // Vérifier si l'utilisateur actuel a déjà évalué cette offre
-            $stmt = $this->connexion->prepare("SELECT COUNT(*) AS evalue
-                                            FROM evaluation
-                                            WHERE id_compte = :id_compte AND id_offre = :id_offre");
-            $stmt->bindParam(':id_compte', $user_id);
-            $stmt->bindParam(':id_offre', $id_offre);
-            $stmt->execute();
-            $a_evalue = $stmt->fetch(PDO::FETCH_ASSOC)['evalue'] > 0;
-    
-            return [
-                'offre' => $offre,
-                'competences' => $competences,
-                'secteurs' => $secteurs,
-                'postule' => $postule,
-                'wishlist' => $wishlist,
-                'evaluations' => $evaluations,
-                'a_evalue' => $a_evalue
-            ];
-            
-        } catch (PDOException $e) {
-            error_log("Erreur lors de la récupération des détails de l'offre: " . $e->getMessage());
-            return [
-                'offre' => null,
-                'competences' => [],
-                'secteurs' => [],
-                'postule' => false,
-                'wishlist' => false,
-                'evaluations' => [],
-                'a_evalue' => false
-            ];
-        }
+        // Récupère tous les détails nécessaires d'une offre et ses relations
+
+        // 1. Détail de l'offre
+        $stmt = $this->connexion->prepare(
+            "SELECT o.*, e.nom AS entreprise_nom, e.description AS entreprise_description, e.site AS entreprise_site,
+                    a.nom_adresse, v.nom_ville, r.nom_region, u.nom AS createur_nom, u.prenom AS createur_prenom, u.id_compte AS createur_id
+             FROM offre o
+             JOIN entreprise e ON o.id_entreprise = e.id_entreprise
+             JOIN adresse a ON e.id_adresse = a.id_adresse
+             JOIN ville v ON a.id_ville = v.id_ville
+             JOIN region r ON v.id_region = r.id_region
+             JOIN utilisateur u ON o.id_compte = u.id_compte
+             WHERE o.id_offre = :id");
+        $stmt->bindParam(':id', $id_offre);
+        $stmt->execute();
+        $offre = $stmt->fetch(PDO::FETCH_ASSOC);
+        if (!$offre) return false;
+
+        // 2. Compétences
+        $stmt = $this->connexion->prepare(
+            "SELECT c.id_competence, c.nom
+             FROM contenir co
+             JOIN competence c ON co.id_competence = c.id_competence
+             WHERE co.id_offre = :id");
+        $stmt->bindParam(':id', $id_offre);
+        $stmt->execute();
+        $competences = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        // 3. Secteurs
+        $stmt = $this->connexion->prepare(
+            "SELECT sa.id_secteur_activite, sa.nom
+             FROM travailler t
+             JOIN secteur_activite sa ON t.id_secteur_activite = sa.id_secteur_activite
+             JOIN entreprise e ON t.id_entreprise = e.id_entreprise
+             JOIN offre o ON o.id_entreprise = e.id_entreprise
+             WHERE o.id_offre = :id");
+        $stmt->bindParam(':id', $id_offre);
+        $stmt->execute();
+        $secteurs = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        // 4. Postulation ?
+        $stmt = $this->connexion->prepare(
+            "SELECT COUNT(*) AS postule
+             FROM postuler WHERE id_compte = :id_compte AND id_offre = :id_offre");
+        $stmt->bindParam(':id_compte', $user_id);
+        $stmt->bindParam(':id_offre', $id_offre);
+        $stmt->execute();
+        $postule = $stmt->fetch(PDO::FETCH_ASSOC)['postule'] > 0;
+
+        // 5. Wishlist ?
+        $stmt = $this->connexion->prepare(
+            "SELECT COUNT(*) AS wishlist
+             FROM souhaiter WHERE id_compte = :id_compte AND id_offre = :id_offre");
+        $stmt->bindParam(':id_compte', $user_id);
+        $stmt->bindParam(':id_offre', $id_offre);
+        $stmt->execute();
+        $wishlist = $stmt->fetch(PDO::FETCH_ASSOC)['wishlist'] > 0;
+
+        // 6. Evaluations
+        $stmt = $this->connexion->prepare(
+            "SELECT e.note, e.avis, u.nom, u.prenom, u.id_compte
+             FROM evaluation e
+             JOIN utilisateur u ON e.id_compte = u.id_compte
+             WHERE e.id_offre = :id");
+        $stmt->bindParam(':id', $id_offre);
+        $stmt->execute();
+        $evaluations = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        // 7. Déjà évalué ?
+        $stmt = $this->connexion->prepare(
+            "SELECT COUNT(*) AS evalue
+             FROM evaluation WHERE id_compte = :id_compte AND id_offre = :id_offre");
+        $stmt->bindParam(':id_compte', $user_id);
+        $stmt->bindParam(':id_offre', $id_offre);
+        $stmt->execute();
+        $a_evalue = $stmt->fetch(PDO::FETCH_ASSOC)['evalue'] > 0;
+
+        return compact('offre', 'competences', 'secteurs', 'postule', 'wishlist', 'evaluations', 'a_evalue');
     }
     
     public function deleteOffer($id) {
@@ -447,4 +402,96 @@ class OfferModel {
             ];
         }
     }
+
+    public function processApplication($id_offre, $id_compte, $files) {
+        // Vérifie l'existence, traite les uploads, et insère la postulation
+        try {
+            // Offre existe ?
+            $stmt = $this->connexion->prepare("SELECT COUNT(*) FROM offre WHERE id_offre = :id");
+            $stmt->bindParam(':id', $id_offre, PDO::PARAM_INT);
+            $stmt->execute();
+            if ($stmt->fetchColumn() == 0) {
+                return ['success' => false, 'message' => "L'offre n'existe pas."];
+            }
+            // Déjà postulé ?
+            $stmt = $this->connexion->prepare("SELECT COUNT(*) FROM postuler WHERE id_compte = :id_compte AND id_offre = :id_offre");
+            $stmt->bindParam(':id_compte', $id_compte, PDO::PARAM_STR);
+            $stmt->bindParam(':id_offre', $id_offre);
+            $stmt->execute();
+            if ($stmt->fetchColumn() > 0) {
+                return ['success' => false, 'message' => "Tu as déjà postulé à cette offre."];
+            }
+            // Upload
+            $upload_dir = __DIR__ . "/../uploads/candidatures/";
+            if (!is_dir($upload_dir)) mkdir($upload_dir, 0755, true);
+            if (!is_writable($upload_dir)) return ['success' => false, 'message' => "Répertoire d'upload inaccessible."];
+
+            // CV
+            if (!isset($files['cv']) || $files['cv']['error'] !== 0) return ['success' => false, 'message' => "Le CV est obligatoire."];
+            if ($files['cv']['type'] !== 'application/pdf') return ['success' => false, 'message' => "Le CV doit être un PDF."];
+            $cv_filename = $id_compte . '_' . $id_offre . '_cv_' . time() . '.pdf';
+            if (!move_uploaded_file($files['cv']['tmp_name'], $upload_dir . $cv_filename)) return ['success' => false, 'message' => "Erreur d'upload du CV."];
+
+            // Lettre
+            if (!isset($files['lettre_motivation']) || $files['lettre_motivation']['error'] !== 0) {
+                unlink($upload_dir . $cv_filename);
+                return ['success' => false, 'message' => "Lettre de motivation obligatoire."];
+            }
+            if ($files['lettre_motivation']['type'] !== 'application/pdf') {
+                unlink($upload_dir . $cv_filename);
+                return ['success' => false, 'message' => "La lettre doit être un PDF."];
+            }
+            $lettre_filename = $id_compte . '_' . $id_offre . '_lettre_' . time() . '.pdf';
+            if (!move_uploaded_file($files['lettre_motivation']['tmp_name'], $upload_dir . $lettre_filename)) {
+                unlink($upload_dir . $cv_filename);
+                return ['success' => false, 'message' => "Erreur d'upload de la lettre."];
+            }
+
+            // Insert
+            $stmt = $this->connexion->prepare("INSERT INTO postuler (id_compte, id_offre, cv_path, lettre_motivation_path, date_candidature) VALUES (:id_compte, :id_offre, :cv_path, :lettre_path, NOW())");
+            $stmt->bindParam(':id_compte', $id_compte, PDO::PARAM_STR);
+            $stmt->bindParam(':id_offre', $id_offre);
+            $stmt->bindParam(':cv_path', $cv_filename);
+            $stmt->bindParam(':lettre_path', $lettre_filename);
+            $stmt->execute();
+
+            return ['success' => true, 'message' => "Ta candidature a bien été envoyée !"];
+        } catch(Exception $e) {
+            return ['success' => false, 'message' => "Erreur lors de la candidature: " . $e->getMessage()];
+        }
+    }
+
+    public function addEvaluation($id_offre, $id_compte, $note, $avis) {
+        try {
+            // Offre existe ?
+            $stmt = $this->connexion->prepare("SELECT 1 FROM offre WHERE id_offre = :id_offre");
+            $stmt->bindParam(':id_offre', $id_offre);
+            $stmt->execute();
+            if (!$stmt->fetch()) return ['success' => false, 'message' => "Offre introuvable."];
+
+            // Déjà évalué ?
+            $stmt = $this->connexion->prepare("SELECT 1 FROM evaluation WHERE id_compte = :id_compte AND id_offre = :id_offre");
+            $stmt->bindParam(':id_compte', $id_compte, PDO::PARAM_STR);
+            $stmt->bindParam(':id_offre', $id_offre);
+            $stmt->execute();
+            if ($stmt->fetch()) return ['success' => false, 'message' => "Tu as déjà évalué cette offre."];
+
+            // Note valide ?
+            $notes_valides = ['Excellent', 'Très bien', 'Bien', 'Moyen', 'À éviter'];
+            if (!in_array($note, $notes_valides)) return ['success' => false, 'message' => "Note invalide."];
+
+            // Ajout
+            $stmt = $this->connexion->prepare("INSERT INTO evaluation (id_compte, id_offre, note, avis) VALUES (:id_compte, :id_offre, :note, :avis)");
+            $stmt->bindParam(':id_compte', $id_compte, PDO::PARAM_STR);
+            $stmt->bindParam(':id_offre', $id_offre);
+            $stmt->bindParam(':note', $note);
+            $stmt->bindParam(':avis', $avis);
+            $stmt->execute();
+
+            return ['success' => true, 'message' => "Merci, ton évaluation est prise en compte !"];
+        } catch (Exception $e) {
+            return ['success' => false, 'message' => "Erreur: " . $e->getMessage()];
+        }
+    }
 }
+?>
