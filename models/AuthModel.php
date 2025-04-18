@@ -6,8 +6,7 @@ class AuthModel {
     
     public function __construct() {
         // Inclure le fichier de configuration
-        require_once __DIR__ . '/../config/config.php';
-        $this->connexion = $connexion; // Supposant que $connexion vient de config.php
+        $this->connexion = require __DIR__ . '/../config/config.php';
     }
     
     public function verifyUser($identifiant, $motdepasse) {  // Le paramètre s'appelle motdepasse ici
