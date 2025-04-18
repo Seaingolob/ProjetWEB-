@@ -44,7 +44,6 @@ class UserViewController {
         
         // DÉFINIR L'ID CORRECTEMENT
         $id_compte = $_GET['id'];
-        echo "ID récupéré de l'URL: " . $id_compte . "<br>";
         
         // Récupérer les informations de l'utilisateur
         $userData = $this->userModel->getUserInfo($id_compte);
