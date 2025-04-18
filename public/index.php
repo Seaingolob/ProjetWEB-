@@ -74,6 +74,11 @@ $router->add('ajouter-evaluation', 'EvaluationController', 'addEvaluation');
 $router->add('contact', 'ContactController', 'form');
 $router->add('contact-process', 'ContactController', 'process');
 $router->add('voir-promo', 'PromoController', 'voir');
+$router->add('faq', 'StaticController', 'faq');
+$router->add('cgu', 'StaticController', 'cgu');
+$router->add('mentions-legales', 'StaticController', 'mentionsLegales');
+$router->add('qsn', 'StaticController', 'qsn');
+$router->add('404', 'ErrorController', 'notFound');
 // ... autres routes
 
 // Dispatcher la requête

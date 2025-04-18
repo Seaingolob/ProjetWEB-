@@ -10,7 +10,7 @@ class PromoController {
     }
 
     private function checkAuthentication() {
-        session_start();
+
 
         if (!isset($_GET['id_promotion'])) {
             die("ID de promotion manquant.");

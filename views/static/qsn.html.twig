@@ -1,0 +1,52 @@
+{% extends 'layout/base_minimal.html.twig' %}
+
+{% block title %}LeBonPlan - Qui sommes-nous{% endblock %}
+
+{% block content %}
+<main>
+    <section class="about-us">
+        <h2>Qui sommes-nous ?</h2>
+        <p>Bienvenue chez <strong>LeBonPlan</strong> ! On est une équipe passionnée de 5 personnes, unies par une même vision : faciliter la connexion entre les entreprises et les opportunités d'emploi.</p>
+    
+        <div class="team-container">
+            <div class="team-member">
+                <img src="/images/BastienB.jpg" alt="Membre 1">
+                <h3>Blumenfeld Bastien</h3>
+                <p>Développeur Full-stack</p>
+            </div>
+            <div class="team-member">
+                <img src="/images/KillianB.jpg" alt="Membre 2">
+                <h3>Killian Berthier</h3>
+                <p>Dev JavaScript</p>
+            </div>
+            <div class="team-member">
+                <img src="/images/NielsB.jpg" alt="Membre 3">
+                <h3>Niels Bourg</h3>
+                <p>Interface Utilisateur</p>
+            </div>
+            <div class="team-member">
+                <img src="/images/SamC.jpg" alt="Membre 4">
+                <h3>Samuel Ceccarelli</h3>
+                <p>Dev Backend PHP</p>
+            </div>
+            <div class="team-member">
+                <img src="/images/JorisDS.jpg" alt="Membre 5">
+                <h3>Joris Dos-Santos</h3>
+                <p>Expert CSS</p>
+            </div>
+        </div>
+    </section>
+</main>
+<br><br>
+<div class="footer-content">
+    <button id="backButton">Retour</button>
+</div>
+{% endblock %}
+
+{% block javascripts %}
+<script>
+document.getElementById('backButton').addEventListener('click', function() {
+    window.history.back();
+});
+</script>
+{% endblock %}

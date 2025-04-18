@@ -5,22 +5,17 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}LeBonPlan{% endblock %}</title>
     <link rel="stylesheet" href="/css/styles.css">
-    <script src="/js/script.js"></script>
     {% block stylesheets %}{% endblock %}
 </head>
 <body>
-    <header>
-        <nav>
-            <div class="logo">
-                <a href="{{ url('main') }}"><h1>lebonplan</h1></a>
-            </div>
-        </nav>
-    </header>
-    
     <main>
         {% block content %}{% endblock %}
     </main>
-    
+    <footer>
+        <div class="footer-bottom">
+            <p>&copy; 2024 - Tous droits réservés - Web4All</p>
+        </div>
+    </footer>
     {% block javascripts %}{% endblock %}
 </body>
 </html>

@@ -1,0 +1,36 @@
+{% extends 'layout/base_minimal.html.twig' %}
+
+{% block title %}LeBonPlan - CGU{% endblock %}
+
+{% block content %}
+<main class="cgu-page">
+    <section style="max-width: 800px; margin: 0 auto;">
+        <h1>Conditions Générales d’Utilisation</h1>
+        <article style="margin-bottom: 2rem;">
+            <h2>1. Objet</h2>
+            <p>Les présentes CGU ont pour objet de définir les conditions d’accès et d’utilisation du site LeBonPlan.</p>
+        </article>
+        <article style="margin-bottom: 2rem;">
+            <h2>2. Accès au service</h2>
+            <p>L’accès au site est gratuit pour tout utilisateur disposant d’un accès à Internet.</p>
+        </article>
+        <article style="margin-bottom: 2rem;">
+            <h2>3. Propriété intellectuelle</h2>
+            <p>Tous les contenus présents sur ce site sont protégés par la législation en vigueur sur la propriété intellectuelle.</p>
+        </article>
+        <!-- Ajoute tes autres articles ici -->
+    </section>
+</main>
+<br><br>
+<div class="footer-content">
+    <button id="backButton">Retour</button>
+</div>
+{% endblock %}
+
+{% block javascripts %}
+<script>
+document.getElementById('backButton').addEventListener('click', function() {
+    window.history.back();
+});
+</script>
+{% endblock %}

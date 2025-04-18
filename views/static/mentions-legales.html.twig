@@ -1,0 +1,62 @@
+{% extends 'layout/base_minimal.html.twig' %}
+
+{% block title %}LeBonPlan - Mentions Légales{% endblock %}
+
+{% block content %}
+<main style="padding: 80px 20px 40px;">
+    <section style="max-width: 800px; margin: 0 auto;">
+        <h1 style="margin-bottom: 2rem;">Mentions Légales</h1>
+
+        <article style="margin-bottom: 2rem;">
+            <h2 style="color: var(--gray-800); margin-bottom: 1rem;">1. Éditeur du site</h2>
+            <p><strong>Web4All</strong><br>
+            93 Boulevard de la Seine<br>
+            92000 Nanterre<br>
+            France<br>
+            Email : contact@web4all.fr<br>
+            Tél : 01 23 45 67 89</p>
+        </article>
+
+        <article style="margin-bottom: 2rem;">
+            <h2 style="color: var(--gray-800); margin-bottom: 1rem;">2. Hébergement</h2>
+            <p>Ce site est hébergé par :<br>
+            Azure <br>
+            2 rue Kellermann<br>
+            59100 Roubaix<br>
+            France</p>
+        </article>
+
+        <article style="margin-bottom: 2rem;">
+            <h2 style="color: var(--gray-800); margin-bottom: 1rem;">3. Propriété intellectuelle</h2>
+            <p>L'ensemble de ce site relève de la législation française et internationale sur le droit d'auteur et la propriété intellectuelle. Tous les droits de reproduction sont réservés, y compris pour les documents téléchargeables et les représentations iconographiques et photographiques.</p>
+        </article>
+
+        <article style="margin-bottom: 2rem;">
+            <h2 style="color: var(--gray-800); margin-bottom: 1rem;">4. Protection des données personnelles</h2>
+            <p>Conformément au Règlement Général sur la Protection des Données (RGPD), tu disposes d'un droit d'accès, de rectification et de suppression des données te concernant. Pour exercer ce droit, contacte-nous par mail à : privacy@web4all.fr</p>
+        </article>
+
+        <article style="margin-bottom: 2rem;">
+            <h2 style="color: var(--gray-800); margin-bottom: 1rem;">5. Cookies</h2>
+            <p>Notre site utilise des cookies pour améliorer ton expérience de navigation. Tu peux configurer ton navigateur pour refuser les cookies ou être averti lors de leur utilisation.</p>
+        </article>
+
+        <article style="margin-bottom: 2rem;">
+            <h2 style="color: var(--gray-800); margin-bottom: 1rem;">6. Responsabilité</h2>
+            <p>Les infos fournies sur ce site le sont à titre indicatif. Web4All ne garantit pas l'exactitude, la complétude, l'actualité des infos diffusées sur le site. Du coup, tu utilises ces infos sous ta propre responsabilité.</p>
+        </article>
+    </section>
+</main>
+<br><br>
+<div class="footer-content">
+    <button id="backButton">Retour</button>
+</div>
+{% endblock %}
+
+{% block javascripts %}
+<script>
+document.getElementById('backButton').addEventListener('click', function() {
+    window.history.back();
+});
+</script>
+{% endblock %}
