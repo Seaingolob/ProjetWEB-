@@ -73,6 +73,7 @@ $router->add('postuler', 'ApplyController', 'apply');
 $router->add('ajouter-evaluation', 'EvaluationController', 'addEvaluation');
 $router->add('contact', 'ContactController', 'form');
 $router->add('contact-process', 'ContactController', 'process');
+$router->add('voir-promo', 'PromoController', 'voir');
 // ... autres routes
 
 // Dispatcher la requête

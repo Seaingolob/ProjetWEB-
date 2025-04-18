@@ -1,0 +1,76 @@
+{% extends 'layout/base.html.twig' %}
+
+{% block title %}Statistiques de la Promotion {{ promotion.nom }}{% endblock %}
+
+{% block content %}
+<div class="contact-form">
+    <h1>Statistiques de la {{ promotion.nom }}</h1>
+    <p><strong>Nombre d'étudiants :</strong> {{ nb_etudiants }}</p>
+    <p><strong>Pilote responsable :</strong>
+        <a href="{{ url('voir-eleve') }}?id={{ pilote.id_compte }}">
+            {{ pilote.prenom }} {{ pilote.nom }}
+        </a>
+    </p>
+    <p><strong>Moyenne des offres postulées par étudiant :</strong> {{ moyenne_postulations }}</p>
+
+    <h2>Élèves n'ayant postulé à aucune offre :</h2>
+    <ul>
+        {% if etudiants_sans_postulation|length > 0 %}
+            {% for etu in etudiants_sans_postulation %}
+                <li>{{ etu.prenom }} {{ etu.nom }}</li>
+            {% endfor %}
+        {% else %}
+            <li>Aucun élève n'est sans postulation.</li>
+        {% endif %}
+    </ul>
+</div>
+<div class="graphe">
+    <canvas id="myPieChart" width="500" height="500"></canvas>
+</div>
+{% endblock %}
+
+{% block javascripts %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const ctx = document.getElementById('myPieChart').getContext('2d');
+    const myPieChart = new Chart(ctx, {
+        type: 'pie',
+        data: {
+            labels: ['Postulé au moins à un stage', 'Pas de postulation'],
+            datasets: [{
+                label: 'Postulations des étudiants',
+                data: [{{ nb_etudiants - etudiants_sans_postulation|length }}, {{ etudiants_sans_postulation|length }}],
+                backgroundColor: [
+                    'rgba(75, 192, 192, 0.2)',
+                    'rgba(255, 99, 132, 0.2)'
+                ],
+                borderColor: [
+                    'rgba(75, 192, 192, 1)',
+                    'rgba(255, 99, 132, 1)'
+                ],
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: false,
+            plugins: {
+                legend: { position: 'top' },
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            let label = context.label || '';
+                            if (label) {
+                                label += ': ';
+                            }
+                            label += context.raw;
+                            return label;
+                        }
+                    }
+                }
+            }
+        }
+    });
+});
+</script>
+{% endblock %}
