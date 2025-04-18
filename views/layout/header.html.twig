@@ -16,10 +16,10 @@
                 <li><a href="{{ url('wishlist') }}">Wishlist</a></li>
             {% endif %}
             {% if session.user_type == 'admin' %}
-                <li><a href="{{ url('admin') }}" class="active">Espace-administration</a></li>
+                <li><a href="{{ url('admin') }}">Espace-administration</a></li>
             {% endif %}
             {% if session.user_type == 'pilote' %}
-                <li><a href="{{ url('admin') }}" class="active">Espace-pilote</a></li>
+                <li><a href="{{ url('admin') }}">Espace-pilote</a></li>
             {% endif %}
             <li><a href="{{ url('contact') }}">Contact</a></li>
             <div class="logout-container">
