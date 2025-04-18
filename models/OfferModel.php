@@ -38,6 +38,9 @@ class OfferModel {
         ];
     }
     
+    public function getPDO() {
+        return $this->connexion;
+    }
 
     public function getFeaturedOffers() {
         $sql = "SELECT o.id_offre, o.titre, o.duree_mois, o.date_publication, o.id_entreprise, 

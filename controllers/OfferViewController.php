@@ -91,4 +91,63 @@ class OfferViewController {
         header("Location: /offres");
         exit();
     }
+
+    public function apply() {
+        // Vérifier que l'utilisateur est connecté
+        if (!isset($_SESSION['logged_in']) || $_SESSION['logged_in'] !== true) {
+            header("Location: /connexion");
+            exit();
+        }
+        
+        // Vérifier que l'utilisateur est un étudiant
+        if ($_SESSION['user_type'] !== 'etudiant') {
+            header("Location: /main");
+            exit();
+        }
+        
+        // Vérifier que l'ID de l'offre est présent
+        if (!isset($_POST['id']) || empty($_POST['id'])) {
+            $_SESSION['error_message'] = "Aucune offre spécifiée.";
+            header("Location: /offres");
+            exit();
+        }
+        
+        $id_offre = intval($_POST['id']);
+        $id_compte = $_SESSION['user_id'];
+        
+        // Vérifier si l'étudiant a déjà postulé à cette offre
+        if ($this->offerModel->hasApplied($id_compte, $id_offre)) {
+            $_SESSION['error_message'] = "Vous avez déjà postulé à cette offre.";
+            header("Location: /voir-offre?id=" . $id_offre);
+            exit();
+        }
+        
+        // Vérifier les fichiers uploadés
+        $cv_file = isset($_FILES['cv']) ? $_FILES['cv'] : null;
+        $lm_file = isset($_FILES['lettre_motivation']) ? $_FILES['lettre_motivation'] : null;
+        
+        // Valider les fichiers
+        $validation = $this->validateFiles($cv_file, $lm_file);
+        if (!$validation['valid']) {
+            $_SESSION['error_message'] = $validation['message'];
+            header("Location: /voir-offre?id=" . $id_offre);
+            exit();
+        }
+        
+        // Traiter les fichiers et enregistrer la candidature
+        $result = $this->offerModel->saveApplication($id_compte, $id_offre, $cv_file, $lm_file);
+        
+        if ($result) {
+            $_SESSION['success_message'] = "Votre candidature a été enregistrée avec succès.";
+        } else {
+            $_SESSION['error_message'] = "Une erreur est survenue lors de l'enregistrement de votre candidature.";
+        }
+        
+        // Rediriger vers la page de détail de l'offre
+        header("Location: /voir-offre?id=" . $id_offre);
+        exit();
+    }
+
+
+
 }
