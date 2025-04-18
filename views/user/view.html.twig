@@ -102,7 +102,7 @@
 
             <div class="user-action-buttons">
                 <button class="back-btn" onclick="window.location.href='{{ url('main') }}';">Retour</button>
-                {% if currentUser.type == 'admin' and  user.type != 'admin' %}
+                {% if currentUser.type == 'admin' and user_type != 'admin' %}
                     <button class="delete-btn" onclick="if(confirm('Êtes-vous sûr de vouloir supprimer cet élève ?')) { window.location.href='{{ url('delete-user') }}?id={{ user.id_compte }}'; } return false;">Supprimer</button>
                 {% endif %}
             </div>
