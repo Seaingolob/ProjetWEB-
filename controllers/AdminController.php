@@ -95,16 +95,15 @@ class AdminController {
     }
     
     private function getOfferData($search) {
-        $page = isset($_GET['pageOffres']) ? (int)$_GET['pageOffres'] : 1;
+        $pageOffres = isset($_GET['pageOffres']) ? (int)$_GET['pageOffres'] : 1;
         $itemsPerPage = 4;
-        
-        // Récupérer les offres
-        $data = $this->offerModel->getOffers($search, $page, $itemsPerPage);
-        
+    
+        $data = $this->offerModel->getOffers($search, $pageOffres, $itemsPerPage);
+    
         return [
             'offres' => $data['offers'],
-            'page' => $page,
-            'totalPages' => $data['totalPages']
+            'pageOffres' => $pageOffres, 
+            'totalPagesOffres' => $data['totalPages'] 
         ];
     }
 }
