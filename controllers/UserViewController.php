@@ -49,19 +49,6 @@ class UserViewController {
         // Récupérer les informations de l'utilisateur
         $userData = $this->userModel->getUserInfo($id_compte);
         
-        echo "<h3>Données retournées par getUserInfo:</h3>";
-        echo "<pre>";
-        var_dump($userData);
-        echo "</pre>";
-        
-        // Vérifier si l'utilisateur existe
-        if (!$userData['user']) {
-            echo "Utilisateur non trouvé selon la condition !userData['user']<br>";
-            exit();
-        }
-        
-        echo "Si tu vois ce message, l'utilisateur a été trouvé et tout fonctionne !";
-        
         // Préparer les données pour la vue
         $viewData = [
             'user' => $userData['user'],
