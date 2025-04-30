@@ -164,8 +164,8 @@
 {% block javascripts %}
 <script src="/js/script.js"></script>
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
+    window.onload = function() {
         postuleroffre();
-    });
+    };
 </script>
 {% endblock %}
