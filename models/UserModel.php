@@ -32,7 +32,7 @@ class UserModel {
             $type_utilisateur = $data['type_utilisateur'];
     
             // Générer l'id_compte : première lettre du prénom + "_" + nom (ex: "J_Dupont")
-            $id_compte_base = strtoupper(substr($prenom, 0, 1)) . '_' . ucfirst(strtolower($nom));
+            $id_compte_base = strtolower(substr($prenom, 0, 1)) . '_' . strtolower($nom);
             $id_compte = $id_compte_base;
     
             // Vérifier l'unicité de l'id_compte, si déjà utilisé, on ajoute un nombre aléatoire
