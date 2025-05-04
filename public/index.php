@@ -81,9 +81,9 @@ $router->add('mentions-legales', 'StaticController', 'mentionsLegales');
 $router->add('qsn', 'StaticController', 'qsn');
 $router->add('404', 'ErrorController', 'notFound');
 $router->add('formulaire-utilisateur', 'UserController', 'showForm');
-$router->add('ajouter-utilisateur', 'UserController', 'processForm');
+$router->add('process-ajouter-utilisateur', 'UserController', 'processForm');
 $router->add('formulaire-offres', 'OfferController', 'showForm');
-$router->add('ajouter-offre', 'OfferController', 'processForm');
+$router->add('process-ajouter-offre', 'OfferController', 'processForm');
 // ... autres routes
 
 // Dispatcher la requête
