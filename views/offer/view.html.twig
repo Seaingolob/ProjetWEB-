@@ -10,7 +10,6 @@
     {% if error %}
         <div class="error-message">{{ error }}</div>
     {% endif %}
-<br>
     <div class="offre-header">
         <h2>{{ offre.titre }} - ID {{ offre.id_offre }}</h2>
     </div>
@@ -89,9 +88,6 @@
                             <div class="file-upload-container">
                                 <label class="file-upload-label" for="cv">CV</label>
                                 <div class="file-input-container">
-                                <div class="message" id="cv_message" style="display: none;">
-                                    Veuillez insérer votre CV
-                                </div>
                                     <input type="file" id="cv" name="cv" class="file-input" accept=".pdf">
                                     <span class="input-note">Format accepté: PDF uniquement</span>
                                 </div>
@@ -99,9 +95,6 @@
                             <div class="file-upload-container">
                                 <label class="file-upload-label" for="lettre_motivation">Lettre de motivation</label>
                                 <div class="file-input-container">
-                                <div class="message" id="lettre_motivation_message" style="display: none;">
-                                            Veuillez insérer votre lettre de motivation
-                                </div>
                                     <input type="file" id="lettre_motivation" name="lettre_motivation" class="file-input" accept=".pdf">
                                     <span class="input-note">Format accepté: PDF uniquement</span>
                                 </div>
