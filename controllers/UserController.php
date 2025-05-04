@@ -43,11 +43,11 @@ class UserController {
                 exit();
             } else {
                 $_SESSION['message'] = "Erreur: " . $result['error'];
-                header("Location: /ajouter-utilisateur");
+                header("Location: /formulaire-utilisateur");
                 exit();
             }
         } else {
-            header("Location: /ajouter-utilisateur");
+            header("Location: /formulaire-utilisateur");
             exit();
         }
     }

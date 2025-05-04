@@ -43,11 +43,11 @@ class OfferController {
                 exit();
             } else {
                 $_SESSION['message'] = "Erreur: " . $result['error'];
-                header("Location: /ajouter-offre");
+                header("Location: /formulaire-offre");
                 exit();
             }
         } else {
-            header("Location: /ajouter-offre");
+            header("Location: /formulaire-offre");
             exit();
         }
     }
