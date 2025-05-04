@@ -80,6 +80,10 @@ $router->add('cgu', 'StaticController', 'cgu');
 $router->add('mentions-legales', 'StaticController', 'mentionsLegales');
 $router->add('qsn', 'StaticController', 'qsn');
 $router->add('404', 'ErrorController', 'notFound');
+$router->add('formulaire-utilisateur', 'UserController', 'showForm');
+$router->add('process-ajouter-utilisateur', 'UserController', 'processForm');
+$router->add('formulaire-offres', 'OfferController', 'showForm');
+$router->add('process-ajouter-offre', 'OfferController', 'processForm');
 // ... autres routes
 
 // Dispatcher la requête
