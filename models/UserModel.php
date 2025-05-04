@@ -8,6 +8,97 @@ class UserModel {
         $this->connexion = require __DIR__ . '/../config/config.php';
     }
 
+    public function getFormOptions() {
+        try {
+            $campus = $this->connexion->query("SELECT id_campus, nom_campus FROM campus ORDER BY nom_campus")->fetchAll(PDO::FETCH_ASSOC);
+            $promotions = $this->connexion->query("SELECT id_promotion, nom FROM promotion ORDER BY nom")->fetchAll(PDO::FETCH_ASSOC);
+            $regions = $this->connexion->query("SELECT id_region, nom_region FROM region ORDER BY nom_region")->fetchAll(PDO::FETCH_ASSOC);
+            $villes = $this->connexion->query("SELECT id_ville, nom_ville, id_region FROM ville ORDER BY nom_ville")->fetchAll(PDO::FETCH_ASSOC);
+            return compact('campus', 'promotions', 'regions', 'villes');
+        } catch (PDOException $e) {
+            return [];
+        }
+    }
+
+    public function addUser($data) {
+        try {
+            $this->connexion->beginTransaction();
+
+            $nom = htmlspecialchars($data['nom']);
+            $prenom = htmlspecialchars($data['prenom']);
+            $mail = filter_var($data['mail'], FILTER_SANITIZE_EMAIL);
+            $mot_de_passe_hash = password_hash($data['mot_de_passe'], PASSWORD_DEFAULT);
+            $telephone = htmlspecialchars($data['telephone']);
+            $type_utilisateur = $data['type_utilisateur'];
+
+            $stmt = $this->connexion->prepare("INSERT INTO utilisateur (nom, prenom, mail, mot_de_passe, telephone) VALUES (?, ?, ?, ?, ?)");
+            $stmt->execute([$nom, $prenom, $mail, $mot_de_passe_hash, $telephone]);
+            $id_compte = $this->connexion->lastInsertId();
+
+            if ($type_utilisateur === 'admin') {
+                $stmt = $this->connexion->prepare("INSERT INTO admin (id_compte) VALUES (?)");
+                $stmt->execute([$id_compte]);
+            } else {
+                // Campus
+                if ($data['campus-choix'] === 'existant') {
+                    $id_campus = intval($data['campus-id']);
+                } else {
+                    $nom_campus = htmlspecialchars($data['nouveau-campus-nom']);
+                    $adresse_complete = htmlspecialchars($data['adresse']);
+                    $id_ville = null;
+
+                    if ($data['ville-choix'] === 'existante') {
+                        $id_ville = intval($data['ville_id']);
+                    } else {
+                        $nouvelle_ville_nom = htmlspecialchars($data['nouvelle_ville_nom']);
+                        $id_region = intval($data['region_id']);
+                        $stmt = $this->connexion->prepare("INSERT INTO ville (nom_ville, id_region) VALUES (?, ?)");
+                        $stmt->execute([$nouvelle_ville_nom, $id_region]);
+                        $id_ville = $this->connexion->lastInsertId();
+                    }
+
+                    $stmt = $this->connexion->prepare("INSERT INTO adresse (nom_adresse, id_ville) VALUES (?, ?)");
+                    $stmt->execute([$adresse_complete, $id_ville]);
+                    $id_adresse = $this->connexion->lastInsertId();
+
+                    $stmt = $this->connexion->prepare("INSERT INTO campus (nom_campus, id_adresse) VALUES (?, ?)");
+                    $stmt->execute([$nom_campus, $id_adresse]);
+                    $id_campus = $this->connexion->lastInsertId();
+                }
+
+                // Promotion
+                if ($data['promotion-choix'] === 'existante') {
+                    $id_promotion = intval($data['promotion-id']);
+                } else {
+                    $nom_promotion = htmlspecialchars($data['nouvelle-promotion-nom']);
+                    $stmt = $this->connexion->prepare("INSERT INTO promotion (nom, id_campus) VALUES (?, ?)");
+                    $stmt->execute([$nom_promotion, $id_campus]);
+                    $id_promotion = $this->connexion->lastInsertId();
+                }
+
+                $today = date("Y-m-d");
+
+                if ($type_utilisateur === 'etudiant') {
+                    $stmt = $this->connexion->prepare("INSERT INTO etudiant (id_compte) VALUES (?)");
+                    $stmt->execute([$id_compte]);
+                    $stmt = $this->connexion->prepare("INSERT INTO appartenir (id_compte, id_promotion, debut) VALUES (?, ?, ?)");
+                    $stmt->execute([$id_compte, $id_promotion, $today]);
+                } elseif ($type_utilisateur === 'pilote') {
+                    $stmt = $this->connexion->prepare("INSERT INTO pilote (id_compte) VALUES (?)");
+                    $stmt->execute([$id_compte]);
+                    $stmt = $this->connexion->prepare("INSERT INTO piloter (id_compte, id_promotion, debut) VALUES (?, ?, ?)");
+                    $stmt->execute([$id_compte, $id_promotion, $today]);
+                }
+            }
+
+            $this->connexion->commit();
+            return ['success' => true];
+        } catch (PDOException $e) {
+            $this->connexion->rollBack();
+            return ['success' => false, 'error' => $e->getMessage()];
+        }
+    }
+
     public function getUsers($search, $page, $itemsPerPage) {
         $offset = ($page - 1) * $itemsPerPage;
     

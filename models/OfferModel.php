@@ -7,6 +7,146 @@ class OfferModel {
         // Inclure config et se connecter à la BD
         $this->connexion = require __DIR__ . '/../config/config.php';
     }
+
+    public function getFormOptions() {
+        try {
+            $sqls = [
+                'competences' => "SELECT id_competence, nom FROM competence ORDER BY nom",
+                'entreprises' => "SELECT id_entreprise, nom FROM entreprise ORDER BY nom",
+                'villes' => "SELECT id_ville, nom_ville FROM ville ORDER BY nom_ville",
+                'secteurs' => "SELECT id_secteur_activite, nom FROM secteur_activite ORDER BY nom",
+                'regions' => "SELECT id_region, nom_region FROM region ORDER BY nom_region"
+            ];
+            $result = [];
+            foreach ($sqls as $key => $query) {
+                $stmt = $this->connexion->prepare($query);
+                $stmt->execute();
+                $result[$key] = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            }
+            return $result;
+        } catch (PDOException $e) {
+            return [];
+        }
+    }
+
+    public function addOffer($data, $id_compte) {
+        try {
+            // Récupération des données du formulaire pour l'offre
+            $titre = htmlspecialchars($data['titre']);
+            $duree = intval($data['duree']);
+            $date_publication = $data['date_publication'];
+            $description = htmlspecialchars($data['description']);
+            $id_entreprise = null;
+
+            // Gestion entreprise
+            if ($data['entreprise-choix'] === 'existante') {
+                $id_entreprise = intval($data['entreprise-id']);
+            } else {
+                // Nouvelle entreprise, gestion cascade
+                $nom_entreprise = htmlspecialchars($data['nouvelle-entreprise-nom']);
+                $entreprise_description = htmlspecialchars($data['entreprise-description']);
+                $entreprise_site = filter_var($data['entreprise-site'], FILTER_SANITIZE_URL);
+
+                // Région
+                if ($data['region-choix'] === 'existante') {
+                    $id_region = intval($data['region']);
+                } else {
+                    $nom_region = htmlspecialchars($data['nouvelle-region-nom']);
+                    $stmt = $this->connexion->prepare("INSERT INTO region (nom_region) VALUES (?)");
+                    $stmt->execute([$nom_region]);
+                    $id_region = $this->connexion->lastInsertId();
+                }
+
+                // Ville
+                if ($data['ville-choix'] === 'existante') {
+                    $id_ville = intval($data['ville']);
+                } else {
+                    $nom_ville = htmlspecialchars($data['nouvelle-ville-nom']);
+                    $stmt = $this->connexion->prepare("INSERT INTO ville (nom_ville, id_region) VALUES (?, ?)");
+                    $stmt->execute([$nom_ville, $id_region]);
+                    $id_ville = $this->connexion->lastInsertId();
+                }
+
+                // Adresse
+                $adresse = htmlspecialchars($data['adresse']);
+                $stmt = $this->connexion->prepare("INSERT INTO adresse (nom_adresse, id_ville) VALUES (?, ?)");
+                $stmt->execute([$adresse, $id_ville]);
+                $id_adresse = $this->connexion->lastInsertId();
+
+                // Entreprise
+                $stmt = $this->connexion->prepare("INSERT INTO entreprise (nom, description, site, id_adresse) VALUES (?, ?, ?, ?)");
+                $stmt->execute([$nom_entreprise, $entreprise_description, $entreprise_site, $id_adresse]);
+                $id_entreprise = $this->connexion->lastInsertId();
+
+                // Secteurs existants
+                if (isset($data['secteurs']) && is_array($data['secteurs'])) {
+                    foreach ($data['secteurs'] as $id_secteur) {
+                        $stmt = $this->connexion->prepare("INSERT INTO travailler (id_entreprise, id_secteur_activite) VALUES (?, ?)");
+                        $stmt->execute([$id_entreprise, $id_secteur]);
+                    }
+                }
+                // Nouveaux secteurs
+                if (isset($data['nouveau-secteur-check']) && isset($data['nouveaux-secteurs']) && !empty($data['nouveaux-secteurs'])) {
+                    $nouveaux_secteurs = explode(',', $data['nouveaux-secteurs']);
+                    foreach ($nouveaux_secteurs as $nouveau_secteur) {
+                        $nouveau_secteur = trim($nouveau_secteur);
+                        if (!empty($nouveau_secteur)) {
+                            $stmt = $this->connexion->prepare("SELECT id_secteur_activite FROM secteur_activite WHERE nom = ?");
+                            $stmt->execute([$nouveau_secteur]);
+                            $secteur = $stmt->fetch(PDO::FETCH_ASSOC);
+                            if (!$secteur) {
+                                $stmt = $this->connexion->prepare("INSERT INTO secteur_activite (nom) VALUES (?)");
+                                $stmt->execute([$nouveau_secteur]);
+                                $id_secteur = $this->connexion->lastInsertId();
+                            } else {
+                                $id_secteur = $secteur['id_secteur_activite'];
+                            }
+                            $stmt = $this->connexion->prepare("INSERT INTO travailler (id_entreprise, id_secteur_activite) VALUES (?, ?)");
+                            $stmt->execute([$id_entreprise, $id_secteur]);
+                        }
+                    }
+                }
+            }
+
+            // Ajout de l'offre
+            $stmt = $this->connexion->prepare("INSERT INTO offre (titre, description, duree_mois, date_publication, id_entreprise, id_compte) VALUES (?, ?, ?, ?, ?, ?)");
+            $stmt->execute([$titre, $description, $duree, $date_publication, $id_entreprise, $id_compte]);
+            $id_offre = $this->connexion->lastInsertId();
+
+            // Compétences existantes
+            if (isset($data['competences']) && is_array($data['competences'])) {
+                foreach ($data['competences'] as $id_competence) {
+                    $stmt = $this->connexion->prepare("INSERT INTO contenir (id_offre, id_competence) VALUES (?, ?)");
+                    $stmt->execute([$id_offre, $id_competence]);
+                }
+            }
+            // Nouvelles compétences
+            if (isset($data['nouvelle-competence-check']) && isset($data['nouvelles-competences']) && !empty($data['nouvelles-competences'])) {
+                $nouvelles_competences = explode(',', $data['nouvelles-competences']);
+                foreach ($nouvelles_competences as $nouvelle_competence) {
+                    $nouvelle_competence = trim($nouvelle_competence);
+                    if (!empty($nouvelle_competence)) {
+                        $stmt = $this->connexion->prepare("SELECT id_competence FROM competence WHERE nom = ?");
+                        $stmt->execute([$nouvelle_competence]);
+                        $comp = $stmt->fetch(PDO::FETCH_ASSOC);
+                        if (!$comp) {
+                            $stmt = $this->connexion->prepare("INSERT INTO competence (nom) VALUES (?)");
+                            $stmt->execute([$nouvelle_competence]);
+                            $id_competence = $this->connexion->lastInsertId();
+                        } else {
+                            $id_competence = $comp['id_competence'];
+                        }
+                        $stmt = $this->connexion->prepare("INSERT INTO contenir (id_offre, id_competence) VALUES (?, ?)");
+                        $stmt->execute([$id_offre, $id_competence]);
+                    }
+                }
+            }
+
+            return ['success' => true];
+        } catch (PDOException $e) {
+            return ['success' => false, 'error' => $e->getMessage()];
+        }
+    }
     
     public function getOffers($search, $page, $itemsPerPage) {
         $offset = ($page - 1) * $itemsPerPage;
