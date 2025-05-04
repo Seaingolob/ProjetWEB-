@@ -23,30 +23,49 @@ class UserModel {
     public function addUser($data) {
         try {
             $this->connexion->beginTransaction();
-
-            $nom = htmlspecialchars($data['nom']);
-            $prenom = htmlspecialchars($data['prenom']);
+    
+            $nom = trim(htmlspecialchars($data['nom']));
+            $prenom = trim(htmlspecialchars($data['prenom']));
             $mail = filter_var($data['mail'], FILTER_SANITIZE_EMAIL);
             $mot_de_passe_hash = password_hash($data['mot_de_passe'], PASSWORD_DEFAULT);
-            $telephone = htmlspecialchars($data['telephone']);
+            $telephone = trim(htmlspecialchars($data['telephone']));
             $type_utilisateur = $data['type_utilisateur'];
-
-            $stmt = $this->connexion->prepare("INSERT INTO utilisateur (nom, prenom, mail, mot_de_passe, telephone) VALUES (?, ?, ?, ?, ?)");
-            $stmt->execute([$nom, $prenom, $mail, $mot_de_passe_hash, $telephone]);
-            $id_compte = $this->connexion->lastInsertId();
-
+    
+            // Générer l'id_compte : première lettre du prénom + "_" + nom (ex: "J_Dupont")
+            $id_compte_base = strtoupper(substr($prenom, 0, 1)) . '_' . ucfirst(strtolower($nom));
+            $id_compte = $id_compte_base;
+    
+            // Vérifier l'unicité de l'id_compte, si déjà utilisé, on ajoute un nombre aléatoire
+            $stmt = $this->connexion->prepare("SELECT COUNT(*) FROM utilisateur WHERE id_compte = ?");
+            $suffix = 1;
+            while (true) {
+                $stmt->execute([$id_compte]);
+                if ($stmt->fetchColumn() == 0) {
+                    break;
+                }
+                $id_compte = $id_compte_base . $suffix;
+                $suffix++;
+            }
+    
+            // Insérer dans la table utilisateur
+            $stmt = $this->connexion->prepare(
+                "INSERT INTO utilisateur (id_compte, nom, prenom, mail, mot_de_passe, telephone) VALUES (?, ?, ?, ?, ?, ?)"
+            );
+            $stmt->execute([$id_compte, $nom, $prenom, $mail, $mot_de_passe_hash, $telephone]);
+    
+            // Ensuite, tu utilises $id_compte partout pour la suite
             if ($type_utilisateur === 'admin') {
                 $stmt = $this->connexion->prepare("INSERT INTO admin (id_compte) VALUES (?)");
                 $stmt->execute([$id_compte]);
             } else {
-                // Campus
+                // Gestion du campus
                 if ($data['campus-choix'] === 'existant') {
                     $id_campus = intval($data['campus-id']);
                 } else {
                     $nom_campus = htmlspecialchars($data['nouveau-campus-nom']);
                     $adresse_complete = htmlspecialchars($data['adresse']);
                     $id_ville = null;
-
+    
                     if ($data['ville-choix'] === 'existante') {
                         $id_ville = intval($data['ville_id']);
                     } else {
@@ -56,16 +75,16 @@ class UserModel {
                         $stmt->execute([$nouvelle_ville_nom, $id_region]);
                         $id_ville = $this->connexion->lastInsertId();
                     }
-
+    
                     $stmt = $this->connexion->prepare("INSERT INTO adresse (nom_adresse, id_ville) VALUES (?, ?)");
                     $stmt->execute([$adresse_complete, $id_ville]);
                     $id_adresse = $this->connexion->lastInsertId();
-
+    
                     $stmt = $this->connexion->prepare("INSERT INTO campus (nom_campus, id_adresse) VALUES (?, ?)");
                     $stmt->execute([$nom_campus, $id_adresse]);
                     $id_campus = $this->connexion->lastInsertId();
                 }
-
+    
                 // Promotion
                 if ($data['promotion-choix'] === 'existante') {
                     $id_promotion = intval($data['promotion-id']);
@@ -75,9 +94,9 @@ class UserModel {
                     $stmt->execute([$nom_promotion, $id_campus]);
                     $id_promotion = $this->connexion->lastInsertId();
                 }
-
+    
                 $today = date("Y-m-d");
-
+    
                 if ($type_utilisateur === 'etudiant') {
                     $stmt = $this->connexion->prepare("INSERT INTO etudiant (id_compte) VALUES (?)");
                     $stmt->execute([$id_compte]);
@@ -90,7 +109,7 @@ class UserModel {
                     $stmt->execute([$id_compte, $id_promotion, $today]);
                 }
             }
-
+    
             $this->connexion->commit();
             return ['success' => true];
         } catch (PDOException $e) {
